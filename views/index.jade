@@ -1,0 +1,175 @@
+h1(style='margin-top: 0')= title
+p Welcome to #{title}!
+script(type='text/javascript', src='/socket.io/socket.io.js')
+script(type='text/javascript')
+  var socket = io.connect('http://129.105.107.162');
+  socket.on('name request', function (data) {
+    var user = prompt("Type your user name: ");
+    socket.emit('name reply', user);
+  });
+  socket.on('name conflict', function (data) {
+    var user = prompt("That name is taken. Please type another user name: ");
+    socket.emit('name reply', user);
+  });
+  socket.on('message', function (data) {
+    String.prototype.reverse = function(){
+      return this.split("").reverse().join("");
+    };
+    String.prototype.wordReverse = function(){
+      var word, _i, _len;
+      var newMessageArray = [];
+      var messageArray = message.split(" ");
+      for (_i = 0, _len = messageArray.length; _i < _len; _i++) {
+        word = messageArray[_i];
+        newMessageArray[_i] = word.reverse();
+      }
+      return newMessageArray.join(" ");
+    };
+    var time = data.processed_time;
+    var user = data.user;
+    var message = data.processed_message;
+    var serverState = data.server_state;
+    var final_text = "";
+    switch (serverState) {
+      case 0:
+        final_text = message;
+        break;
+      case 1:
+        final_text = message.reverse();
+        break;
+      case 2:
+        final_text = message.wordReverse();
+        break;
+    }
+    var prefix = $("#log").val() === "" ? "" : "\n";
+    $("#log").append(prefix + time + " " + user + ":  " + final_text);
+    textScroll();
+  });
+script(type='text/javascript', src='http://code.jquery.com/jquery.js')
+#chat(style="float: none;")
+  p
+  h4 Chat Log
+  textarea#log(cols="50", rows="15", readonly="readonly", style='resize: none;', onkeydown='keyCheck(this, event)')
+  p
+#inputs(style='vertical-align: text-bottom')
+  #shoutState(style='font-size: 8pt; float: left; width: 50px; margin-top: 4px;') Normal
+  input#abc(value='', onkeydown='keyCheck(this, event)', autofocus='autofocus', style='float: left; width: 20em')
+  input#outputState(type='checkbox', onchange='a()')
+  label(for='outputState', style='font-size: 8pt;') Variable output?
+#info(style='text-align: center; width: 40em; font-size: 8pt; margin-top: 2em')
+    | Press tab to shout! Mess around with variable output!
+script(type='text/javascript')
+  var List, node;
+  List = (function() {
+    function List(maxLen) {
+      this.maxLen = maxLen;
+      this.len = 0;
+      this.head = null;
+      this.tail = null;
+      this.cursor = null;
+    };
+    List.prototype.clearCursor = function() {
+      this.cursor = null;
+    };
+    List.prototype.append = function(newNode) {
+      var oldTail;
+      if (this.head != null) {
+        newNode.older = this.head;
+        this.head.newer = newNode;
+      };
+      this.head = newNode;
+      if (this.tail === null) {
+        this.tail = this.head;
+      };
+      if (this.len < this.maxLen) {
+        this.len++;
+      } else {
+        oldTail = this.tail;
+        this.tail = oldTail.newer;
+        this.tail.older = null;
+      };
+    };
+    return List;
+  })();
+  node = (function() {
+    function node(data) {
+      this.data = data;
+      this.newer = null;
+      this.older = null;
+    };
+    return node;
+  })();
+  var messageList = new List(20);
+  function keyCheck(inField, e){
+    var charCode;
+    if (e && e.which){
+      charCode = e.which;
+    }
+    else if (window.event){
+      e = window.event;
+      charCode = e.which;
+    };
+    if (charCode === 9){
+      e.preventDefault();
+      changeShout();
+    }
+    else if (charCode === 13){
+      if ($(inField).val() !== "") {
+        send($(inField).val());
+      };
+    }
+    else if ((charCode === 38) || (charCode === 40)){
+      e.preventDefault();
+      scroll(charCode);
+    }
+    else {
+      $("#abc").focus();
+    };
+  };
+  function changeShout(){
+    var currentState = $("#shoutState").text();
+    if (currentState === "Normal"){
+      $("#shoutState").text("Shouting");
+    }
+    else {
+      $("#shoutState").text("Normal");
+    }
+  };
+  function scroll(key){
+    if (key === 38) {
+      if (messageList.cursor === null)
+        messageList.cursor = messageList.head;
+      else
+        messageList.cursor = messageList.cursor.older != null ? messageList.cursor.older : messageList.cursor;
+    }
+    else if (key === 40) {
+      messageList.cursor = messageList.cursor.newer;
+    };
+    var info = messageList.cursor != null ? messageList.cursor.data : "";
+    $("#abc").val(info);
+  };
+  function storeMessage(text){
+    var Message = new node(text);
+    messageList.append(Message);
+  };
+  function textScroll(){
+    var box = $("#log");
+    var bottom = box[0].scrollHeight - box.height();
+    var font = box.css('font-size');
+    var size = parseInt(font.substr(0, font.length - 2));
+    box.scrollTop(bottom - size);
+    box.animate({'scrollTop': bottom}, 'fast');
+  };
+  function send(message){
+    var d = new Date();
+    var time = d.toUTCString().split(" ")[4] + " GMT";
+    var shout = $("#shoutState").text();
+    var output = $("#outputState").prop("checked");
+    var packet = { Time: time, Message: message, Shout: shout, Output: output };
+    socket.json.send(packet);
+    storeMessage(message);
+    messageList.clearCursor();
+    $("#abc").val("");
+    $("#abc").focus();
+  };
+  function a(){ $('#abc').focus() };
