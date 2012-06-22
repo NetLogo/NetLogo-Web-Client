@@ -10,3 +10,7 @@ exports.index = function(req, res){
 exports.thing = function(req, res){
     res.render('thing', { title: "thing" })
 };
+
+exports.error = function(req, res){
+    res.render('error', { title: "Error" })
+};

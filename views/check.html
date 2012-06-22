@@ -12,11 +12,22 @@
     var socket = io.connect('http://129.105.107.162');
     socket.on('name request', function (data) {
         var user = prompt("Type your user name: ");
+        if ((user === null) || (user === "")) {
+            socket.emit('invalid name');
+        }
         socket.emit('name reply', user);
     });
     socket.on('name conflict', function (data) {
         var user = prompt("That name is taken. Please type another user name: ");
         socket.emit('name reply', user);
+    });
+    socket.on('users changed', function (data) {
+        var user, prefix;
+        $("#users").text("");
+        for (user in data) {
+            prefix = $("#users").val() === "" ? "" : "\n";
+            $("#users").append(prefix + user);
+        };
     });
     socket.on('message', function (data) {
         String.prototype.reverse = function(){
@@ -49,23 +60,28 @@
                 break;
         }
         var prefix = $("#log").val() === "" ? "" : "\n";
-        $("#log").append(prefix + time + " " + user + ":  " + final_text);
+        $("#log").append(prefix + time + "  " + user + ": " + final_text);
         textScroll();
     });
 </script>
 
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 
-<div id="chat" style="float: none;">
+<div id="chat">
     <p></p>
     <h4>Chat Log</h4>
-    <textarea id="log" cols="50" rows="15" readonly="readonly" style="resize: none;" onkeydown="keyCheck(this, event);">
+    <textarea id="log" rows="15" cols="50" readonly="readonly" style="resize: none; float: left; margin-right: 10pt" onkeydown="keyCheck(this, event);">
     </textarea>
+    <div id="userLog" style="vertical-align: top;">
+        <label for="users" style="display: block; margin-bottom: 4pt; margin-top: 4pt">Online:</label>
+        <textarea id="users" rows="13" cols="10" readonly="readonly" style="resize: none; vertical-align: bottom;">
+        </textarea>
+    </div>
     <p></p>
 </div>
 
-<div id="inputs" style='vertical-align: text-bottom'>
-    <div id="shoutState" style="font-size: 8pt; float: left; width: 50px; height: 16pt; vertical-align: middle;">Normal</div>
+<div id="inputs" style='float: none;'>
+    <div id="shoutState" style="font-size: 8pt; float: left; width: 50px; margin-top: 4px;">Normal</div>
     <input id="abc" value="" onkeydown="keyCheck(this, event)" autofocus="autofocus" style="float: left; width: 20em">
     <input type="checkbox" id="outputState" onchange="a()">
     <label for="outputState" style="font-size: 8pt">Variable output?</label>

@@ -41,7 +41,12 @@ io.sockets.on('connection', function (socket) {
         } else {
             userNames[data] = data;
             name = data;
+            io.sockets.json.emit('users changed', userNames);
         };
+    });
+    socket.on('invalid name', function () {
+        var x;
+        // send the client to the error page
     });
     socket.on('message', function (data) {
         var output = data.Output;
@@ -61,9 +66,15 @@ io.sockets.on('connection', function (socket) {
         console.log("Server Sending: " + packet);
         io.sockets.json.send(packet);
     });
+    socket.on('disconnect', function(){
+        delete userNames[name];
+        io.sockets.json.emit('users changed', userNames);
+    });
 });
 
 // Routes
+
+app.get('/error', routes.error);
 
 app.get('/', routes.index);
 

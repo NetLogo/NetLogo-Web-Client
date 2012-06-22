@@ -5,11 +5,22 @@ script(type='text/javascript')
   var socket = io.connect('http://129.105.107.162');
   socket.on('name request', function (data) {
     var user = prompt("Type your user name: ");
+    if ((user === null) || (user === "")) {
+      socket.emit('invalid name');
+    }
     socket.emit('name reply', user);
   });
   socket.on('name conflict', function (data) {
     var user = prompt("That name is taken. Please type another user name: ");
     socket.emit('name reply', user);
+  });
+  socket.on('users changed', function (data) {
+    var user, prefix;
+    $("#users").text("");
+    for (user in data) {
+    prefix = $("#users").val() === "" ? "" : "\n";
+      $("#users").append(prefix + user);
+    };
   });
   socket.on('message', function (data) {
     String.prototype.reverse = function(){
@@ -49,9 +60,12 @@ script(type='text/javascript', src='http://code.jquery.com/jquery.js')
 #chat(style="float: none;")
   p
   h4 Chat Log
-  textarea#log(cols="50", rows="15", readonly="readonly", style='resize: none;', onkeydown='keyCheck(this, event)')
+  textarea#log(cols="50", rows="15", readonly="readonly", style='resize: none; float: left; margin-right: 10pt', onkeydown='keyCheck(this, event)')
+  #userLog(style='vertical-align: top;')
+    label(for='users', style='display: block; margin-bottom: 4pt; margin-top: 4pt;') Online:
+    textarea#users(rows='13', cols='10', readonly='readonly', style='resize: none; vertical-align: bottom;')
   p
-#inputs(style='vertical-align: text-bottom')
+#inputs(style='float: none')
   #shoutState(style='font-size: 8pt; float: left; width: 50px; margin-top: 4px;') Normal
   input#abc(value='', onkeydown='keyCheck(this, event)', autofocus='autofocus', style='float: left; width: 20em')
   input#outputState(type='checkbox', onchange='a()')
