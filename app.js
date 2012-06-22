@@ -28,25 +28,31 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+function updateUserNames(){
+    io.sockets.json.emit('users changed', userNames);
+};
+
+function addUser(name){
+    userNames[name] = true;
+    updateUserNames();
+};
+
+function removeUser(name){
+    delete userNames[name];
+    updateUserNames();
+};
+
+validName = function(name){
+    return (name in userNames);
+};
+
 var userNames = {};
 
 io.sockets.on('connection', function (socket) {
     var name = "";
-    console.log("server requesting name");
-    socket.emit('name request');
     socket.on('name reply', function (data) {
-        //console.log("server receiving: " + data.toString());
-        if (data in userNames) {
-            socket.emit('name conflict');
-        } else {
-            userNames[data] = data;
-            name = data;
-            io.sockets.json.emit('users changed', userNames);
-        };
-    });
-    socket.on('invalid name', function () {
-        var x;
-        // send the client to the error page
+        name = data;
+        addUser(name);
     });
     socket.on('message', function (data) {
         var output = data.Output;
@@ -67,8 +73,7 @@ io.sockets.on('connection', function (socket) {
         io.sockets.json.send(packet);
     });
     socket.on('disconnect', function(){
-        delete userNames[name];
-        io.sockets.json.emit('users changed', userNames);
+        removeUser(name);
     });
 });
 
@@ -79,6 +84,10 @@ app.get('/error', routes.error);
 app.get('/', routes.index);
 
 app.get('/thing', routes.thing);
+
+app.post('/', routes.indexPost);
+
+app.post('/validate', routes.validatePost);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
