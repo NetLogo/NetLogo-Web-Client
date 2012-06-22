@@ -1,3 +1,5 @@
 .idea/misc.xml
 .idea/workspace.xml
 .idea/codeStyleSettings.xml
+/views/something.coffee
+/views/check.html
