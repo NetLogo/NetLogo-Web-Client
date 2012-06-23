@@ -3,16 +3,9 @@
  * User: Joe
  * Date: 6/22/12
  * Time: 4:50 PM
- * To change this template use File | Settings | File Templates.
  */
-var name = prompt("Please type your user name:");
-var query = $.post('/', { username: name }, function(data, textStatus, jqXHR){
-    if (data !== null) {
-        runSockets(data);
-    }
-});
 function runSockets(approvedName){
-    var socket = io.connect('http://129.105.107.162');
+    var socket = io.connect('http://165.124.139.137');
     socket.emit('name reply', approvedName);
     socket.on('users changed', function (data) {
         var user, prefix;
