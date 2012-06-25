@@ -1,8 +1,8 @@
 h1(style='margin-top: 0')= title
 p Welcome to #{title}!
 script(type='text/javascript', src='/socket.io/socket.io.js')
-script(type='text/javascript', src='chat.js')
 script(type='text/javascript', src='http://code.jquery.com/jquery.js')
+script(type='text/javascript', src='chat.js')
 #chat(style="float: none;")
   p
   h4 Chat Log
@@ -18,10 +18,3 @@ script(type='text/javascript', src='http://code.jquery.com/jquery.js')
   label(for='outputState', style='font-size: 8pt;') Variable output?
 #info(style='text-align: center; width: 40em; font-size: 8pt; margin-top: 2em')
     | Press tab to shout! Mess around with variable output!
-script(type='text/javascript')
-  var name = prompt("Please type your user name:");
-  var query = $.post('/', { username: name }, function(data, textStatus, jqXHR){
-      if (data !== null) {
-          runSockets(data);
-      }
-  });
