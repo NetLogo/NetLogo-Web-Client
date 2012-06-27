@@ -10,12 +10,12 @@ window.onload = startup();
 var userName;
 function startup(){
     userName = prompt("Please type your user name:");
-    var query = $.post('/', { username: userName }, function(data, statusText, jqXHR){
+    $.post('/', { username: userName }, function(data){
         if (data !== userName) {
             document.location.href = data;
         }
     });
-};
+}
 var socket = io.connect();
 socket.on('connected', function(){
     socket.emit('name reply', userName);
@@ -26,7 +26,7 @@ socket.on('users changed', function (data) {
     for (user in data) {
         prefix = $("#usersOnline").val() === "" ? "" : "\n";
         $("#usersOnline").append(prefix + user);
-    };
+    }
 });
 socket.on('message', function (data) {
     var time = data.processed_time;
@@ -54,6 +54,7 @@ socket.on('message', function (data) {
     $("#timeLog").append(prefix + time + lineCorrection);
     textScroll();
 });
+// Philip got this off of StackOverflow somewhere.  It duplicates the string in question `count` number of times
 String.prototype.repeat = function(count) {
     if (count < 1) return '';
     var result = '', pattern = this.valueOf();
@@ -84,7 +85,7 @@ List = (function() {
         this.head = null;
         this.tail = null;
         this.cursor = null;
-    };
+    }
     List.prototype.clearCursor = function() {
         this.cursor = null;
     };
@@ -93,18 +94,18 @@ List = (function() {
         if (this.head != null) {
             newNode.older = this.head;
             this.head.newer = newNode;
-        };
+        }
         this.head = newNode;
         if (this.tail === null) {
             this.tail = this.head;
-        };
+        }
         if (this.len < this.maxLen) {
             this.len++;
         } else {
             oldTail = this.tail;
             this.tail = oldTail.newer;
             this.tail.older = null;
-        };
+        }
     };
     return List;
 })();
@@ -113,7 +114,7 @@ node = (function() {
         this.data = data;
         this.newer = null;
         this.older = null;
-    };
+    }
     return node;
 })();
 var messageList = new List(20);
@@ -125,7 +126,7 @@ function keyCheck(inField, e){
     else if (window.event){
         e = window.event;
         charCode = e.which;
-    };
+    }
     if (charCode === 9){
         e.preventDefault();
         changeShout();
@@ -133,7 +134,7 @@ function keyCheck(inField, e){
     else if (charCode === 13){
         if ($(inField).val() !== "") {
             send($(inField).val());
-        };
+        }
     }
     else if ((charCode === 38) || (charCode === 40)){
         e.preventDefault();
@@ -141,8 +142,8 @@ function keyCheck(inField, e){
     }
     else if (!e.ctrlKey) {
         $("#abc").focus();
-    };
-};
+    }
+}
 function changeShout(){
     var currentState = $("#shoutState").text();
     if (currentState === "Normal"){
@@ -150,7 +151,7 @@ function changeShout(){
     } else {
         $("#shoutState").text("Normal");
     }
-};
+}
 function scroll(key){
     if (key === 38) {
         if (messageList.cursor === null)
@@ -160,14 +161,14 @@ function scroll(key){
     }
     else if (key === 40) {
         messageList.cursor = messageList.cursor.newer;
-    };
+    }
     var info = messageList.cursor != null ? messageList.cursor.data : "";
     $("#abc").val(info);
-};
+}
 function storeMessage(text){
     var Message = new node(text);
     messageList.append(Message);
-};
+}
 function getLines(){
 //    var result = $.countLines($('#lastMessage'), {
 //        recalculateCharWidth: false,
@@ -176,11 +177,11 @@ function getLines(){
 //    });
 //    return result.visual;
     return $("#lastMessage").val().split(/\r?\n|\r/).length + 1
-};
+}
 function animateScroll(obj, bottom, scrollAmount){
     obj.scrollTop(bottom - scrollAmount);
     obj.animate({'scrollTop': bottom}, 'fast');
-};
+}
 $(function(){
     $('textarea[id$=chatLog]').scroll(function() {
         $('textarea[id$=userLog]')
@@ -204,7 +205,7 @@ function textScroll(){
     var size = parseInt(font.substr(0, font.length - 2));
     var lineCount = getLines();
     animateScroll(box, bottom, size*lineCount);
-};
+}
 function send(message){
     var d = new Date();
     var time = d.toUTCString().split(" ")[4] + " GMT";
@@ -217,5 +218,5 @@ function send(message){
     messageList.clearCursor();
     $("#abc").val("");
     $("#abc").focus();
-};
-function a(){ $('#abc').focus() };
+}
+function a(){ $('#abc').focus() }
