@@ -22,6 +22,6 @@ exports.indexPost = function(req, res){
         res.write(name.toString());
         res.end();
     } else {
-        res.send('http://129.105.107.162:3000/error');
+        res.send('/error');
     };
 };
