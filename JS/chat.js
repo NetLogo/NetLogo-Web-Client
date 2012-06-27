@@ -16,7 +16,7 @@ function startup(){
         }
     });
 };
-var socket = io.connect('http://129.105.107.162');
+var socket = io.connect();
 socket.on('connected', function(){
     socket.emit('name reply', userName);
 });
