@@ -6,5 +6,5 @@
  * To change this template use File | Settings | File Templates.
  */
 function goBack(){
-    window.location.href = 'http://129.105.107.162:3000';
+    history.go(-1);
 };
