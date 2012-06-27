@@ -12,12 +12,6 @@ Then, from your home directory (`~`), run the following commands:
 
 `npm install jade express` (this installs the Jade templating engine)
 
-### IP address configuration
-
-An IP address is hardcoded in several source files. You'll need to replace it with your own IP address.
-You can locate the places you need to edit with:  
-`git grep 129.105.107.162`
-
 ## Running
 
 To start the server, run this command:  
