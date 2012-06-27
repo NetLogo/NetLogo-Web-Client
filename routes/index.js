@@ -23,5 +23,5 @@ exports.indexPost = function(req, res){
         res.end();
     } else {
         res.send('/error');
-    };
+    }
 };

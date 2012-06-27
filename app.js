@@ -32,17 +32,17 @@ app.configure('production', function(){
 
 function updateUserNames(){
     io.sockets.json.emit('users changed', userNames);
-};
+}
 
 function addUser(name){
     userNames[name] = true;
     updateUserNames();
-};
+}
 
 function removeUser(name){
     delete userNames[name];
     updateUserNames();
-};
+}
 
 validName = function(name){
     return !(name in userNames);
@@ -69,10 +69,10 @@ io.sockets.on('connection', function (socket) {
         var final_message = message;
         if (shout === "Shouting") {
             final_message = message.toUpperCase().replace(/\./g, "!").replace(/\?/g, "!?");
-        };
+        }
         if (output) {
             serverState = Math.floor(Math.random()*3);
-        };
+        }
         var packet = { processed_time: time, user: name, processed_message: final_message, server_state: serverState };
         console.log("Server Sending: " + packet);
         io.sockets.json.send(packet);
