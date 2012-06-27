@@ -1,20 +1,26 @@
 h1(style='margin-top: 0')= title
-p Welcome to #{title}!
 script(type='text/javascript', src='/socket.io/socket.io.js')
 script(type='text/javascript', src='http://code.jquery.com/jquery.js')
+script(type='text/javascript', src='jquery.Textarealinecount.1.4.js')
 script(type='text/javascript', src='chat.js')
-#chat(style="float: none;")
+#chat(style='float: none')
   p
   h4 Chat Log
-  textarea#log(cols="50", rows="15", readonly="readonly", style='resize: none; float: left; margin-right: 10pt', onkeydown='keyCheck(this, event)')
-  #userLog(style='vertical-align: top;')
-    label(for='users', style='display: block; margin-bottom: 4pt; margin-top: 4pt;') Online:
-    textarea#users(rows='13', cols='10', readonly='readonly', style='resize: none; vertical-align: bottom;')
+  #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: 0.5%; margin-right: 10pt; float: left', onkeydown='keyCheck(this, event)')
+    textarea#timeLog(readonly='readonly', style='color: #00CC00; border: none; resize: none; float: left; width: 20%; height: 99%; overflow: hidden')
+    textarea#userLog(readonly='readonly', style='color: #CC0000; border: none; resize: none; float: left; width: 20%; height: 99%; overflow: hidden')
+    textarea#chatLog(readonly='readonly', style='border: none; resize: none; float: left; width: 58%; height: 99%;')
+    textarea#lastMessage(readonly='readonly', style='border: none; resize: none; width: 58%; height: 20%; visibility: hidden')
+  #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: 0.5%; float: left', onkeydown='keyCheck(this, event)')
+    textarea#label(readonly='readonly', style='resize: none; border: none; width: 98%; height: 9%')
+      | Online:
+    textarea#usersOnline(readonly='readonly', style='resize: none; border: none; width: 98%; height: 88%;', value='')
   p
-#inputs(style='float: none')
-  #shoutState(style='font-size: 8pt; float: left; width: 50px; margin-top: 4px;') Normal
-  input#abc(value='', onkeydown='keyCheck(this, event)', autofocus='autofocus', style='float: left; width: 20em')
-  input#outputState(type='checkbox', onchange='a()')
+p
+#inputs(style='clear: left; height: 16pt; margin: 1%')
+  #shoutState(style='font-size: 8pt; float: left; width: 50px; margin-top: 1%;') Normal
+  input#abc(value='', onkeydown='keyCheck(this, event)', autofocus='autofocus', style='float: left; width: 30em; margin: 1%')
+  input#outputState(type='checkbox', style='margin: 1%', onchange='a()')
   label(for='outputState', style='font-size: 8pt;') Variable output?
 #info(style='text-align: center; width: 40em; font-size: 8pt; margin-top: 2em')
     | Press tab to shout! Mess around with variable output!

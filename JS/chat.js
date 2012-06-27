@@ -5,6 +5,8 @@
  * Time: 4:50 PM
  */
 window.onload = startup();
+//window.onload = scrollOthers();
+//$("#chatLog").scroll(scrollOthers());
 var userName;
 function startup(){
     userName = prompt("Please type your user name:");
@@ -20,10 +22,10 @@ socket.on('connected', function(){
 });
 socket.on('users changed', function (data) {
     var user, prefix;
-    $("#users").text("");
+    $("#usersOnline").text("");
     for (user in data) {
-        prefix = $("#users").val() === "" ? "" : "\n";
-        $("#users").append(prefix + user);
+        prefix = $("#usersOnline").val() === "" ? "" : "\n";
+        $("#usersOnline").append(prefix + user);
     };
 });
 socket.on('message', function (data) {
@@ -43,10 +45,24 @@ socket.on('message', function (data) {
             final_text = message.wordReverse();
             break;
     }
-    var prefix = $("#log").val() === "" ? "" : "\n";
-    $("#log").append(prefix + time + "  " + user + ": " + final_text);
+    $("#lastMessage").val(final_text);
+    var prefix = $("#chatLog").val() === "" ? "" : "\n";
+    var linesNeeded = getLines() - 1;
+    var lineCorrection = "\n ".repeat(linesNeeded);
+    $("#chatLog").append(prefix + final_text);
+    $("#userLog").append(prefix + user + ":" + lineCorrection);
+    $("#timeLog").append(prefix + time + lineCorrection);
     textScroll();
 });
+String.prototype.repeat = function(count) {
+    if (count < 1) return '';
+    var result = '', pattern = this.valueOf();
+    while (count > 0) {
+        if (count & 1) result += pattern;
+        count >>= 1, pattern += pattern;
+    }
+    return result;
+};
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
 };
@@ -152,13 +168,42 @@ function storeMessage(text){
     var Message = new node(text);
     messageList.append(Message);
 };
+function getLines(){
+//    var result = $.countLines($('#lastMessage'), {
+//        recalculateCharWidth: false,
+//        charsMode: 'random',
+//        fontAttrs: ["font-family", "font-size", "text-decoration", "font-style", "font-weight"]
+//    });
+//    return result.visual;
+    return $("#lastMessage").val().split(/\r?\n|\r/).length + 1
+};
+function animateScroll(obj, bottom, scrollAmount){
+    obj.scrollTop(bottom - scrollAmount);
+    obj.animate({'scrollTop': bottom}, 'fast');
+};
+$(function(){
+    $('textarea[id$=chatLog]').scroll(function() {
+        $('textarea[id$=userLog]')
+            .scrollTop($('textarea[id$=chatLog]').scrollTop());
+        $('textarea[id$=timeLog]')
+            .scrollTop($('textarea[id$=chatLog]').scrollTop());
+    });
+});
+//function scrollOthers(){
+//    var master = $("#chatLog");
+//    var dependent1 = $("#userLog");
+//    var dependent2 = $("#timeLog");
+//    dependent1.scrollTop = master.scrollTop;
+//    dependent2.scrollTop = master.scrollTop;
+//    setTimeout("scrolltheother()",10);
+//};
 function textScroll(){
-    var box = $("#log");
+    var box = $("#chatLog");
     var bottom = box[0].scrollHeight - box.height();
     var font = box.css('font-size');
     var size = parseInt(font.substr(0, font.length - 2));
-    box.scrollTop(bottom - size);
-    box.animate({'scrollTop': bottom}, 'fast');
+    var lineCount = getLines();
+    animateScroll(box, bottom, size*lineCount);
 };
 function send(message){
     var d = new Date();

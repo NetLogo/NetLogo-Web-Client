@@ -17,7 +17,7 @@ exports.error = function(req, res){
 
 exports.indexPost = function(req, res){
     var name = req.body.username;
-    if ((name !== null) && (name !== "") && (name !== "null") && (validName(name))) {
+    if ((name !== null) && (name !== "") && (name !== "null") && (name.length < 13) && (validName(name))) {
         res.writeHead(200, {"Content-Type": "text/plain"});
         res.write(name.toString());
         res.end();
