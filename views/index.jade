@@ -1,27 +1,29 @@
-h1(style='margin-top: 0')= title
-script(type='text/javascript', src='/socket.io/socket.io.js')
-script(type='text/javascript', src='http://code.jquery.com/jquery.js')
-script(type='text/javascript', src='jquery.Textarealinecount.1.4.js')
-script(type='text/javascript', src='chat.js')
-#chat(style='float: none')
-  p
+head
+body
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src='http://code.jquery.com/jquery.js')
+  script(type='text/javascript', src='chat.js')
+  h1(style='margin-top: 0')= title
   h4 Chat Log
-  #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: 0.5%; margin-right: 10pt; float: left', onkeydown='keyCheck(this, event)')
-    textarea#timeLog(readonly='readonly', style='color: #00CC00; border: none; resize: none; float: left; width: 20%; height: 99%; overflow: hidden')
-    textarea#userLog(readonly='readonly', style='color: #CC0000; border: none; resize: none; float: left; width: 20%; height: 99%; overflow: hidden')
-    textarea#chatLog(readonly='readonly', style='border: none; resize: none; float: left; width: 58%; height: 99%;')
-    textarea#lastMessage(readonly='readonly', style='border: none; resize: none; width: 58%; height: 1em;')
-      | a
-  #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: 0.5%; float: left', onkeydown='keyCheck(this, event)')
-    textarea#label(readonly='readonly', style='resize: none; border: none; width: 98%; height: 9%')
-      | Online:
-    textarea#usersOnline(readonly='readonly', style='resize: none; border: none; width: 98%; height: 88%;', value='')
-  p
-p
-#inputs(style='clear: left; height: 16pt; margin: 1%')
-  #shoutState(style='font-size: 8pt; float: left; width: 50px; margin-top: 1%;') Normal
-  input#abc(value='', onkeydown='keyCheck(this, event)', autofocus='autofocus', style='float: left; width: 30em; margin: 1%')
-  input#outputState(type='checkbox', style='margin: 1%', onchange='a()')
-  label(for='outputState', style='font-size: 8pt;') Variable output?
-#info(style='text-align: center; width: 40em; font-size: 8pt; margin-top: 2em')
-    | Press tab to shout! Mess around with variable output!
+  table#chat(style='border: none; table-layout: fixed', onkeydown='keyCheck(this, event)')
+    tr
+      td
+        #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: 5px; margin-right: 10pt; overflow: auto')
+          table#chatLog(style='width: 98%; table-layout: fixed')
+      td
+        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: 5px;')
+          textarea#label(readonly='readonly', style='resize: none; border: none; width: 98%; height: 8%')
+            | Online:
+          textarea#usersOnline(style='resize: none; border: none; width: 98%; height: 88%;', value='')
+  table#inputs(style='margin: 5px')
+    tr(style='height: 15px')
+      td#shoutState(style='font-size: 8pt; width: 50px; height: 100%; vertical-align: middle;', cellspacing='3px', cellpadding='3px')
+        | Normal
+      td(style='height: 100%', cellspacing='3px', cellpadding='3px')
+        input#abc(value='', autofocus='autofocus', style='width: 30em;', onkeydown='keyCheck(this, event)')
+      td(style='height: 100%; vertical-align: middle;', cellspacing='3px', cellpadding='3px')
+        input#outputState(type='checkbox', onchange='a()')
+        label(for='outputState', style='font-size: 8pt;') Variable output?
+    tr
+      td(style='text-align: center; font-size: 8pt;', colspan='3', cellspacing='3px', cellpadding='3px')
+        | Press tab to shout! Mess around with variable output!

@@ -5,7 +5,6 @@
  * Time: 4:50 PM
  */
 window.onload = startup();
-var margin = 0;
 var userName;
 function startup(){
     userName = prompt("Please type your user name:");
@@ -15,13 +14,9 @@ function startup(){
         }
     });
 }
-function calibrateSpaces(){
-    margin = $("#lastMessage")[0].scrollHeight - getFontSize($("#lastMessage"));
-}
 var socket = io.connect();
 socket.on('connected', function(){
     socket.emit('name reply', userName);
-    calibrateSpaces();
 });
 socket.on('users changed', function (data) {
     var user, prefix;
@@ -48,26 +43,15 @@ socket.on('message', function (data) {
             final_text = message.wordReverse();
             break;
     }
-    $("#lastMessage").val(final_text);
-    var prefix = $("#chatLog").val() === "" ? "" : "\n";
-    var linesNeeded = getLines(margin) - 1;
-    var lineCorrection = "\n ".repeat(linesNeeded);
-    $("#chatLog").append(prefix + final_text);
-    $("#userLog").append(prefix + user + ":" + lineCorrection);
-    $("#timeLog").append(prefix + time + lineCorrection);
+    var entry =
+        "<tr style='vertical-align: text-top; width: 100%'>"+
+            "<td style='color: #00CC00; width: 20%'>" + time + "</td>"+
+            "<td style='color: #CC0000; width: 20%'>" + user + ":" + "</td>"+
+            "<td>"+final_text+"</td>"+
+        "</tr>";
+    $("#chatLog").append(entry);
     textScroll();
 });
-// The following duplicates the string in question `count` number of times.
-// Source: disfated in the discussion at http://stackoverflow.com/questions/202605/repeat-string-javascript
-String.prototype.repeat = function(count) {
-    if (count < 1) return '';
-    var result = '', pattern = this.valueOf();
-    while (count > 0) {
-        if (count & 1) result += pattern;
-        count >>= 1, pattern += pattern;
-    }
-    return result;
-};
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
 };
@@ -173,37 +157,13 @@ function storeMessage(text){
     var Message = new node(text);
     messageList.append(Message);
 }
-function getLines(margin){
-    var box = $('#lastMessage');
-    var textHeight = box[0].scrollHeight;
-    var size = getFontSize(box);
-    var lineSpacing = 3;
-    alert('textHeight: ' + textHeight + '\nmargin: ' + margin + '\nline space: ' + lineSpacing + '\nfont size: ' + size);
-    alert((textHeight - margin + lineSpacing) /(size + lineSpacing));
-    return (textHeight - margin + lineSpacing) /(size + lineSpacing);
-}
-function animateScroll(obj, bottom, scrollAmount){
-    obj.scrollTop(bottom - scrollAmount);
-    obj.animate({'scrollTop': bottom}, 'fast');
-}
-$(function(){
-    $('textarea[id$=chatLog]').scroll(function() {
-        $('textarea[id$=userLog]')
-            .scrollTop($('textarea[id$=chatLog]').scrollTop());
-        $('textarea[id$=timeLog]')
-            .scrollTop($('textarea[id$=chatLog]').scrollTop());
-    });
-});
-function getFontSize(obj){
-    var font = obj.css('font-size');
-    return parseInt(font.substr(0, font.length - 2));
-}
 function textScroll(){
-    var box = $("#chatLog");
+    var box = $("#container");
     var bottom = box[0].scrollHeight - box.height();
-    var size = getFontSize(box);
-    var lineCount = getLines(margin);
-    animateScroll(box, bottom, size*lineCount);
+    var font = box.css('font-size');
+    var size = parseInt(font.substr(0, font.length - 2));
+    box.scrollTop(bottom - size);
+    box.animate({'scrollTop': bottom}, 'fast');
 }
 function send(message){
     var d = new Date();
