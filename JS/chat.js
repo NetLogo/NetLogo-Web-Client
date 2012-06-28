@@ -21,6 +21,7 @@ function calibrateSpaces(){
 var socket = io.connect();
 socket.on('connected', function(){
     socket.emit('name reply', userName);
+    calibrateSpaces();
 });
 socket.on('users changed', function (data) {
     var user, prefix;
@@ -56,7 +57,8 @@ socket.on('message', function (data) {
     $("#timeLog").append(prefix + time + lineCorrection);
     textScroll();
 });
-// Philip got this off of StackOverflow somewhere.  It duplicates the string in question `count` number of times
+// The following duplicates the string in question `count` number of times.
+// Source: disfated in the discussion at http://stackoverflow.com/questions/202605/repeat-string-javascript
 String.prototype.repeat = function(count) {
     if (count < 1) return '';
     var result = '', pattern = this.valueOf();
@@ -176,6 +178,7 @@ function getLines(margin){
     var textHeight = box[0].scrollHeight;
     var size = getFontSize(box);
     var lineSpacing = 3;
+    alert('textHeight: ' + textHeight + '\nmargin: ' + margin + '\nline space: ' + lineSpacing + '\nfont size: ' + size);
     alert((textHeight - margin + lineSpacing) /(size + lineSpacing));
     return (textHeight - margin + lineSpacing) /(size + lineSpacing);
 }
