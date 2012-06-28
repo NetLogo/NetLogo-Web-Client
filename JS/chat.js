@@ -5,8 +5,7 @@
  * Time: 4:50 PM
  */
 window.onload = startup();
-//window.onload = scrollOthers();
-//$("#chatLog").scroll(scrollOthers());
+var margin = 0;
 var userName;
 function startup(){
     userName = prompt("Please type your user name:");
@@ -15,6 +14,9 @@ function startup(){
             document.location.href = data;
         }
     });
+}
+function calibrateSpaces(){
+    margin = $("#lastMessage")[0].scrollHeight - getFontSize($("#lastMessage"));
 }
 var socket = io.connect();
 socket.on('connected', function(){
@@ -47,7 +49,7 @@ socket.on('message', function (data) {
     }
     $("#lastMessage").val(final_text);
     var prefix = $("#chatLog").val() === "" ? "" : "\n";
-    var linesNeeded = getLines() - 1;
+    var linesNeeded = getLines(margin) - 1;
     var lineCorrection = "\n ".repeat(linesNeeded);
     $("#chatLog").append(prefix + final_text);
     $("#userLog").append(prefix + user + ":" + lineCorrection);
@@ -169,14 +171,13 @@ function storeMessage(text){
     var Message = new node(text);
     messageList.append(Message);
 }
-function getLines(){
-//    var result = $.countLines($('#lastMessage'), {
-//        recalculateCharWidth: false,
-//        charsMode: 'random',
-//        fontAttrs: ["font-family", "font-size", "text-decoration", "font-style", "font-weight"]
-//    });
-//    return result.visual;
-    return $("#lastMessage").val().split(/\r?\n|\r/).length + 1
+function getLines(margin){
+    var box = $('#lastMessage');
+    var textHeight = box[0].scrollHeight;
+    var size = getFontSize(box);
+    var lineSpacing = 3;
+    alert((textHeight - margin + lineSpacing) /(size + lineSpacing));
+    return (textHeight - margin + lineSpacing) /(size + lineSpacing);
 }
 function animateScroll(obj, bottom, scrollAmount){
     obj.scrollTop(bottom - scrollAmount);
@@ -190,20 +191,15 @@ $(function(){
             .scrollTop($('textarea[id$=chatLog]').scrollTop());
     });
 });
-//function scrollOthers(){
-//    var master = $("#chatLog");
-//    var dependent1 = $("#userLog");
-//    var dependent2 = $("#timeLog");
-//    dependent1.scrollTop = master.scrollTop;
-//    dependent2.scrollTop = master.scrollTop;
-//    setTimeout("scrolltheother()",10);
-//};
+function getFontSize(obj){
+    var font = obj.css('font-size');
+    return parseInt(font.substr(0, font.length - 2));
+}
 function textScroll(){
     var box = $("#chatLog");
     var bottom = box[0].scrollHeight - box.height();
-    var font = box.css('font-size');
-    var size = parseInt(font.substr(0, font.length - 2));
-    var lineCount = getLines();
+    var size = getFontSize(box);
+    var lineCount = getLines(margin);
     animateScroll(box, bottom, size*lineCount);
 }
 function send(message){
