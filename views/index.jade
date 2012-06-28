@@ -16,12 +16,12 @@ body
             | Online:
           textarea#usersOnline(style='resize: none; border: none; width: 98%; height: 88%;', value='')
   table#inputs(style='margin: 5px')
-    tr(style='height: 15px')
-      td#shoutState(style='font-size: 8pt; width: 50px; height: 100%; vertical-align: middle;', cellspacing='3px', cellpadding='3px')
+    tr(style='height: 15px', valign='middle')
+      td#shoutState(style='font-size: 8pt; width: 50px; height: 100%;', cellspacing='3px', cellpadding='3px')
         | Normal
       td(style='height: 100%', cellspacing='3px', cellpadding='3px')
         input#abc(value='', autofocus='autofocus', style='width: 30em;', onkeydown='keyCheck(this, event)')
-      td(style='height: 100%; vertical-align: middle;', cellspacing='3px', cellpadding='3px')
+      td(style='height: 100%;', cellspacing='3px', cellpadding='3px')
         input#outputState(type='checkbox', onchange='a()')
         label(for='outputState', style='font-size: 8pt;') Variable output?
     tr

@@ -47,7 +47,7 @@ socket.on('message', function (data) {
         "<tr style='vertical-align: text-top; width: 100%'>"+
             "<td style='color: #00CC00; width: 20%'>" + time + "</td>"+
             "<td style='color: #CC0000; width: 20%'>" + user + ":" + "</td>"+
-            "<td>"+final_text+"</td>"+
+            "<td style='width: 60%; word-wrap: break-word'>"+final_text+"</td>"+
         "</tr>";
     $("#chatLog").append(entry);
     textScroll();
