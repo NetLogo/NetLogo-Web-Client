@@ -176,6 +176,10 @@ function send(message){
     storeMessage(message);
     messageList.clearCursor();
     $("#abc").val("");
-    $("#abc").focus();
+    a();
+}
+function clearChat(){
+    $('#chatLog').text('');
+    a();
 }
 function a(){ $('#abc').focus() }

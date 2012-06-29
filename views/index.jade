@@ -4,7 +4,12 @@ body
   script(type='text/javascript', src='http://code.jquery.com/jquery.js')
   script(type='text/javascript', src='chat.js')
   h1(style='margin-top: 0')= title
-  h4 Chat Log
+  table
+    tr(style='text-align: left')
+      th(style='width: 520px')
+        | Chat Log
+      td
+        input(type="button", value="Clear", onclick="clearChat()")
   table#chat(style='border: none; table-layout: fixed', onkeydown='keyCheck(this, event)')
     tr
       td
