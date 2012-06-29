@@ -26,6 +26,7 @@ socket.on('users changed', function (data) {
         $("#usersOnline").append(prefix + user);
     }
 });
+var state = 0;
 socket.on('message', function (data) {
     var d = new Date();
     var time = d.toTimeString().slice(0, 5);
@@ -44,15 +45,32 @@ socket.on('message', function (data) {
             final_text = message.wordReverse();
             break;
     }
-    var entry =
-        "<tr style='vertical-align: middle; width: 100%'>"+
-            "<td style='color: #CC0000; width: 20%;'>" + user + ":" + "</td>"+
-            "<td style='width: 70%; word-wrap: break-word'>"+final_text+"</td>"+
-            "<td style='color: #00CC00; width: 10%; text-align: right'>" + time + "</td>"+
-        "</tr>";
+    var entry = messageSwitcher(user, final_text, time);
     $("#chatLog").append(entry);
     textScroll();
 });
+function messageSwitcher(user, final_text, time){
+    var color;
+    if (state%2 === 0) {
+        color = "#FFFFFF";
+    } else {
+        color = "#CCFFFF";
+    }
+    var row =
+        "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;'>"+
+            "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
+                user + ":" +
+            "</td>" +
+            "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
+                final_text +
+            "</td>" +
+            "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
+                time +
+            "</td>" +
+        "</tr>";
+    state++;
+    return row;
+}
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
 };

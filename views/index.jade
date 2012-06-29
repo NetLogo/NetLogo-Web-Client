@@ -13,10 +13,10 @@ body
   table#chat(style='border: none; table-layout: fixed', onkeydown='keyCheck(this, event)')
     tr
       td
-        #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: 5px; margin-right: 10pt; overflow: auto')
-          table#chatLog(style='width: 98%; table-layout: fixed')
+        #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: .385em; margin-right: 10pt; overflow: auto')
+          table#chatLog(style='width: 100%; border-collapse: collapse; table-layout: fixed')
       td
-        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: 5px;')
+        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: .385em;')
           textarea#label(readonly='readonly', style='resize: none; border: none; width: 98%; height: 8%')
             | Online:
           textarea#usersOnline(style='resize: none; border: none; width: 98%; height: 88%;', value='')
