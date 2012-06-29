@@ -19,11 +19,11 @@ socket.on('connected', function(){
     socket.emit('name reply', userName);
 });
 socket.on('users changed', function (data) {
-    var user, prefix;
+    var user, row;
     $("#usersOnline").text("");
     for (user in data) {
-        prefix = $("#usersOnline").val() === "" ? "" : "\n";
-        $("#usersOnline").append(prefix + user);
+        row = "<tr id=" + user + "><td>" + user + "</td></tr>";
+        $("#usersOnline").append(row);
     }
 });
 var state = 0;

@@ -16,10 +16,12 @@ body
         #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: .385em; margin-right: 10pt; overflow: auto')
           table#chatLog(style='width: 100%; border-collapse: collapse; table-layout: fixed')
       td
-        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: .385em;')
-          textarea#label(readonly='readonly', style='resize: none; border: none; width: 98%; height: 8%')
-            | Online:
-          textarea#usersOnline(style='resize: none; border: none; width: 98%; height: 88%;', value='')
+        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: .385em; overflow: auto')
+          table(style='width: 100%; table-layout: fixed')
+            thead
+              tr
+                td(style='line-height: 20pt; vertical-align: middle; font-weight: bold;') Online:
+            tbody#usersOnline
   table#inputs(style='margin: 5px')
     tr(style='height: 15px', valign='middle')
       td#shoutState(style='font-size: 8pt; width: 50px; height: 100%;', cellspacing='3px', cellpadding='3px')
