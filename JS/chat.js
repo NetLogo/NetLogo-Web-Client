@@ -27,7 +27,8 @@ socket.on('users changed', function (data) {
     }
 });
 socket.on('message', function (data) {
-    var time = data.processed_time;
+    var d = new Date();
+    var time = d.toTimeString().slice(0, 5);
     var user = data.user;
     var message = data.processed_message;
     var serverState = data.server_state;
@@ -44,10 +45,10 @@ socket.on('message', function (data) {
             break;
     }
     var entry =
-        "<tr style='vertical-align: text-top; width: 100%'>"+
-            "<td style='color: #00CC00; width: 20%'>" + time + "</td>"+
-            "<td style='color: #CC0000; width: 20%'>" + user + ":" + "</td>"+
-            "<td style='width: 60%; word-wrap: break-word'>"+final_text+"</td>"+
+        "<tr style='vertical-align: middle; width: 100%'>"+
+            "<td style='color: #CC0000; width: 20%;'>" + user + ":" + "</td>"+
+            "<td style='width: 70%; word-wrap: break-word'>"+final_text+"</td>"+
+            "<td style='color: #00CC00; width: 10%; text-align: right'>" + time + "</td>"+
         "</tr>";
     $("#chatLog").append(entry);
     textScroll();
@@ -129,7 +130,7 @@ function keyCheck(inField, e){
         scroll(charCode);
     }
     else if (!e.ctrlKey) {
-        $("#abc").focus();
+        focusInput();
     }
 }
 function changeShout(){
@@ -151,7 +152,7 @@ function scroll(key){
         messageList.cursor = messageList.cursor.newer;
     }
     var info = messageList.cursor != null ? messageList.cursor.data : "";
-    $("#abc").val(info);
+    $("#inputBuffer").val(info);
 }
 function storeMessage(text){
     var Message = new node(text);
@@ -166,20 +167,18 @@ function textScroll(){
     box.animate({'scrollTop': bottom}, 'fast');
 }
 function send(message){
-    var d = new Date();
-    var time = d.toUTCString().split(" ")[4] + " GMT";
     var shout = $("#shoutState").text();
     var output = $("#outputState").prop("checked");
-    var packet = { Time: time, Message: message, Shout: shout, Output: output };
+    var packet = { Message: message, Shout: shout, Output: output };
     console.log("client sending: " + packet);
     socket.json.send(packet);
     storeMessage(message);
     messageList.clearCursor();
-    $("#abc").val("");
-    a();
+    $("#inputBuffer").val("");
+    focusInput();
 }
 function clearChat(){
     $('#chatLog').text('');
-    a();
+    focusInput();
 }
-function a(){ $('#abc').focus() }
+function focusInput(){ $('#inputBuffer').focus() }

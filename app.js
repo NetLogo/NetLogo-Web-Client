@@ -62,7 +62,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('message', function (data) {
         var output = data.Output;
         var shout = data.Shout;
-        var time = data.Time;
         var message = data.Message;
         console.log("Server Receiving: " + data);
         var serverState = 0;
@@ -73,7 +72,7 @@ io.sockets.on('connection', function (socket) {
         if (output) {
             serverState = Math.floor(Math.random()*3);
         }
-        var packet = { processed_time: time, user: name, processed_message: final_message, server_state: serverState };
+        var packet = { user: name, processed_message: final_message, server_state: serverState };
         console.log("Server Sending: " + packet);
         io.sockets.json.send(packet);
     });
