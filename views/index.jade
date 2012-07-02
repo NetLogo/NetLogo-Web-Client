@@ -2,7 +2,7 @@ head
 body
   script(type='text/javascript', src='/socket.io/socket.io.js')
   script(type='text/javascript', src='http://code.jquery.com/jquery.js')
-  script(type='text/javascript', src='chat.js')
+  script(type='text/javascript', src='/javascripts/chat.js')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')
@@ -10,7 +10,7 @@ body
         | Chat Log
       td
         input(type="button", value="Clear", onclick="clearChat()", style="width: 50px")
-  table#chat(style='border: none; table-layout: fixed', onkeydown='keyCheck(this, event)')
+  table#chat(style='border: none; table-layout: fixed')
     tr
       td
         #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: .385em; margin-right: 10pt; overflow: auto')
@@ -34,3 +34,7 @@ body
     tr
       td(style='text-align: center; font-size: 8pt;', colspan='3', cellspacing='3px', cellpadding='3px')
         | Press tab to shout! Mess around with variable output!
+  #blocker(style='position: fixed; margin: auto; z-index: -1; width: 150px; height: 150px;')
+    img(src='/images/white.png')
+  #copierWrap(style='position: fixed; margin: auto; padding: 20px; width: 100px; height: 100px; z-index: -2;')
+    textarea#copier(name='', style='width: 100%; height: 100%;', onfocus='nameSelect(this.name)', onblur='nameDeselect(this.name)')

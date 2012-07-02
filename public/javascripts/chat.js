@@ -25,7 +25,7 @@ socket.on('users changed', function (data) {
         row =
             "<tr><td>" +
                 "<input id="+user+" value="+user+" type='button' " +
-                "onclick='focus(this.value)' onfocus='nameSelect(this.value)' onblur='nameDeselect(this.value)' " +
+                "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
                 "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
             "</td></tr>";
         $("#usersOnline").append(row);
@@ -205,7 +205,6 @@ function clearChat(){
     focusInput();
 }
 function focusInput(){ $('#inputBuffer').focus() }
-function focus(id){ $("#" + id).focus() }
 function nameSelect(id){
     var row = $("#"+id);
     row.css({backgroundColor: '#0033CC', color: '#FFFFFF', fontWeight: 'bold'});
@@ -213,4 +212,10 @@ function nameSelect(id){
 function nameDeselect(id){
     var row = $('#'+id);
     row.css({backgroundColor: '#FFFFFF', color: '#000000', fontWeight: 'normal'});
+}
+function copySetup(text) {
+    $('#copier').attr('name', text);
+    $('#copier').val(text);
+    $('#copier').focus();
+    $('#copier').select();
 }
