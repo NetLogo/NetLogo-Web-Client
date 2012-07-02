@@ -9,7 +9,7 @@ body
       th(style='width: 520px')
         | Chat Log
       td
-        input(type="button", value="Clear", onclick="clearChat()")
+        input(type="button", value="Clear", onclick="clearChat()", style="width: 50px")
   table#chat(style='border: none; table-layout: fixed', onkeydown='keyCheck(this, event)')
     tr
       td
@@ -17,7 +17,7 @@ body
           table#chatLog(style='width: 100%; border-collapse: collapse; table-layout: fixed')
       td
         #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: .385em; overflow: auto')
-          table(style='width: 100%; table-layout: fixed')
+          table#usersTable(style='width: 100%; table-layout: fixed')
             thead
               tr
                 td(style='line-height: 20pt; vertical-align: middle; font-weight: bold;') Online:
