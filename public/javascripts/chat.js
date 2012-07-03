@@ -4,6 +4,9 @@
  * Date: 6/22/12
  * Time: 4:50 PM
  */
+
+// Initial page setup and verification
+
 window.onload = startup();
 var userName;
 function startup(){
@@ -14,6 +17,9 @@ function startup(){
         }
     });
 }
+
+// Socket connection and event handlers
+
 var socket = io.connect();
 socket.on('connected', function(){
     socket.emit('name reply', userName);
@@ -54,6 +60,9 @@ socket.on('message', function (data) {
     $("#chatLog").append(entry);
     textScroll();
 });
+
+// Supplemental functions to the handlers above
+
 function messageSwitcher(user, final_text, time){
     var color;
     if (state%2 === 0) {
@@ -76,6 +85,17 @@ function messageSwitcher(user, final_text, time){
     state++;
     return row;
 }
+function textScroll(){
+    var box = $("#container");
+    var bottom = box[0].scrollHeight - box.height();
+    var font = box.css('font-size');
+    var size = parseInt(font.substr(0, font.length - 2));
+    box.scrollTop(bottom - size);
+    box.animate({'scrollTop': bottom}, 'fast');
+}
+
+// Additional classes and methods
+
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
 };
@@ -129,86 +149,13 @@ node = (function() {
     }
     return node;
 })();
-var messageList = new List(20);
-function keyCheck(inField, e){
-    var charCode;
-    if (e && e.which){
-        charCode = e.which;
-    }
-    else if (window.event){
-        e = window.event;
-        charCode = e.which;
-    }
-    if (charCode === 9){
-        e.preventDefault();
-        changeShout();
-    }
-    else if ((charCode === 13) && ($(inField).val() !== "")) {
-        send($(inField).val());
-    }
-    else if ((charCode === 38) || (charCode === 40)){
-        e.preventDefault();
-        scroll(charCode);
-    }
-    else if (!e.ctrlKey) {
-        focusInput();
-    }
-    else if (e.ctrlKey && (charCode === 86)) {
-        setTimeout(function(){
-            var text = $(inField).val().replace(/\t/g, " ");
-            $(inField).val(text);
-        }, 1);
-    }
-}
-function changeShout(){
-    var currentState = $("#shoutState").text();
-    if (currentState === "Normal"){
-        $("#shoutState").text("Shouting");
-    } else {
-        $("#shoutState").text("Normal");
-    }
-}
-function scroll(key){
-    if (key === 38) {
-        if (messageList.cursor === null)
-            messageList.cursor = messageList.head;
-        else
-            messageList.cursor = messageList.cursor.older != null ? messageList.cursor.older : messageList.cursor;
-    }
-    else if (key === 40) {
-        messageList.cursor = messageList.cursor.newer;
-    }
-    var info = messageList.cursor != null ? messageList.cursor.data : "";
-    $("#inputBuffer").val(info);
-}
-function storeMessage(text){
-    var Message = new node(text);
-    messageList.append(Message);
-}
-function textScroll(){
-    var box = $("#container");
-    var bottom = box[0].scrollHeight - box.height();
-    var font = box.css('font-size');
-    var size = parseInt(font.substr(0, font.length - 2));
-    box.scrollTop(bottom - size);
-    box.animate({'scrollTop': bottom}, 'fast');
-}
-function send(message){
-    var shout = $("#shoutState").text();
-    var output = $("#outputState").prop("checked");
-    var packet = { Message: message, Shout: shout, Output: output };
-    console.log("client sending: " + packet);
-    socket.json.send(packet);
-    storeMessage(message);
-    messageList.clearCursor();
-    $("#inputBuffer").val("");
-    focusInput();
-}
+
+// Functions triggered by events on the page
+
 function clearChat(){
     $('#chatLog').text('');
     focusInput();
 }
-function focusInput(){ $('#inputBuffer').focus() }
 function nameSelect(id){
     var row = $("#"+id);
     row.css({backgroundColor: '#0033CC', color: '#FFFFFF', fontWeight: 'bold'});
@@ -223,3 +170,67 @@ function copySetup(text) {
     $('#copier').focus();
     $('#copier').select();
 }
+function keyCheck(inField, e){
+    var charCode;
+    if (e && e.which){
+        charCode = e.which;
+    } else if (window.event){
+        e = window.event;
+        charCode = e.which;
+    }
+    if (charCode === 9){
+        e.preventDefault();
+        changeShout();
+    } else if ((charCode === 13) && ($(inField).val() !== "")) {
+        send($(inField).val());
+    } else if ((charCode === 38) || (charCode === 40)){
+        e.preventDefault();
+        scroll(charCode);
+    } else if (!e.ctrlKey) {
+        focusInput();
+    } else if (e.ctrlKey && (charCode === 86)) {
+        setTimeout(function(){
+            var text = $(inField).val().replace(/\t/g, " ");
+            $(inField).val(text);
+        }, 1);
+    }
+}
+
+// Helper functions to the trigger functions above
+
+function changeShout(){
+    var currentState = $("#shoutState").text();
+    if (currentState === "Normal"){
+        $("#shoutState").text("Shouting");
+    } else {
+        $("#shoutState").text("Normal");
+    }
+}
+var messageList = new List(20);
+function scroll(key){
+    if (key === 38) {
+        if (messageList.cursor === null)
+            messageList.cursor = messageList.head;
+        else
+            messageList.cursor = messageList.cursor.older != null ? messageList.cursor.older : messageList.cursor;
+    } else if (key === 40) {
+        messageList.cursor = messageList.cursor.newer;
+    }
+    var info = messageList.cursor != null ? messageList.cursor.data : "";
+    $("#inputBuffer").val(info);
+}
+function send(message){
+    var shout = $("#shoutState").text();
+    var output = $("#outputState").prop("checked");
+    var packet = { Message: message, Shout: shout, Output: output };
+    socket.json.send(packet);
+    storeMessage(message);
+    messageList.clearCursor();
+    $("#inputBuffer").val("");
+    focusInput();
+}
+function storeMessage(text){
+    var Message = new node(text);
+    messageList.append(Message);
+}
+function focusInput(){ $('#inputBuffer').focus() }
