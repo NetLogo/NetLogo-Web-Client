@@ -143,10 +143,8 @@ function keyCheck(inField, e){
         e.preventDefault();
         changeShout();
     }
-    else if (charCode === 13){
-        if ($(inField).val() !== "") {
-            send($(inField).val());
-        }
+    else if ((charCode === 13) && ($(inField).val() !== "")) {
+        send($(inField).val());
     }
     else if ((charCode === 38) || (charCode === 40)){
         e.preventDefault();
@@ -154,6 +152,12 @@ function keyCheck(inField, e){
     }
     else if (!e.ctrlKey) {
         focusInput();
+    }
+    else if (e.ctrlKey && (charCode === 86)) {
+        setTimeout(function(){
+            var text = $(inField).val().replace(/\t/g, " ");
+            $(inField).val(text);
+        }, 1);
     }
 }
 function changeShout(){

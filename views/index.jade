@@ -32,8 +32,10 @@ body
         input#outputState(type='checkbox', onchange='a()')
         label(for='outputState', style='font-size: 8pt;') Variable output?
     tr
-      td(style='text-align: center; font-size: 8pt;', colspan='3', cellspacing='3px', cellpadding='3px')
+      td
+      td(style='text-align: center; font-size: 8pt;', cellspacing='3px', cellpadding='3px')
         | Press tab to shout! Mess around with variable output!
+      td
   #blocker(style='position: fixed; margin: auto; z-index: -1; width: 150px; height: 150px;')
     img(src='/images/white.png')
   #copierWrap(style='position: fixed; margin: auto; padding: 20px; width: 100px; height: 100px; z-index: -2;')
