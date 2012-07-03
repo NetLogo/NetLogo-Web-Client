@@ -117,9 +117,14 @@ List = (function() {
         this.head = null;
         this.tail = null;
         this.cursor = null;
+        this.current = null;
     }
     List.prototype.clearCursor = function() {
         this.cursor = null;
+        this.current = null;
+    };
+    List.prototype.addCurrent = function(){
+        messageList.current = new node($("#inputBuffer").val());
     };
     List.prototype.append = function(newNode) {
         var oldTail;
@@ -209,14 +214,21 @@ function changeShout(){
 var messageList = new List(20);
 function scroll(key){
     if (key === 38) {
-        if (messageList.cursor === null)
+        if (messageList.cursor === null) {
             messageList.cursor = messageList.head;
-        else
+            messageList.addCurrent()
+        } else
             messageList.cursor = messageList.cursor.older != null ? messageList.cursor.older : messageList.cursor;
     } else if (key === 40) {
         messageList.cursor = messageList.cursor.newer;
     }
-    var info = messageList.cursor != null ? messageList.cursor.data : "";
+    var info;
+    if (messageList.cursor !== null) {
+        info = messageList.cursor.data;
+    } else {
+        info = messageList.current.data;
+        messageList.clearCursor();
+    }
     $("#inputBuffer").val(info);
 }
 function send(message){
