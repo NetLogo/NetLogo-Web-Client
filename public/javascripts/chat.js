@@ -5,96 +5,9 @@
  * Time: 4:50 PM
  */
 
-// Initial page setup and verification
-
-window.onload = startup();
-var userName;
-function startup(){
-    userName = prompt("Please type your user name:");
-    $.post('/', { username: userName }, function(data){
-        if (data !== userName) {
-            document.location.href = data;
-        }
-    });
-}
-
-// Socket connection and event handlers
-
-var socket = io.connect();
-socket.on('connected', function(){
-    socket.emit('name reply', userName);
-});
-socket.on('users changed', function (data) {
-    var user, row;
-    $("#usersOnline").text("");
-    for (user in data) {
-        row =
-            "<tr><td>" +
-                "<input id="+user+" value="+user+" type='button' " +
-                "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
-                "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
-            "</td></tr>";
-        $("#usersOnline").append(row);
-    }
-});
-var state = 0;
-socket.on('message', function (data) {
-    var d = new Date();
-    var time = d.toTimeString().slice(0, 5);
-    var user = data.user;
-    var message = data.processed_message;
-    var serverState = data.server_state;
-    var final_text = "";
-    switch (serverState) {
-        case 0:
-            final_text = message;
-            break;
-        case 1:
-            final_text = message.reverse();
-            break;
-        case 2:
-            final_text = message.wordReverse();
-            break;
-    }
-    var entry = messageSwitcher(user, final_text, time);
-    $("#chatLog").append(entry);
-    textScroll();
-});
-
-// Supplemental functions to the handlers above
-
-function messageSwitcher(user, final_text, time){
-    var color;
-    if (state%2 === 0) {
-        color = "#FFFFFF";
-    } else {
-        color = "#CCFFFF";
-    }
-    var row =
-        "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;'>"+
-            "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
-                user + ":" +
-            "</td>" +
-            "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
-                final_text +
-            "</td>" +
-            "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
-                time +
-            "</td>" +
-        "</tr>";
-    state++;
-    return row;
-}
-function textScroll(){
-    var box = $("#container");
-    var bottom = box[0].scrollHeight - box.height();
-    var font = box.css('font-size');
-    var size = parseInt(font.substr(0, font.length - 2));
-    box.scrollTop(bottom - size);
-    box.animate({'scrollTop': bottom}, 'fast');
-}
-
-// Additional classes and methods
+/*
+ * Additional classes and methods
+ */
 
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
@@ -155,7 +68,104 @@ node = (function() {
     return node;
 })();
 
-// Functions triggered by events on the page
+/*
+ * Initial page setup and verification
+ */
+
+window.onload = startup();
+var userName;
+function startup(){
+    userName = prompt("Please type your user name:");
+    $.post('/', { username: userName }, function(data){
+        if (data !== userName) {
+            document.location.href = data;
+        }
+    });
+}
+
+/*
+ * Socket connection and event handlers
+ */
+
+var socket = io.connect();
+socket.on('connected', function(){
+    socket.emit('name reply', userName);
+});
+socket.on('users changed', function (data) {
+    var user, row;
+    $("#usersOnline").text("");
+    for (user in data) {
+        row =
+            "<tr><td>" +
+                "<input id="+user+" value="+user+" type='button' " +
+                "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
+                "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
+            "</td></tr>";
+        $("#usersOnline").append(row);
+    }
+});
+var state = 0;
+socket.on('message', function (data) {
+    var d = new Date();
+    var time = d.toTimeString().slice(0, 5);
+    var user = data.user;
+    var message = data.processed_message;
+    var serverState = data.server_state;
+    var final_text = "";
+    switch (serverState) {
+        case 0:
+            final_text = message;
+            break;
+        case 1:
+            final_text = message.reverse();
+            break;
+        case 2:
+            final_text = message.wordReverse();
+            break;
+    }
+    var entry = messageSwitcher(user, final_text, time);
+    $("#chatLog").append(entry);
+    textScroll();
+});
+
+/*
+ * Supplemental functions to the handlers above
+ */
+
+function messageSwitcher(user, final_text, time){
+    var color;
+    if (state%2 === 0) {
+        color = "#FFFFFF";
+    } else {
+        color = "#CCFFFF";
+    }
+    var row =
+        "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;'>"+
+            "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
+                user + ":" +
+            "</td>" +
+            "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
+                final_text +
+            "</td>" +
+            "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
+                time +
+            "</td>" +
+        "</tr>";
+    state++;
+    return row;
+}
+function textScroll(){
+    var box = $("#container");
+    var bottom = box[0].scrollHeight - box.height();
+    var font = box.css('font-size');
+    var size = parseInt(font.substr(0, font.length - 2));
+    box.scrollTop(bottom - size);
+    box.animate({'scrollTop': bottom}, 'fast');
+}
+
+/*
+ * Functions triggered by events on the page
+ */
 
 function clearChat(){
     $('#chatLog').text('');
@@ -196,6 +206,8 @@ function keyCheck(inField, e){
     } else if (e.ctrlKey && (charCode === 67)) {
         $("#textCopier").focus();
         $("#textCopier").select();
+        // setTimeout here makes sure that the focus isn't taken from the
+        // textCopier area until after the text is copied to the clipboard.
         setTimeout(focusInput(), 5);
     }
 }
@@ -210,15 +222,17 @@ function getSelText(){
     } else if (document.selection) {
         txt = document.selection.createRange().text;
     } else return;
-    var modText = txt.toString().replace(/\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm, "  [$1]");
+    // The regular expression 'timestamp' matches time strings of the form hh:mm in 24-hour format.
+    var timestamp = /\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm;
+    var modText = txt.toString().replace(timestamp, "  [$1]");
     var finalText = modText.replace(/\t/g, " ");
     $("#textCopier").val(finalText);
     $("#container").focus();
-    //$("#textCopier").focus();
-    //$("#textCopier").select();
 }
 
-// Helper functions to the trigger functions above
+/*
+ * Helper functions to the trigger functions above
+ */
 
 function changeShout(){
     var currentState = $("#shoutState").text();
