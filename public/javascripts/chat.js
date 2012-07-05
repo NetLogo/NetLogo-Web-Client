@@ -203,16 +203,16 @@ if (BrowserDetect.OS === "Mac"){
     var commandkey = false;
     var keyCode1, keyCode2;
     if (BrowserDetect.browser === "Opera") {
-        keyCode1 = 17
+        keyCode1 = 17;
     } else if (BrowserDetect.browser === "Firefox"){
-        keyCode1 = 224
+        keyCode1 = 224;
     } else {
         keyCode1 = 91;
         keyCode2 = 93;
     }
     function keyDown() {
         if ((event.keyCode == keyCode1) || (event.keyCode == keyCode2)) { commandkey = true }
-        keyCheck(event);
+        keyCheck(this, event);
     }
     function keyUp() {
         if ((event.keyCode == keyCode1) || (event.keyCode == keyCode2)) commandkey = false;
@@ -325,7 +325,8 @@ function copySetup(text) {
     $('#copier').focus();
     $('#copier').select();
 }
-function keyCheck(e){
+function keyCheck(inField, e){
+    // Find out what key is pressed.
     var charCode;
     if (e && e.which){
         charCode = e.which;
@@ -333,6 +334,7 @@ function keyCheck(e){
         e = window.event;
         charCode = e.which;
     }
+    // Based on what key is pressed, do something.
     if (charCode === 9){
         e.preventDefault();
         changeShout();
@@ -344,10 +346,12 @@ function keyCheck(e){
     } else if ((e.ctrlKey || commandkey) && (charCode === 67)) {
         $("#textCopier").focus();
         $("#textCopier").select();
-        // setTimeout here makes sure that the focus isn't taken from the
-        // textCopier area until after the text is copied to the clipboard.
-        setTimeout(focusInput(), 5);
-    } else {
+        // The default action (copy selected text to clipboard) occurs after the two lines above.
+    }
+    // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
+    if ((typeof commandkey !== "undefined") && (commandkey !== null)) {
+        if (!commandkey) focusInput()
+    } else if (!e.ctrlKey) {
         focusInput();
     }
 }
