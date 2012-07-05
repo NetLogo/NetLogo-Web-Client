@@ -193,12 +193,29 @@ function keyCheck(inField, e){
         scroll(charCode);
     } else if (!e.ctrlKey) {
         focusInput();
-    } else if (e.ctrlKey && (charCode === 86)) {
-        setTimeout(function(){
-            var text = $(inField).val().replace(/\t/g, " ");
-            $(inField).val(text);
-        }, 1);
+    } else if (e.ctrlKey && (charCode === 67)) {
+        $("#textCopier").focus();
+        $("#textCopier").select();
+        setTimeout(focusInput(), 5);
     }
+}
+// Credit to Jeff Anderson
+// Source: http://www.codetoad.com/javascript_get_selected_text.asp
+function getSelText(){
+    var txt = "";
+    if (window.getSelection) {
+        txt = window.getSelection();
+    } else if (document.getSelection) {
+        txt = document.getSelection();
+    } else if (document.selection) {
+        txt = document.selection.createRange().text;
+    } else return;
+    var modText = txt.toString().replace(/\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm, "  [$1]");
+    var finalText = modText.replace(/\t/g, " ");
+    $("#textCopier").val(finalText);
+    $("#container").focus();
+    //$("#textCopier").focus();
+    //$("#textCopier").select();
 }
 
 // Helper functions to the trigger functions above

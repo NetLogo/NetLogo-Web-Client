@@ -13,7 +13,7 @@ body
   table#chat(style='border: none; table-layout: fixed')
     tr
       td
-        #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: .385em; margin-right: 10pt; overflow: auto')
+        #container(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: .385em; margin-right: 10pt; overflow: auto', tabindex='', onmouseup='getSelText()', onkeydown='keyCheck(this, event)')
           table#chatLog(style='width: 100%; border-collapse: collapse; table-layout: fixed')
       td
         #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: .385em; overflow: auto')
@@ -36,7 +36,11 @@ body
       td(style='text-align: center; font-size: 8pt;', cellspacing='3px', cellpadding='3px')
         | Press tab to shout! Mess around with variable output!
       td
-  #blocker(style='position: fixed; margin: auto; z-index: -1; width: 150px; height: 150px;')
+  #blocker1(style='position: fixed; margin: auto; z-index: -1; width: 150px; height: 150px;')
     img(src='/images/white.png')
   #copierWrap(style='position: fixed; margin: auto; padding: 20px; width: 100px; height: 100px; z-index: -2;')
     textarea#copier(name='', style='width: 100%; height: 100%;', onfocus='nameSelect(this.name)', onblur='nameDeselect(this.name)')
+  #blocker2(style='position: fixed; margin: auto; z-index: -3; width: 150px; height: 150px;')
+    img(src='/images/white.png')
+  #textCopierWrap(style='position: fixed; margin: auto; padding: 20px; width: 100px; height: 100px; z-index: -4;')
+    textarea#textCopier(style='width: 100%; height: 100%;')
