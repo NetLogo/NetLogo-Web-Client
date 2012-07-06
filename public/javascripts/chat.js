@@ -6,10 +6,9 @@
  */
 
 /*
- * Additional classes and methods
+ * Variables into which to cache jQuery selector results
  */
 
-// Variables for easy jQuery selector access
 var $inputBuffer;
 var $usersOnline;
 var $chatLog    ;
@@ -19,21 +18,9 @@ var $textCopier ;
 var $shoutState ;
 var $outputState;
 
-// `String` enhancers
-String.prototype.reverse = function(){
-    return this.split("").reverse().join("");
-};
-
-String.prototype.wordReverse = function(){
-    var word, _i, _len;
-    var newMessageArray = [];
-    var messageArray = this.split(" ");
-    for (_i = 0, _len = messageArray.length; _i < _len; _i++) {
-        word = messageArray[_i];
-        newMessageArray[_i] = word.reverse();
-    }
-    return newMessageArray.join(" ");
-};
+/*
+ * Other globals
+ */
 
 var ListNode = (function() {
     function ListNode(data) {
@@ -90,40 +77,19 @@ var List = (function() {
 
 })();
 
+var userName;
+var state = 0;
+var messageList = new List(20);
+var socket = io.connect();
+
+
 /*
- * Initial page setup and verification
+ * Onload-related instructions
  */
 
 window.onload = startup();
-var userName;
-function startup(){
-    userName = prompt("Please type your user name:");
-    $.post('/', { username: userName }, function(data){
-        if (data !== userName) {
-            document.location.href = data;
-        }
-    });
-}
 
-// Caching jQuery selector results for easy access throughout the code
-function initSelectors() {
-    $inputBuffer = $("#inputBuffer");
-    $usersOnline = $("#usersOnline");
-    $chatLog     = $("#chatLog");
-    $container   = $("#container");
-    $copier      = $("#copier");
-    $textCopier  = $("#textCopier");
-    $shoutState  = $("#shoutState");
-    $outputState = $("#outputState");
-}
-
-/*
- * Socket connection and event handlers
- */
-
-var socket = io.connect();
-
-socket.on('connected', function(){
+socket.on('connected', function() {
     socket.emit('name reply', userName);
     initSelectors();
 });
@@ -133,10 +99,10 @@ socket.on('users changed', function (data) {
     var user, row;
     for (user in data) {
         row = "<tr><td>" +
-                  "<input id="+user+" value="+user+" type='button' " +
-                  "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
-                  "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
-              "</td></tr>";
+            "<input id="+user+" value="+user+" type='button' " +
+            "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
+            "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
+            "</td></tr>";
         $usersOnline.append(row);
     }
 });
@@ -167,15 +133,56 @@ socket.on('message', function (data) {
 
 });
 
+
 /*
- * Supplemental functions to the handlers above
+ * `String` enhancers
  */
 
-var state = 0;
-function messageSwitcher(user, final_text, time){
+String.prototype.reverse = function(){
+    return this.split("").reverse().join("");
+};
+
+String.prototype.wordReverse = function(){
+    var word, _i, _len;
+    var newMessageArray = [];
+    var messageArray = this.split(" ");
+    for (_i = 0, _len = messageArray.length; _i < _len; _i++) {
+        word = messageArray[_i];
+        newMessageArray[_i] = word.reverse();
+    }
+    return newMessageArray.join(" ");
+};
+
+
+/*
+ * Basic page functionality
+ */
+
+function startup() {
+    userName = prompt("Please type your user name:");
+    $.post('/', { username: userName }, function(data) {
+        if (data !== userName) {
+            document.location.href = data;
+        }
+    });
+}
+
+// Caching jQuery selector results for easy access throughout the code
+function initSelectors() {
+    $inputBuffer = $("#inputBuffer");
+    $usersOnline = $("#usersOnline");
+    $chatLog     = $("#chatLog");
+    $container   = $("#container");
+    $copier      = $("#copier");
+    $textCopier  = $("#textCopier");
+    $shoutState  = $("#shoutState");
+    $outputState = $("#outputState");
+}
+
+function messageSwitcher(user, final_text, time) {
 
     var color;
-    if (state%2 === 0) {
+    if (state % 2 === 0) {
         color = "#FFFFFF";
     } else {
         color = "#CCFFFF";
@@ -195,6 +202,7 @@ function messageSwitcher(user, final_text, time){
            "</tr>";
 
 }
+
 function textScroll(){
     var box = $container;
     var bottom = box[0].scrollHeight - box.height();
@@ -203,6 +211,7 @@ function textScroll(){
     box.scrollTop(bottom - size);
     box.animate({'scrollTop': bottom}, 'fast');
 }
+
 
 /*
  * Functions triggered by events on the page
@@ -245,36 +254,12 @@ function keyCheck(inField, e){
         $textCopier.show();  // Show so we can select the text for copying
         $textCopier.focus();
         $textCopier.select();
-        setTimeout(function() {$textCopier.hide();}, 5);
+        setTimeout(function() { $textCopier.hide(); }, 5);
         // Delay for a short bit, so we can hide it after the default action (copy) is triggered
     } else if (!isModifier(e)) {
         focusInput();
     }
 
-}
-
-
-function extractCharCode(e) {
-    if (e && e.which){
-        return e.which;
-    } else if (window.event){
-        return e.window.event;
-    } else {
-        return e;  // Should pretty much never happen
-    }
-}
-
-// this is equivalent to the CoffeeScript:
-//      charCode = extractCharCode(e)
-//      if not ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
-//          focusInput()
-// which means if the key pressed is not a modifier key, focus the input box.
-// So, if you want to modify this code, it's suggestible that you just copy&paste the above CoffeeScript into a
-// a CS => JS converter, and regenerate the code that way–for your own sanity, that is
-function isModifier(e) {
-    var charCode = extractCharCode(e);
-    var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-    return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
 }
 
 // Credit to Jeff Anderson
@@ -304,6 +289,29 @@ function getSelText(){
  * Helper functions to the trigger functions above
  */
 
+function extractCharCode(e) {
+    if (e && e.which){
+        return e.which;
+    } else if (window.event){
+        return e.window.event;
+    } else {
+        return e;  // Should pretty much never happen
+    }
+}
+
+// this is equivalent to the CoffeeScript:
+//      charCode = extractCharCode(e)
+//      if not ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
+//          focusInput()
+// which means if the key pressed is not a modifier key, focus the input box.
+// So, if you want to modify this code, it's suggestible that you just copy&paste the above CoffeeScript into a
+// a CS => JS converter, and regenerate the code that way–for your own sanity, that is
+function isModifier(e) {
+    var charCode = extractCharCode(e);
+    var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
+}
+
 function changeShout(){
     var currentState = $shoutState.text();
     if (currentState === "Normal"){
@@ -312,8 +320,6 @@ function changeShout(){
         $shoutState.text("Normal");
     }
 }
-
-var messageList = new List(20);
 
 function scroll(key){
 
