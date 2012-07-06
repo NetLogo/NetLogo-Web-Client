@@ -78,16 +78,16 @@ var List = (function() {
 })();
 
 var userName;
+var socket;
 var state = 0;
 var messageList = new List(20);
-var socket = io.connect();
-
 
 /*
  * Onload-related instructions
  */
 
 window.onload = startup();
+socket = io.connect();
 
 socket.on('connected', function() {
     socket.emit('name reply', userName);
