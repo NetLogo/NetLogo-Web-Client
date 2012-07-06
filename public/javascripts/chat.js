@@ -11,10 +11,10 @@
 
 var $inputBuffer;
 var $usersOnline;
-var $chatLog    ;
-var $container  ;
-var $copier     ;
-var $textCopier ;
+var $chatLog;
+var $container;
+var $copier;
+var $textCopier;
 var $shoutState ;
 var $outputState;
 
