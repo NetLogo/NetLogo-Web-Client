@@ -209,8 +209,7 @@ function keyCheck(inField, e){
         $("#textCopier").select();
         setTimeout(function() {$("#textCopier").hide();}, 5);
         // Delay for a short bit, so we can hide it after the default action (copy) is triggered
-    }
-    else if (!(e.ctrlKey || e.metaKey)) {
+    } else if (!(e.ctrlKey || e.metaKey)) {
         focusInput(); // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
     }
 }
