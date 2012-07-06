@@ -230,14 +230,7 @@ function copySetup(text) {
 function keyCheck(inField, e){
 
     // Find out what key is pressed.
-    var charCode;
-    var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-    if (e && e.which){
-        charCode = e.which;
-    } else if (window.event){
-        e = window.event;
-        charCode = e.which;
-    }
+    var charCode = extractCharCode(e);
 
     // Based on what key is pressed, do something.
     if (charCode === 9){
@@ -254,14 +247,34 @@ function keyCheck(inField, e){
         $textCopier.select();
         setTimeout(function() {$textCopier.hide();}, 5);
         // Delay for a short bit, so we can hide it after the default action (copy) is triggered
-    } else if (!(e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0))) {
+    } else if (!isModifier(e)) {
         focusInput();
-        // this is equivalent to the CoffeeScript:
-        //      if not ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
-        //          focusInput()
-        // which means if the key pressed is not a modifier key, focus the input box.
     }
 
+}
+
+
+function extractCharCode(e) {
+    if (e && e.which){
+        return e.which;
+    } else if (window.event){
+        return e.window.event;
+    } else {
+        return e;  // Should pretty much never happen
+    }
+}
+
+// this is equivalent to the CoffeeScript:
+//      charCode = extractCharCode(e)
+//      if not ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
+//          focusInput()
+// which means if the key pressed is not a modifier key, focus the input box.
+// So, if you want to modify this code, it's suggestible that you just copy&paste the above CoffeeScript into a
+// a CS => JS converter, and regenerate the code that way–for your own sanity, that is
+function isModifier(e) {
+    var charCode = extractCharCode(e);
+    var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
 }
 
 // Credit to Jeff Anderson
