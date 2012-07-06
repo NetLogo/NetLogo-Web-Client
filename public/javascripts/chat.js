@@ -204,12 +204,11 @@ function messageSwitcher(user, final_text, time) {
 }
 
 function textScroll(){
-    var box = $container;
-    var bottom = box[0].scrollHeight - box.height();
-    var font = box.css('font-size');
+    var bottom = $container[0].scrollHeight - $container.height();
+    var font = $container.css('font-size');
     var size = parseInt(font.substr(0, font.length - 2));
-    box.scrollTop(bottom - size);
-    box.animate({'scrollTop': bottom}, 'fast');
+    $container.scrollTop(bottom - size);
+    $container.animate({'scrollTop': bottom}, 'fast');
 }
 
 
