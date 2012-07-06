@@ -50,34 +50,45 @@ validName = function(name){
 var userNames = {};
 
 io.sockets.on('connection', function (socket) {
+
     var address = socket.handshake.address;
     console.log('Connection from ' + address.address + ':' + address.port);
     socket.emit('connected');
+
     var name = "";
     socket.on('name reply', function (data) {
         name = data;
         addUser(name);
     });
+
     socket.on('message', function (data) {
+
         var output = data.Output;
         var shout = data.Shout;
         var message = data.Message;
-        console.log("Server Receiving: " + data);
         var serverState = 0;
         var final_message = message;
+
+        console.log("Server Receiving: " + data);
+
         if (shout === "Shouting") {
             final_message = message.toUpperCase().replace(/\./g, "!").replace(/\?/g, "!?");
         }
+
         if (output) {
             serverState = Math.floor(Math.random()*3);
         }
+
         var packet = { user: name, processed_message: final_message, server_state: serverState };
         console.log("Server Sending: " + packet);
         io.sockets.json.send(packet);
+
     });
+
     socket.on('disconnect', function(){
         removeUser(name);
     });
+
 });
 
 // Routes
