@@ -18,6 +18,7 @@ var $textCopier;
 var $shoutState ;
 var $outputState;
 
+
 /*
  * Other globals
  */
@@ -81,6 +82,7 @@ var userName;
 var socket;
 var state = 0;
 var messageList = new List(20);
+
 
 /*
  * Onload-related instructions
@@ -283,6 +285,7 @@ function getSelText() {
     $container.focus();
 
 }
+
 
 /*
  * Helper functions to the trigger functions above
