@@ -231,6 +231,7 @@ function keyCheck(inField, e){
 
     // Find out what key is pressed.
     var charCode;
+    var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
     if (e && e.which){
         charCode = e.which;
     } else if (window.event){
@@ -253,8 +254,12 @@ function keyCheck(inField, e){
         $textCopier.select();
         setTimeout(function() {$textCopier.hide();}, 5);
         // Delay for a short bit, so we can hide it after the default action (copy) is triggered
-    } else if (!(e.ctrlKey || e.metaKey)) {
-        focusInput(); // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
+    } else if (!(e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0))) {
+        focusInput();
+        // this is equivalent to the CoffeeScript:
+        //      if not ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
+        //          focusInput()
+        // which means if the key pressed is not a modifier key, focus the input box.
     }
 
 }
