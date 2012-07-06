@@ -9,6 +9,16 @@
  * Additional classes and methods
  */
 
+// Variables for easy jQuery selector access
+var $inputBuffer;
+var $usersOnline;
+var $chatLog    ;
+var $container  ;
+var $copier     ;
+var $textCopier ;
+var $shoutState ;
+var $outputState;
+
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
 };
@@ -37,7 +47,7 @@ List = (function() {
         this.current = null;
     };
     List.prototype.addCurrent = function(){
-        messageList.current = new node($("#inputBuffer").val());
+        messageList.current = new node($inputBuffer.val());
     };
     List.prototype.append = function(newNode) {
         var oldTail;
@@ -82,6 +92,18 @@ function startup(){
     });
 }
 
+// Caching jQuery selector results for easy access throughout the code
+function initSelectors() {
+    $inputBuffer = $("#inputBuffer");
+    $usersOnline = $("#usersOnline");
+    $chatLog     = $("#chatLog");
+    $container   = $("#container");
+    $copier      = $("#copier");
+    $textCopier  = $("#textCopier");
+    $shoutState  = $("#shoutState");
+    $outputState = $("#outputState");
+}
+
 /*
  * Socket connection and event handlers
  */
@@ -89,10 +111,11 @@ function startup(){
 var socket = io.connect();
 socket.on('connected', function(){
     socket.emit('name reply', userName);
+    initSelectors();
 });
 socket.on('users changed', function (data) {
     var user, row;
-    $("#usersOnline").text("");
+    $usersOnline.text("");
     for (user in data) {
         row =
             "<tr><td>" +
@@ -100,7 +123,7 @@ socket.on('users changed', function (data) {
                 "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
                 "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
             "</td></tr>";
-        $("#usersOnline").append(row);
+        $usersOnline.append(row);
     }
 });
 var state = 0;
@@ -123,7 +146,7 @@ socket.on('message', function (data) {
             break;
     }
     var entry = messageSwitcher(user, final_text, time);
-    $("#chatLog").append(entry);
+    $chatLog.append(entry);
     textScroll();
 });
 
@@ -154,7 +177,7 @@ function messageSwitcher(user, final_text, time){
     return row;
 }
 function textScroll(){
-    var box = $("#container");
+    var box = $container;
     var bottom = box[0].scrollHeight - box.height();
     var font = box.css('font-size');
     var size = parseInt(font.substr(0, font.length - 2));
@@ -167,7 +190,7 @@ function textScroll(){
  */
 
 function clearChat(){
-    $('#chatLog').text('');
+    $chatLog.text('');
     focusInput();
 }
 function nameSelect(id){
@@ -179,10 +202,10 @@ function nameDeselect(id){
     row.css({backgroundColor: '#FFFFFF', color: '#000000', fontWeight: 'normal'});
 }
 function copySetup(text) {
-    $('#copier').attr('name', text);
-    $('#copier').val(text);
-    $('#copier').focus();
-    $('#copier').select();
+    $copier.attr('name', text);
+    $copier.val(text);
+    $copier.focus();
+    $copier.select();
 }
 
 function keyCheck(inField, e){
@@ -198,16 +221,16 @@ function keyCheck(inField, e){
     if (charCode === 9){
         e.preventDefault();
         changeShout();
-    } else if ((charCode === 13) && ($("#inputBuffer").val() !== "")) {
-        send($("#inputBuffer").val());
+    } else if ((charCode === 13) && ($inputBuffer.val() !== "")) {
+        send($inputBuffer.val());
     } else if ((charCode === 38) || (charCode === 40)){
         e.preventDefault();
         scroll(charCode);
     } else if ((e.ctrlKey || e.metaKey) && (charCode === 67)) {
-        $("#textCopier").show();  // Show so we can select the text for copying
-        $("#textCopier").focus();
-        $("#textCopier").select();
-        setTimeout(function() {$("#textCopier").hide();}, 5);
+        $textCopier.show();  // Show so we can select the text for copying
+        $textCopier.focus();
+        $textCopier.select();
+        setTimeout(function() {$textCopier.hide();}, 5);
         // Delay for a short bit, so we can hide it after the default action (copy) is triggered
     } else if (!(e.ctrlKey || e.metaKey)) {
         focusInput(); // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
@@ -228,9 +251,9 @@ function getSelText(){
     var timestamp = /\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm;
     var modText = txt.toString().replace(timestamp, "  [$1]");
     var finalText = modText.replace(/\t/g, " ");
-    $("#textCopier").hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
-    $("#textCopier").val(finalText);
-    $("#container").focus();
+    $textCopier.hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
+    $textCopier.val(finalText);
+    $container.focus();
 }
 
 /*
@@ -238,11 +261,11 @@ function getSelText(){
  */
 
 function changeShout(){
-    var currentState = $("#shoutState").text();
+    var currentState = $shoutState.text();
     if (currentState === "Normal"){
-        $("#shoutState").text("Shouting");
+        $shoutState.text("Shouting");
     } else {
-        $("#shoutState").text("Normal");
+        $shoutState.text("Normal");
     }
 }
 var messageList = new List(20);
@@ -263,20 +286,20 @@ function scroll(key){
         info = messageList.current.data;
         messageList.clearCursor();
     }
-    $("#inputBuffer").val(info);
+    $inputBuffer.val(info);
 }
 function send(message){
-    var shout = $("#shoutState").text();
-    var output = $("#outputState").prop("checked");
+    var shout = $shoutState.text();
+    var output = $outputState.prop("checked");
     var packet = { Message: message, Shout: shout, Output: output };
     socket.json.send(packet);
     storeMessage(message);
     messageList.clearCursor();
-    $("#inputBuffer").val("");
+    $inputBuffer.val("");
     focusInput();
 }
 function storeMessage(text){
     var Message = new node(text);
     messageList.append(Message);
 }
-function focusInput(){ $('#inputBuffer').focus() }
+function focusInput(){ $inputBuffer.focus() }
