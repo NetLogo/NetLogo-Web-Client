@@ -19,9 +19,11 @@ var $textCopier ;
 var $shoutState ;
 var $outputState;
 
+// `String` enhancers
 String.prototype.reverse = function(){
     return this.split("").reverse().join("");
 };
+
 String.prototype.wordReverse = function(){
     var word, _i, _len;
     var newMessageArray = [];
@@ -32,8 +34,18 @@ String.prototype.wordReverse = function(){
     }
     return newMessageArray.join(" ");
 };
-var List, node;
-List = (function() {
+
+var ListNode = (function() {
+    function ListNode(data) {
+        this.data = data;
+        this.newer = null;
+        this.older = null;
+    }
+    return ListNode;
+})();
+
+var List = (function() {
+
     function List(maxLen) {
         this.maxLen = maxLen;
         this.len = 0;
@@ -42,41 +54,42 @@ List = (function() {
         this.cursor = null;
         this.current = null;
     }
+
     List.prototype.clearCursor = function() {
         this.cursor = null;
         this.current = null;
     };
+
     List.prototype.addCurrent = function(){
-        messageList.current = new node($inputBuffer.val());
+        messageList.current = new ListNode($inputBuffer.val());
     };
+
     List.prototype.append = function(newNode) {
-        var oldTail;
+
         if (this.head != null) {
             newNode.older = this.head;
             this.head.newer = newNode;
         }
+
         this.head = newNode;
+
         if (this.tail === null) {
             this.tail = this.head;
         }
+
         if (this.len < this.maxLen) {
             this.len++;
         } else {
-            oldTail = this.tail;
-            this.tail = oldTail.newer;
+            this.tail = this.tail.newer;
             this.tail.older = null;
         }
+
     };
+
     return List;
+
 })();
-node = (function() {
-    function node(data) {
-        this.data = data;
-        this.newer = null;
-        this.older = null;
-    }
-    return node;
-})();
+
 /*
  * Initial page setup and verification
  */
@@ -109,31 +122,34 @@ function initSelectors() {
  */
 
 var socket = io.connect();
+
 socket.on('connected', function(){
     socket.emit('name reply', userName);
     initSelectors();
 });
+
 socket.on('users changed', function (data) {
-    var user, row;
     $usersOnline.text("");
+    var user, row;
     for (user in data) {
-        row =
-            "<tr><td>" +
-                "<input id="+user+" value="+user+" type='button' " +
-                "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
-                "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
-            "</td></tr>";
+        row = "<tr><td>" +
+                  "<input id="+user+" value="+user+" type='button' " +
+                  "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
+                  "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
+              "</td></tr>";
         $usersOnline.append(row);
     }
 });
-var state = 0;
+
 socket.on('message', function (data) {
+
     var d = new Date();
     var time = d.toTimeString().slice(0, 5);
     var user = data.user;
     var message = data.processed_message;
     var serverState = data.server_state;
     var final_text = "";
+
     switch (serverState) {
         case 0:
             final_text = message;
@@ -145,36 +161,39 @@ socket.on('message', function (data) {
             final_text = message.wordReverse();
             break;
     }
-    var entry = messageSwitcher(user, final_text, time);
-    $chatLog.append(entry);
+
+    $chatLog.append(messageSwitcher(user, final_text, time));
     textScroll();
+
 });
 
 /*
  * Supplemental functions to the handlers above
  */
 
+var state = 0;
 function messageSwitcher(user, final_text, time){
+
     var color;
     if (state%2 === 0) {
         color = "#FFFFFF";
     } else {
         color = "#CCFFFF";
     }
-    var row =
-        "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;'>"+
-            "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
-                user + ":" +
-            "</td>" +
-            "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
-                final_text +
-            "</td>" +
-            "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
-                time +
-            "</td>" +
-        "</tr>";
     state++;
-    return row;
+
+    return "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;'>"+
+               "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
+                   user + ":" +
+               "</td>" +
+               "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
+                   final_text +
+               "</td>" +
+               "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
+                   time +
+               "</td>" +
+           "</tr>";
+
 }
 function textScroll(){
     var box = $container;
@@ -209,6 +228,7 @@ function copySetup(text) {
 }
 
 function keyCheck(inField, e){
+
     // Find out what key is pressed.
     var charCode;
     if (e && e.which){
@@ -217,6 +237,7 @@ function keyCheck(inField, e){
         e = window.event;
         charCode = e.which;
     }
+
     // Based on what key is pressed, do something.
     if (charCode === 9){
         e.preventDefault();
@@ -235,10 +256,13 @@ function keyCheck(inField, e){
     } else if (!(e.ctrlKey || e.metaKey)) {
         focusInput(); // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
     }
+
 }
+
 // Credit to Jeff Anderson
 // Source: http://www.codetoad.com/javascript_get_selected_text.asp
 function getSelText(){
+
     var txt = "";
     if (window.getSelection) {
         txt = window.getSelection();
@@ -247,6 +271,7 @@ function getSelText(){
     } else if (document.selection) {
         txt = document.selection.createRange().text;
     } else return;
+
     // The regular expression 'timestamp' matches time strings of the form hh:mm in 24-hour format.
     var timestamp = /\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm;
     var modText = txt.toString().replace(timestamp, "  [$1]");
@@ -254,6 +279,7 @@ function getSelText(){
     $textCopier.hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
     $textCopier.val(finalText);
     $container.focus();
+
 }
 
 /*
@@ -268,17 +294,22 @@ function changeShout(){
         $shoutState.text("Normal");
     }
 }
+
 var messageList = new List(20);
+
 function scroll(key){
+
     if (key === 38) {
         if (messageList.cursor === null) {
             messageList.cursor = messageList.head;
             messageList.addCurrent()
-        } else
+        } else {
             messageList.cursor = messageList.cursor.older != null ? messageList.cursor.older : messageList.cursor;
+        }
     } else if (key === 40) {
         messageList.cursor = messageList.cursor.newer;
     }
+
     var info;
     if (messageList.cursor !== null) {
         info = messageList.cursor.data;
@@ -286,20 +317,28 @@ function scroll(key){
         info = messageList.current.data;
         messageList.clearCursor();
     }
+
     $inputBuffer.val(info);
+
 }
+
 function send(message){
+
     var shout = $shoutState.text();
     var output = $outputState.prop("checked");
     var packet = { Message: message, Shout: shout, Output: output };
     socket.json.send(packet);
     storeMessage(message);
+
     messageList.clearCursor();
     $inputBuffer.val("");
     focusInput();
+
 }
+
 function storeMessage(text){
-    var Message = new node(text);
+    var Message = new ListNode(text);
     messageList.append(Message);
 }
+
 function focusInput(){ $inputBuffer.focus() }
