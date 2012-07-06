@@ -6,5 +6,5 @@
  * To change this template use File | Settings | File Templates.
  */
 function goBack(){
-    history.go(-1);
+  window.location = "/";
 }
