@@ -47,7 +47,7 @@ var List = (function() {
         this.current = null;
     };
 
-    List.prototype.addCurrent = function(){
+    List.prototype.addCurrent = function() {
         messageList.current = new ListNode($inputBuffer.val());
     };
 
@@ -138,11 +138,11 @@ socket.on('message', function (data) {
  * `String` enhancers
  */
 
-String.prototype.reverse = function(){
+String.prototype.reverse = function() {
     return this.split("").reverse().join("");
 };
 
-String.prototype.wordReverse = function(){
+String.prototype.wordReverse = function() {
     var word, _i, _len;
     var newMessageArray = [];
     var messageArray = this.split(" ");
@@ -203,7 +203,7 @@ function messageSwitcher(user, final_text, time) {
 
 }
 
-function textScroll(){
+function textScroll() {
     var bottom = $container[0].scrollHeight - $container.height();
     var font = $container.css('font-size');
     var size = parseInt(font.substr(0, font.length - 2));
@@ -216,15 +216,15 @@ function textScroll(){
  * Functions triggered by events on the page
  */
 
-function clearChat(){
+function clearChat() {
     $chatLog.text('');
     focusInput();
 }
-function nameSelect(id){
+function nameSelect(id) {
     var row = $("#"+id);
     row.css({backgroundColor: '#0033CC', color: '#FFFFFF', fontWeight: 'bold'});
 }
-function nameDeselect(id){
+function nameDeselect(id) {
     var row = $('#'+id);
     row.css({backgroundColor: '#FFFFFF', color: '#000000', fontWeight: 'normal'});
 }
@@ -235,18 +235,18 @@ function copySetup(text) {
     $copier.select();
 }
 
-function keyCheck(inField, e){
+function keyCheck(inField, e) {
 
     // Find out what key is pressed.
     var charCode = extractCharCode(e);
 
     // Based on what key is pressed, do something.
-    if (charCode === 9){
+    if (charCode === 9) {
         e.preventDefault();
         changeShout();
     } else if ((charCode === 13) && ($inputBuffer.val() !== "")) {
         send($inputBuffer.val());
-    } else if ((charCode === 38) || (charCode === 40)){
+    } else if ((charCode === 38) || (charCode === 40)) {
         e.preventDefault();
         scroll(charCode);
     } else if ((e.ctrlKey || e.metaKey) && (charCode === 67)) {
@@ -263,7 +263,7 @@ function keyCheck(inField, e){
 
 // Credit to Jeff Anderson
 // Source: http://www.codetoad.com/javascript_get_selected_text.asp
-function getSelText(){
+function getSelText() {
 
     var txt = "";
     if (window.getSelection) {
@@ -289,9 +289,9 @@ function getSelText(){
  */
 
 function extractCharCode(e) {
-    if (e && e.which){
+    if (e && e.which) {
         return e.which;
-    } else if (window.event){
+    } else if (window.event) {
         return e.window.event;
     } else {
         return e;  // Should pretty much never happen
@@ -311,16 +311,16 @@ function isModifier(e) {
     return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
 }
 
-function changeShout(){
+function changeShout() {
     var currentState = $shoutState.text();
-    if (currentState === "Normal"){
+    if (currentState === "Normal") {
         $shoutState.text("Shouting");
     } else {
         $shoutState.text("Normal");
     }
 }
 
-function scroll(key){
+function scroll(key) {
 
     if (key === 38) {
         if (messageList.cursor === null) {
@@ -345,7 +345,7 @@ function scroll(key){
 
 }
 
-function send(message){
+function send(message) {
 
     var shout = $shoutState.text();
     var output = $outputState.prop("checked");
@@ -359,9 +359,9 @@ function send(message){
 
 }
 
-function storeMessage(text){
+function storeMessage(text) {
     var Message = new ListNode(text);
     messageList.append(Message);
 }
 
-function focusInput(){ $inputBuffer.focus() }
+function focusInput() { $inputBuffer.focus() }
