@@ -292,7 +292,7 @@ function extractCharCode(e) {
     if (e && e.which) {
         return e.which;
     } else if (window.event) {
-        return e.window.event;
+        return window.event.which;
     } else {
         return e;  // Should pretty much never happen
     }
