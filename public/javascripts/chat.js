@@ -67,123 +67,6 @@ node = (function() {
     }
     return node;
 })();
-var BrowserDetect = {
-    init: function () {
-        this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
-        this.version = this.searchVersion(navigator.userAgent)
-            || this.searchVersion(navigator.appVersion)
-            || "an unknown version";
-        this.OS = this.searchString(this.dataOS) || "an unknown OS";
-    },
-    searchString: function (data) {
-        for (var i=0;i<data.length;i++)	{
-            var dataString = data[i].string;
-            var dataProp = data[i].prop;
-            this.versionSearchString = data[i].versionSearch || data[i].identity;
-            if (dataString) {
-                if (dataString.indexOf(data[i].subString) != -1)
-                    return data[i].identity;
-            }
-            else if (dataProp)
-                return data[i].identity;
-        }
-    },
-    searchVersion: function (dataString) {
-        var index = dataString.indexOf(this.versionSearchString);
-        if (index == -1) return;
-        return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
-    },
-    dataBrowser: [
-        {
-            string: navigator.userAgent,
-            subString: "Chrome",
-            identity: "Chrome"
-        },
-        { 	string: navigator.userAgent,
-            subString: "OmniWeb",
-            versionSearch: "OmniWeb/",
-            identity: "OmniWeb"
-        },
-        {
-            string: navigator.vendor,
-            subString: "Apple",
-            identity: "Safari",
-            versionSearch: "Version"
-        },
-        {
-            prop: window.opera,
-            identity: "Opera",
-            versionSearch: "Version"
-        },
-        {
-            string: navigator.vendor,
-            subString: "iCab",
-            identity: "iCab"
-        },
-        {
-            string: navigator.vendor,
-            subString: "KDE",
-            identity: "Konqueror"
-        },
-        {
-            string: navigator.userAgent,
-            subString: "Firefox",
-            identity: "Firefox"
-        },
-        {
-            string: navigator.vendor,
-            subString: "Camino",
-            identity: "Camino"
-        },
-        {		// for newer Netscapes (6+)
-            string: navigator.userAgent,
-            subString: "Netscape",
-            identity: "Netscape"
-        },
-        {
-            string: navigator.userAgent,
-            subString: "MSIE",
-            identity: "Explorer",
-            versionSearch: "MSIE"
-        },
-        {
-            string: navigator.userAgent,
-            subString: "Gecko",
-            identity: "Mozilla",
-            versionSearch: "rv"
-        },
-        { 		// for older Netscapes (4-)
-            string: navigator.userAgent,
-            subString: "Mozilla",
-            identity: "Netscape",
-            versionSearch: "Mozilla"
-        }
-    ],
-    dataOS : [
-        {
-            string: navigator.platform,
-            subString: "Win",
-            identity: "Windows"
-        },
-        {
-            string: navigator.platform,
-            subString: "Mac",
-            identity: "Mac"
-        },
-        {
-            string: navigator.userAgent,
-            subString: "iPhone",
-            identity: "iPhone/iPod"
-        },
-        {
-            string: navigator.platform,
-            subString: "Linux",
-            identity: "Linux"
-        }
-    ]
-
-};
-
 /*
  * Initial page setup and verification
  */
@@ -197,30 +80,6 @@ function startup(){
             document.location.href = data;
         }
     });
-}
-BrowserDetect.init();
-if (BrowserDetect.OS === "Mac"){
-    var commandkey = false;
-    var keyCode1, keyCode2;
-    if (BrowserDetect.browser === "Opera") {
-        keyCode1 = 17;
-    } else if (BrowserDetect.browser === "Firefox"){
-        keyCode1 = 224;
-    } else {
-        keyCode1 = 91;
-        keyCode2 = 93;
-    }
-    function keyDown() {
-        if ((event.keyCode == keyCode1) || (event.keyCode == keyCode2)) { commandkey = true }
-        keyCheck(this, event);
-    }
-    function keyUp() {
-        if ((event.keyCode == keyCode1) || (event.keyCode == keyCode2)) commandkey = false;
-    }
-    $("#container").onkeydown = keyDown;
-    $("#inputBuffer").onkeydown = keyDown;
-    $("#container").onkeyup = keyUp;
-    $("#inputBuffer").onkeyup = keyUp;
 }
 
 /*
@@ -325,6 +184,7 @@ function copySetup(text) {
     $('#copier').focus();
     $('#copier').select();
 }
+
 function keyCheck(inField, e){
     // Find out what key is pressed.
     var charCode;
@@ -343,16 +203,13 @@ function keyCheck(inField, e){
     } else if ((charCode === 38) || (charCode === 40)){
         e.preventDefault();
         scroll(charCode);
-    } else if ((e.ctrlKey || commandkey) && (charCode === 67)) {
+    } else if ((e.ctrlKey || e.metaKey) && (charCode === 67)) {
         $("#textCopier").focus();
         $("#textCopier").select();
         // The default action (copy selected text to clipboard) occurs after the two lines above.
     }
-    // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
-    if ((typeof commandkey !== "undefined") && (commandkey !== null)) {
-        if (!commandkey) focusInput()
-    } else if (!e.ctrlKey) {
-        focusInput();
+    else if (!(e.ctrlKey || e.metaKey)) {
+        focusInput(); // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
     }
 }
 // Credit to Jeff Anderson
