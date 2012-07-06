@@ -11,7 +11,7 @@ var app = module.exports = express.createServer()
 
 // Configuration
 
-app.configure(function(){
+app.configure(function() {
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
     app.use(express.bodyParser());
@@ -21,29 +21,29 @@ app.configure(function(){
     app.use(express.static(__dirname + '/lib'));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.configure('production', function(){
+app.configure('production', function() {
     app.use(express.errorHandler());
 });
 
-function updateUserNames(){
+function updateUserNames() {
     io.sockets.json.emit('users changed', userNames);
 }
 
-function addUser(name){
+function addUser(name) {
     userNames[name] = true;
     updateUserNames();
 }
 
-function removeUser(name){
+function removeUser(name) {
     delete userNames[name];
     updateUserNames();
 }
 
-validName = function(name){
+validName = function(name) {
     return !(name in userNames);
 };
 
@@ -85,7 +85,7 @@ io.sockets.on('connection', function (socket) {
 
     });
 
-    socket.on('disconnect', function(){
+    socket.on('disconnect', function() {
         removeUser(name);
     });
 
@@ -101,6 +101,6 @@ app.get('/thing', routes.thing);
 
 app.post('/', routes.indexPost);
 
-app.listen(3000, function(){
+app.listen(3000, function() {
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
