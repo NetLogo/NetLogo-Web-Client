@@ -251,11 +251,14 @@ function keyCheck(inField, e) {
     } else if ((charCode === 38) || (charCode === 40)) {
         e.preventDefault();
         scroll(charCode);
-    } else if ((e.ctrlKey || e.metaKey) && (charCode === 67)) {
+    } else if ((e.ctrlKey || e.metaKey) && (charCode === 67) && (inField.id !== "inputBuffer")) {
         $textCopier.show();  // Show so we can select the text for copying
         $textCopier.focus();
         $textCopier.select();
-        setTimeout(function() { $textCopier.hide(); }, 5);
+        setTimeout(function() {
+            $textCopier.hide();
+            focusInput();
+        }, 5);
         // Delay for a short bit, so we can hide it after the default action (copy) is triggered
     } else if (!isModifier(e)) {
         focusInput();
