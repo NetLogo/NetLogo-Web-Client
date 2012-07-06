@@ -48,7 +48,7 @@ var List = (function() {
     };
 
     List.prototype.addCurrent = function() {
-        messageList.current = new ListNode($inputBuffer.val());
+        this.current = new ListNode($inputBuffer.val());
     };
 
     List.prototype.append = function(newNode) {
