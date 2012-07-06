@@ -204,9 +204,11 @@ function keyCheck(inField, e){
         e.preventDefault();
         scroll(charCode);
     } else if ((e.ctrlKey || e.metaKey) && (charCode === 67)) {
+        $("#textCopier").show();  // Show so we can select the text for copying
         $("#textCopier").focus();
         $("#textCopier").select();
-        // The default action (copy selected text to clipboard) occurs after the two lines above.
+        setTimeout(function() {$("#textCopier").hide();}, 5);
+        // Delay for a short bit, so we can hide it after the default action (copy) is triggered
     }
     else if (!(e.ctrlKey || e.metaKey)) {
         focusInput(); // If the key pressed is not Ctrl (Windows) or Command (Mac OS), focus the input box.
@@ -227,6 +229,7 @@ function getSelText(){
     var timestamp = /\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm;
     var modText = txt.toString().replace(timestamp, "  [$1]");
     var finalText = modText.replace(/\t/g, " ");
+    $("#textCopier").hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
     $("#textCopier").val(finalText);
     $("#container").focus();
 }
