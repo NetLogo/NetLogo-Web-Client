@@ -99,10 +99,10 @@ socket.on('users changed', function (data) {
     var user, row;
     for (user in data) {
         row = "<tr><td>" +
-            "<input id="+user+" value="+user+" type='button' " +
-            "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
-            "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
-            "</td></tr>";
+                  "<input id="+user+" value="+user+" type='button' " +
+                  "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
+                  "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
+              "</td></tr>";
         $usersOnline.append(row);
     }
 });
