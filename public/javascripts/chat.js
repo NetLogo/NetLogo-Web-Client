@@ -24,17 +24,52 @@ var $outputState;
  */
 
 var ListNode = (function() {
+
     function ListNode(data) {
         this.data = data;
         this.newer = null;
         this.older = null;
     }
+
     return ListNode;
+
 })();
 
-var List = (function() {
+var CircleList = (function() {
 
-    function List(maxLen) {
+    function CircleList() {
+        this.head = null;
+        this.last = null;
+        this.current = null;
+    }
+
+    CircleList.prototype.append = function(newNode) {
+        if (this.head === null) {
+            this.head = newNode;
+            this.last = newNode;
+            this.current = newNode;
+        } else {
+            this.last.newer = newNode;
+            newNode.newer = this.head;
+            this.last = newNode;
+        }
+    };
+
+    CircleList.prototype.get = function() {
+        return this.current.data;
+    };
+
+    CircleList.prototype.next = function() {
+        this.current = this.current.newer;
+    };
+
+    return CircleList;
+
+})();
+
+var DoubleList = (function() {
+
+    function DoubleList(maxLen) {
         this.maxLen = maxLen;
         this.len = 0;
         this.head = null;
@@ -43,16 +78,16 @@ var List = (function() {
         this.current = null;
     }
 
-    List.prototype.clearCursor = function() {
+    DoubleList.prototype.clearCursor = function() {
         this.cursor = null;
         this.current = null;
     };
 
-    List.prototype.addCurrent = function() {
+    DoubleList.prototype.addCurrent = function() {
         this.current = new ListNode($inputBuffer.val());
     };
 
-    List.prototype.append = function(newNode) {
+    DoubleList.prototype.append = function(newNode) {
 
         if (this.head != null) {
             newNode.older = this.head;
@@ -74,14 +109,15 @@ var List = (function() {
 
     };
 
-    return List;
+    return DoubleList;
 
 })();
 
 var userName;
 var socket;
 var state = 0;
-var messageList = new List(20);
+var messageList = new DoubleList(20);
+var agentTypeList = new CircleList;
 
 
 /*
@@ -89,11 +125,15 @@ var messageList = new List(20);
  */
 
 window.onload = startup();
+document.body.onload = function() {
+    initSelectors();
+    initAgentList();
+    $shoutState.text(agentTypeList.get());
+};
 socket = io.connect();
 
 socket.on('connected', function() {
     socket.emit('name reply', userName);
-    initSelectors();
 });
 
 socket.on('users changed', function (data) {
@@ -179,6 +219,13 @@ function initSelectors() {
     $textCopier  = $("#textCopier");
     $shoutState  = $("#shoutState");
     $outputState = $("#outputState");
+}
+
+function initAgentList() {
+    agentTypeList.append(new ListNode('observer'));
+    agentTypeList.append(new ListNode('turtles'));
+    agentTypeList.append(new ListNode('patches'));
+    agentTypeList.append(new ListNode('links'));
 }
 
 function messageSwitcher(user, final_text, time) {
@@ -306,8 +353,7 @@ function extractCharCode(e) {
 
 // this is equivalent to the CoffeeScript:
 //      charCode = extractCharCode(e)
-//      if not ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
-//          focusInput()
+//      return ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
 // which means if the key pressed is not a modifier key, focus the input box.
 // So, if you want to modify this code, it's suggestible that you just copy&paste the above CoffeeScript into a
 // a CS => JS converter, and regenerate the code that way–for your own sanity, that is
@@ -318,12 +364,9 @@ function isModifier(e) {
 }
 
 function changeShout() {
-    var currentState = $shoutState.text();
-    if (currentState === "Normal") {
-        $shoutState.text("Shouting");
-    } else {
-        $shoutState.text("Normal");
-    }
+    agentTypeList.next();
+    var currentState = agentTypeList.get();
+    $shoutState.text(currentState);
 }
 
 function scroll(key) {
@@ -358,7 +401,6 @@ function send(message) {
     var packet = { Message: message, Shout: shout, Output: output };
     socket.json.send(packet);
     storeMessage(message);
-
     messageList.clearCursor();
     $inputBuffer.val("");
     focusInput();
