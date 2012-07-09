@@ -242,7 +242,7 @@ function messageSwitcher(user, final_text, time) {
                "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
                    user + ":" +
                "</td>" +
-               "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
+               "<td style='width: 70%; white-space: pre-wrap; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
                    final_text +
                "</td>" +
                "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
