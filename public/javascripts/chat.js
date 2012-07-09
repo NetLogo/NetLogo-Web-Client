@@ -25,45 +25,75 @@ var $outputState;
 
 var ListNode = (function() {
 
-    function ListNode(data) {
+    function ListNode(data, type) {
         this.data = data;
-        this.newer = null;
-        this.older = null;
+        this.next = null;
+        this.prev = null;
+        this.type = type;
     }
 
     return ListNode;
 
 })();
 
-var CircleList = (function() {
+var MapNode = (function() {
 
-    function CircleList() {
+    function MapNode(type) {
+        this.type = type;
+        this.next = null;
+    }
+
+    return MapNode;
+
+})();
+
+var CircleMap = (function() {
+
+    function CircleMap() {
         this.head = null;
         this.last = null;
         this.current = null;
     }
 
-    CircleList.prototype.append = function(newNode) {
+    CircleMap.prototype.append = function(newNode) {
+        var hashKey = this.hash(newNode.type);
+        this[hashKey] = newNode;
         if (this.head === null) {
             this.head = newNode;
             this.last = newNode;
             this.current = newNode;
         } else {
-            this.last.newer = newNode;
-            newNode.newer = this.head;
+            this.last.next = newNode;
+            newNode.next = this.head;
             this.last = newNode;
         }
     };
 
-    CircleList.prototype.get = function() {
-        return this.current.data;
+    CircleMap.prototype.hash = function(value) {
+        return value instanceof Object ? (value.__hash ||
+            (value.__hash = 'object ' + ++arguments.callee.current)) :
+            (typeof value) + ' ' + String(value);
     };
 
-    CircleList.prototype.next = function() {
-        this.current = this.current.newer;
+    CircleMap.prototype.get = function(type) {
+        var hashKey = this.hash(type);
+        return this[hashKey];
     };
 
-    return CircleList;
+    CircleMap.prototype.getCurrent = function() {
+        return this.current.type;
+    };
+
+    CircleMap.prototype.setCurrent = function(type) {
+        var hashKey = this.hash(type);
+        this.current = this[hashKey];
+    };
+
+    CircleMap.prototype.next = function() {
+        this.current = this.current.next;
+    };
+
+    return CircleMap;
 
 })();
 
@@ -84,14 +114,14 @@ var DoubleList = (function() {
     };
 
     DoubleList.prototype.addCurrent = function() {
-        this.current = new ListNode($inputBuffer.val());
+        this.current = new ListNode($inputBuffer.val(), agentTypeList.getCurrent());
     };
 
     DoubleList.prototype.append = function(newNode) {
 
         if (this.head != null) {
-            newNode.older = this.head;
-            this.head.newer = newNode;
+            newNode.prev = this.head;
+            this.head.next = newNode;
         }
 
         this.head = newNode;
@@ -103,8 +133,8 @@ var DoubleList = (function() {
         if (this.len < this.maxLen) {
             this.len++;
         } else {
-            this.tail = this.tail.newer;
-            this.tail.older = null;
+            this.tail = this.tail.next;
+            this.tail.prev = null;
         }
 
     };
@@ -113,11 +143,34 @@ var DoubleList = (function() {
 
 })();
 
+var TextHolder = (function() {
+
+    function TextHolder(text) {
+        this.text = text;
+        this.isExpanded = true;
+    }
+
+    TextHolder.prototype.toString = function() {
+        if (this.isExpanded) {
+            return this.text;
+        } else {
+            return '...';
+        }
+    };
+
+    TextHolder.prototype.change = function() {
+        this.isExpanded = !this.isExpanded;
+    };
+
+    return TextHolder;
+
+})();
+
 var userName;
 var socket;
 var state = 0;
 var messageList = new DoubleList(20);
-var agentTypeList = new CircleList;
+var agentTypeList = new CircleMap();
 
 
 /*
@@ -128,7 +181,7 @@ window.onload = startup();
 document.body.onload = function() {
     initSelectors();
     initAgentList();
-    $shoutState.text(agentTypeList.get());
+    $shoutState.text(agentTypeList.getCurrent());
 };
 socket = io.connect();
 
@@ -222,10 +275,8 @@ function initSelectors() {
 }
 
 function initAgentList() {
-    agentTypeList.append(new ListNode('observer'));
-    agentTypeList.append(new ListNode('turtles'));
-    agentTypeList.append(new ListNode('patches'));
-    agentTypeList.append(new ListNode('links'));
+    var agentTypes = ['observer', 'turtles', 'patches', 'links'];
+    agentTypes.map(function(type) { agentTypeList.append(new MapNode(type)) });
 }
 
 function messageSwitcher(user, final_text, time) {
@@ -243,7 +294,7 @@ function messageSwitcher(user, final_text, time) {
                    user + ":" +
                "</td>" +
                "<td style='width: 70%; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
-                   final_text +
+                   new TextHolder(final_text) +
                "</td>" +
                "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
                    time +
@@ -292,7 +343,8 @@ function keyCheck(inField, e) {
     // Based on what key is pressed, do something.
     if (charCode === 9) {
         e.preventDefault();
-        changeShout();
+        agentTypeList.next();
+        setShout();
     } else if ((charCode === 13) && ($inputBuffer.val() !== "")) {
         send($inputBuffer.val());
     } else if ((charCode === 38) || (charCode === 40)) {
@@ -311,6 +363,21 @@ function keyCheck(inField, e) {
         focusInput();
     }
 
+}
+
+function wrapper() {
+    getSelText();
+    if ($textCopier.val() === '') {
+        collapseRow(this);
+    }
+}
+
+function collapseRow(row) {
+    if (this.title === 'collapsed') {
+        var x;
+    } else if (this.title === 'expanded') {
+        var y;
+    }
 }
 
 // Credit to Jeff Anderson
@@ -363,33 +430,36 @@ function isModifier(e) {
     return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
 }
 
-function changeShout() {
-    agentTypeList.next();
-    var currentState = agentTypeList.get();
-    $shoutState.text(currentState);
+function setShout() {
+    var newState = agentTypeList.getCurrent();
+    $shoutState.text(newState);
 }
 
 function scroll(key) {
 
-    if (key === 38) {
+    if (key === 38) { // Up arrow
         if (messageList.cursor === null) {
+            messageList.addCurrent();
             messageList.cursor = messageList.head;
-            messageList.addCurrent()
         } else {
-            messageList.cursor = messageList.cursor.older != null ? messageList.cursor.older : messageList.cursor;
+            messageList.cursor = messageList.cursor.prev != null ? messageList.cursor.prev : messageList.cursor;
         }
-    } else if (key === 40) {
-        messageList.cursor = messageList.cursor.newer;
+    } else if (key === 40) { // Down arrow
+        messageList.cursor = messageList.cursor.next;
     }
 
-    var info;
+    var info, type;
     if (messageList.cursor !== null) {
         info = messageList.cursor.data;
+        type = messageList.cursor.type;
     } else {
         info = messageList.current.data;
+        type = messageList.current.type;
         messageList.clearCursor();
     }
 
+    agentTypeList.setCurrent(type);
+    setShout();
     $inputBuffer.val(info);
 
 }
@@ -400,15 +470,15 @@ function send(message) {
     var output = $outputState.prop("checked");
     var packet = { Message: message, Shout: shout, Output: output };
     socket.json.send(packet);
-    storeMessage(message);
+    storeMessage(message, agentTypeList.getCurrent());
     messageList.clearCursor();
     $inputBuffer.val("");
     focusInput();
 
 }
 
-function storeMessage(text) {
-    var Message = new ListNode(text);
+function storeMessage(text, type) {
+    var Message = new ListNode(text, type);
     messageList.append(Message);
 }
 
