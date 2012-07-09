@@ -4,10 +4,11 @@
  */
 
 var express = require('express')
-    , routes = require('./routes');
+    , routes = require('./routes')
+    , $      = require('jquery');
 
-var app = module.exports = express.createServer()
-    , io = require('socket.io').listen(app);
+var app = module.exports = express.createServer(),
+     io = require('socket.io').listen(app);
 
 // Configuration
 
@@ -71,17 +72,15 @@ io.sockets.on('connection', function (socket) {
 
         console.log("Server Receiving: " + data);
 
-        if (shout === "Shouting") {
-            final_message = message.toUpperCase().replace(/\./g, "!").replace(/\?/g, "!?");
-        }
 
-        if (output) {
-            serverState = Math.floor(Math.random()*3);
-        }
-
-        var packet = { user: name, processed_message: final_message, server_state: serverState };
-        console.log("Server Sending: " + packet);
-        io.sockets.json.send(packet);
+        $.post("http://localhost:9001/netlogo_data",
+               { agentType: shout, cmd: message },
+               function(data) {
+                   var packet = { user: name, processed_message: data, server_state: 0 };
+                   console.log("Server Sending: " + packet);
+                   io.sockets.json.send(packet);
+               }
+        );
 
     });
 
