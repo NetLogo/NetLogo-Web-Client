@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
         console.log("Server Receiving: " + data);
 
 
-        $.post("http://localhost:9001/netlogo_data",
+        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
                { agentType: shout, cmd: message },
                function(data) {
                    var formatted = data.replace(/\n/g, "<br>");
