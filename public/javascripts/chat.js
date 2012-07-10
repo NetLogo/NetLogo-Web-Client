@@ -293,7 +293,7 @@ function messageSwitcher(user, final_text, time) {
     }
     state++;
 
-    return "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;' onmouseup='rowCollapse(this)' tabindex='1' id='"+(state-1)+"'>"+
+    return "<tr style='vertical-align: middle; outline: none; width: 100%; border-collapse: collapse;' onmouseup='rowCollapse(this)' tabindex='1' id='"+(state-1)+"'>"+
                "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
                    user + ":" +
                "</td>" +
@@ -376,6 +376,7 @@ function keyCheck(inField, e) {
 }
 
 function rowCollapse(row) {
+    getSelText();
     if ($textCopier.val() === '') {
         textCollapse(row);
     }
@@ -414,7 +415,6 @@ function getSelText() {
     var finalText = modText.replace(/\t/g, " ");
     $textCopier.hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
     $textCopier.val(finalText);
-    $container.focus();
 
 }
 
