@@ -345,9 +345,13 @@ function keyCheck(inField, e) {
         e.preventDefault();
         agentTypeList.next();
         setShout();
-    } else if ((charCode === 13) && ($inputBuffer.val() !== "")) {
+    } else if ((charCode === 13) && (/\S/g.test($inputBuffer.val())) && (inField.id === "inputBuffer")) {
         send($inputBuffer.val());
-    } else if ((charCode === 38) || (charCode === 40)) {
+    } else if ((charCode === 32) && (inField.id !== "inputBuffer")) {
+        e.preventDefault();
+        textScroll();
+        focusInput();
+    } else if (((charCode === 38) || (charCode === 40)) && (inField.id === "inputBuffer")) {
         e.preventDefault();
         scroll(charCode);
     } else if ((e.ctrlKey || e.metaKey) && (charCode === 67) && (inField.id !== "inputBuffer")) {
@@ -420,14 +424,14 @@ function extractCharCode(e) {
 
 // this is equivalent to the CoffeeScript:
 //      charCode = extractCharCode(e)
-//      return ( e.metaKey or charCode in [16..36] or charCode in [45, 46] or charCode in [112..123] )
+//      return ( e.metaKey or charCode in [16..36] or charCode in [38, 40, 45, 46] or charCode in [112..123] )
 // which means if the key pressed is not a modifier key, focus the input box.
 // So, if you want to modify this code, it's suggestible that you just copy&paste the above CoffeeScript into a
 // a CS => JS converter, and regenerate the code that way–for your own sanity, that is
 function isModifier(e) {
     var charCode = extractCharCode(e);
     var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-    return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
+    return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 38 || charCode === 40 || charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
 }
 
 function setShout() {
