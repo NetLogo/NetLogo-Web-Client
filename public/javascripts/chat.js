@@ -15,7 +15,7 @@ var $chatLog;
 var $container;
 var $copier;
 var $textCopier;
-var $shoutState ;
+var $agentType;
 var $outputState;
 
 
@@ -181,7 +181,7 @@ window.onload = startup();
 document.body.onload = function() {
     initSelectors();
     initAgentList();
-    $shoutState.text(agentTypeList.getCurrent());
+    $agentType.text(agentTypeList.getCurrent());
 };
 socket = io.connect();
 
@@ -270,7 +270,7 @@ function initSelectors() {
     $container   = $("#container");
     $copier      = $("#copier");
     $textCopier  = $("#textCopier");
-    $shoutState  = $("#shoutState");
+    $agentType   = $("#agentType");
     $outputState = $("#outputState");
 }
 
@@ -432,7 +432,7 @@ function isModifier(e) {
 
 function setShout() {
     var newState = agentTypeList.getCurrent();
-    $shoutState.text(newState);
+    $agentType.text(newState);
 }
 
 function scroll(key) {
@@ -466,7 +466,7 @@ function scroll(key) {
 
 function send(message) {
 
-    var shout = $shoutState.text();
+    var shout = $agentType.text();
     var output = $outputState.prop("checked");
     var packet = { Message: message, Shout: shout, Output: output };
     socket.json.send(packet);

@@ -24,17 +24,9 @@ body
             tbody#usersOnline
   table#inputs(style='margin: 5px')
     tr(style='height: 15px', valign='middle')
-      td#shoutState(style='font-size: 8pt; width: 50px; height: 100%;', cellspacing='3px', cellpadding='3px')
+      td#agentType(style='font-size: 8pt; width: 50px; height: 100%;', cellspacing='3px', cellpadding='3px')
       td(style='height: 100%', cellspacing='3px', cellpadding='3px')
-        input#inputBuffer(value='', autofocus='autofocus', style='width: 30em;', onkeydown='keyCheck(this, event)')
-      td(style='height: 100%;', cellspacing='3px', cellpadding='3px')
-        input#outputState(type='checkbox', onchange='a()')
-        label(for='outputState', style='font-size: 8pt;') Variable output?
-    tr
-      td
-      td(style='text-align: center; font-size: 8pt;', cellspacing='3px', cellpadding='3px')
-        | Press tab to shout! Mess around with variable output!
-      td
+        input#inputBuffer(value='', autofocus='autofocus', style='width: 507px;', onkeydown='keyCheck(this, event)')
   #blocker1(style='position: fixed; margin-top: auto; margin-bottom: auto; right: 0px; z-index: -1; width: 150px; height: 150px;')
     img(src='/images/white.png')
   #copierWrap(style='position: fixed; margin-top: auto; margin-bottom: auto; right: 0px; padding: 20px; width: 100px; height: 100px; z-index: -2;')
