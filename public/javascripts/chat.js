@@ -225,8 +225,9 @@ document.body.onload = function() {
         }
 
         logList[state] = new TextHolder(final_text);
+        var difference = $container[0].scrollHeight - $container.scrollTop();
         $chatLog.append(messageSwitcher(user, final_text, time));
-        textScroll();
+        if ((difference === $container.innerHeight()) || (user === userName)) { textScroll(); }
 
     });
 
