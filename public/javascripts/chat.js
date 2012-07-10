@@ -294,7 +294,7 @@ function messageSwitcher(user, final_text, time) {
     }
     state++;
 
-    return "<tr style='vertical-align: middle; outline: none; width: 100%; border-collapse: collapse;' onmouseup='rowCollapse(this)' tabindex='1' id='"+(state-1)+"'>"+
+    return "<tr style='vertical-align: middle; outline: none; width: 100%; border-collapse: collapse;' onmouseup='handleTextRowOnMouseUp(this)' tabindex='1' id='"+(state-1)+"'>"+
                "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
                    user + ":" +
                "</td>" +
@@ -376,7 +376,7 @@ function keyCheck(inField, e) {
 
 }
 
-function rowCollapse(row) {
+function handleTextRowOnMouseUp(row) {
     getSelText();
     if ($textCopier.val() === '') {
         textCollapse(row);
@@ -412,8 +412,8 @@ function getSelText() {
 
     // The regular expression 'timestamp' matches time strings of the form hh:mm in 24-hour format.
     var timestamp = /\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm;
-    var modText = txt.toString().replace(timestamp, "  [$1]");
-    var finalText = modText.replace(/\t/g, " ");
+    var modText = txt.toString().replace(timestamp, "   [$1]");
+    var finalText = modText.replace(/\t/g, "   ");
     $textCopier.hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
     $textCopier.val(finalText);
 
