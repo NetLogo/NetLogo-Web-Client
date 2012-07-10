@@ -154,7 +154,7 @@ var TextHolder = (function() {
         if (this.isExpanded) {
             return this.text;
         } else {
-            return '...';
+            return '...'.bold();
         }
     };
 
@@ -171,62 +171,66 @@ var socket;
 var state = 0;
 var messageList = new DoubleList(20);
 var agentTypeList = new CircleMap();
+var logList = [];
 
 
 /*
  * Onload-related instructions
  */
 
-window.onload = startup();
 document.body.onload = function() {
+    startup();
     initSelectors();
     initAgentList();
     $agentType.text(agentTypeList.getCurrent());
+
+    socket = io.connect();
+
+    socket.on('connected', function() {
+        socket.emit('name reply', userName);
+    });
+
+    socket.on('users changed', function (data) {
+        $usersOnline.text("");
+        var user, row;
+        for (user in data) {
+            row = "<tr><td>" +
+                "<input id="+user+" value="+user+" type='button' " +
+                "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
+                "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
+                "</td></tr>";
+            $usersOnline.append(row);
+        }
+    });
+
+    socket.on('message', function (data) {
+
+        var d = new Date();
+        var time = d.toTimeString().slice(0, 5);
+        var user = data.user;
+        var message = data.processed_message;
+        var serverState = data.server_state;
+        var final_text = "";
+
+        switch (serverState) {
+            case 0:
+                final_text = message;
+                break;
+            case 1:
+                final_text = message.reverse();
+                break;
+            case 2:
+                final_text = message.wordReverse();
+                break;
+        }
+
+        logList[state] = new TextHolder(final_text);
+        $chatLog.append(messageSwitcher(user, final_text, time));
+        textScroll();
+
+    });
+
 };
-socket = io.connect();
-
-socket.on('connected', function() {
-    socket.emit('name reply', userName);
-});
-
-socket.on('users changed', function (data) {
-    $usersOnline.text("");
-    var user, row;
-    for (user in data) {
-        row = "<tr><td>" +
-                  "<input id="+user+" value="+user+" type='button' " +
-                  "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
-                  "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
-              "</td></tr>";
-        $usersOnline.append(row);
-    }
-});
-
-socket.on('message', function (data) {
-
-    var d = new Date();
-    var time = d.toTimeString().slice(0, 5);
-    var user = data.user;
-    var message = data.processed_message;
-    var serverState = data.server_state;
-    var final_text = "";
-
-    switch (serverState) {
-        case 0:
-            final_text = message;
-            break;
-        case 1:
-            final_text = message.reverse();
-            break;
-        case 2:
-            final_text = message.wordReverse();
-            break;
-    }
-
-    $chatLog.append(messageSwitcher(user, final_text, time));
-    textScroll();
-
-});
 
 
 /*
@@ -289,11 +293,11 @@ function messageSwitcher(user, final_text, time) {
     }
     state++;
 
-    return "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;'>"+
+    return "<tr style='vertical-align: middle; width: 100%; border-collapse: collapse;' onmouseup='rowCollapse(this)' tabindex='1' id='"+(state-1)+"'>"+
                "<td style='color: #CC0000; width: 20%; background-color: " + color + "; border-color: " + color + "'>" +
                    user + ":" +
                "</td>" +
-               "<td style='width: 70%; white-space: pre-wrap; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
+               "<td  class='middle' style='width: 70%; white-space: pre-wrap; word-wrap: break-word; background-color: " + color + "; border-color: " + color + "'>" +
                    final_text +
                "</td>" +
                "<td style='color: #00CC00; width: 10%; text-align: right; background-color: " + color + "; border-color: " + color + "'>" +
@@ -318,6 +322,8 @@ function textScroll() {
 
 function clearChat() {
     $chatLog.text('');
+    state = 0;
+    logList = [];
     focusInput();
 }
 function nameSelect(id) {
@@ -369,19 +375,24 @@ function keyCheck(inField, e) {
 
 }
 
-function wrapper() {
-    getSelText();
+function rowCollapse(row) {
     if ($textCopier.val() === '') {
-        collapseRow(this);
+        textCollapse(row);
     }
 }
 
-function collapseRow(row) {
-    if (this.title === 'collapsed') {
-        var x;
-    } else if (this.title === 'expanded') {
-        var y;
-    }
+
+/*
+ * Helper functions to the trigger functions above
+ */
+
+function textCollapse(row) {
+    var textObj = logList[row.id];
+    var middle = row.getElementsByClassName('middle')[0];
+    textObj.change();
+    middle.innerHTML = textObj.toString();
+    var alignment = textObj.isExpanded ? 'left' : 'center';
+    $(middle).css('text-align', alignment);
 }
 
 // Credit to Jeff Anderson
@@ -406,11 +417,6 @@ function getSelText() {
     $container.focus();
 
 }
-
-
-/*
- * Helper functions to the trigger functions above
- */
 
 function extractCharCode(e) {
     if (e && e.which) {
