@@ -12,6 +12,8 @@ Then, from your home directory (`~`), run the following commands:
 
 `npm install jade express` (this installs the Jade templating engine)
 
+`npm install jquery` (this installs jQuery, which is currently only used by the server for POSTing to a remote headless instance)
+
 ## Running
 
 To start the server, run this command:  

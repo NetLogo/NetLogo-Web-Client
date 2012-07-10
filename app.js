@@ -76,8 +76,7 @@ io.sockets.on('connection', function (socket) {
         $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
                { agentType: shout, cmd: message },
                function(data) {
-                   var formatted = data.replace(/\n/g, "<br>");
-                   var packet = { user: name, processed_message: formatted, server_state: 0 };
+                   var packet = { user: name, processed_message: data, server_state: 0 };
                    console.log("Server Sending: " + packet);
                    io.sockets.json.send(packet);
                }
