@@ -195,10 +195,11 @@ document.body.onload = function() {
         var user, row;
         for (user in data) {
             row = "<tr><td>" +
-                "<input id="+user+" value="+user+" type='button' " +
+                "<input id='"+user+"' value='"+user+"' type='button' " +
                 "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
                 "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
                 "</td></tr>";
+            alert(row);
             $usersOnline.append(row);
         }
     });
@@ -261,9 +262,10 @@ String.prototype.wordReverse = function() {
 function startup() {
     userName = prompt("Please type your user name:");
     $.post('/', { username: userName }, function(data) {
-        if (data !== userName) {
+        if (data === '/error') {
             document.location.href = data;
         }
+        userName = data;
     });
 }
 
