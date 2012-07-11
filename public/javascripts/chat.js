@@ -172,6 +172,8 @@ var state = 0;
 var messageList = new DoubleList(20);
 var agentTypeList = new CircleMap();
 var logList = [];
+var throttledSend;
+var throttleDelay = 100;
 
 
 /*
@@ -183,6 +185,7 @@ document.body.onload = function() {
     initSelectors();
     initAgentList();
     $agentType.text(agentTypeList.getCurrent());
+    throttledSend = throttle(send, throttleDelay);
 
     socket = io.connect();
 
@@ -199,7 +202,6 @@ document.body.onload = function() {
                 "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
                 "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
                 "</td></tr>";
-            alert(row);
             $usersOnline.append(row);
         }
     });
@@ -355,7 +357,7 @@ function keyCheck(inField, e) {
         agentTypeList.next();
         setShout();
     } else if ((charCode === 13) && (/\S/g.test($inputBuffer.val())) && (inField.id === "inputBuffer")) {
-        send($inputBuffer.val());
+        throttledSend($inputBuffer.val());
     } else if ((charCode === 32) && (inField.id !== "inputBuffer")) {
         e.preventDefault();
         textScroll();
@@ -389,6 +391,19 @@ function handleTextRowOnMouseUp(row) {
 /*
  * Helper functions to the trigger functions above
  */
+
+// Credit to Remy Sharp.
+// http://remysharp.com/2010/07/21/throttling-function-calls/
+function throttle(fn, delay) {
+    var timer = null;
+    return function () {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            fn.apply(context, args);
+        }, delay);
+    };
+}
 
 function textCollapse(row) {
     var textObj = logList[row.id];
