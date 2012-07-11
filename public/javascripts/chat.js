@@ -147,6 +147,7 @@ var TextHolder = (function() {
 
     function TextHolder(text) {
         this.text = text;
+        this.command = this.text.split("\n")[0];
         this.isExpanded = true;
     }
 
@@ -154,7 +155,8 @@ var TextHolder = (function() {
         if (this.isExpanded) {
             return this.text;
         } else {
-            return '...'.bold();
+            var result = this.command + '  ...';
+            return result.bold();
         }
     };
 
@@ -410,8 +412,6 @@ function textCollapse(row) {
     var middle = row.getElementsByClassName('middle')[0];
     textObj.change();
     middle.innerHTML = textObj.toString();
-    var alignment = textObj.isExpanded ? 'left' : 'center';
-    $(middle).css('text-align', alignment);
 }
 
 // Credit to Jeff Anderson
