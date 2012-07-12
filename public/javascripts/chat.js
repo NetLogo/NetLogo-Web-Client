@@ -201,7 +201,7 @@ document.body.onload = function() {
         for (user in data) {
             row = "<tr><td>" +
                 "<input id='"+user+"' value='"+user+"' type='button' " +
-                "onkeydown='keyCheck(this, event)' onclick='copySetup(this.value)' " +
+                "class='mousetrap' onclick='copySetup(this.value)' " +
                 "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
                 "</td></tr>";
             $usersOnline.append(row);
@@ -235,6 +235,60 @@ document.body.onload = function() {
         if ((difference === $container.innerHeight()) || (user === userName)) { textScroll(); }
 
     });
+
+    var keyString =
+        'abcdefghijklmnopqrstuvwxyz' +
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+            '1234567890!@#$%^&*()' +
+            '\<>-_=+[{]};:",.?\\|\'`~';
+    var keyArray = keyString.split('');
+    var notNumberRE = /\D+/g;
+
+    Mousetrap.bind('tab', function(e) {
+        e.preventDefault();
+        agentTypeList.next();
+        setShout();
+    });
+
+    Mousetrap.bind(keyArray, function() {
+        focusInput();
+    });
+
+    Mousetrap.bind('enter', function(e) {
+        if ((e.target.id === 'inputBuffer') && (/\S/g.test($inputBuffer.val()))) {
+            throttledSend($inputBuffer.val());
+        }
+    });
+
+    Mousetrap.bind(['up', 'down'], function(e) {
+        if (e.target.id === 'inputBuffer') {
+            var charCode = extractCharCode(e);
+            e.preventDefault();
+            scroll(charCode);
+        }
+    });
+
+    Mousetrap.bind('space', function(e) {
+        if (e.target.id === 'container') {
+            e.preventDefault();
+            textScroll();
+            focusInput();
+        }
+    });
+
+    Mousetrap.bind(['ctrl+c', 'command+c'], function(e) {
+        // If there are only digit characters in e.target.id...
+        // This would mean that e.target is a table row in the chat output.
+        if (!notNumberRE.test(e.target.id)) {
+            $textCopier.show();  // Show so we can select the text for copying
+            $textCopier.focus();
+            $textCopier.select();
+            setTimeout(function() {
+                $textCopier.hide();
+                focusInput();
+            }, 50);
+        }
+    }, 'keydown');
 
 };
 
@@ -348,40 +402,6 @@ function copySetup(text) {
     $copier.select();
 }
 
-function keyCheck(inField, e) {
-
-    // Find out what key is pressed.
-    var charCode = extractCharCode(e);
-
-    // Based on what key is pressed, do something.
-    if (charCode === 9) {
-        e.preventDefault();
-        agentTypeList.next();
-        setShout();
-    } else if ((charCode === 13) && (/\S/g.test($inputBuffer.val())) && (inField.id === "inputBuffer")) {
-        throttledSend($inputBuffer.val());
-    } else if ((charCode === 32) && (inField.id !== "inputBuffer")) {
-        e.preventDefault();
-        textScroll();
-        focusInput();
-    } else if (((charCode === 38) || (charCode === 40)) && (inField.id === "inputBuffer")) {
-        e.preventDefault();
-        scroll(charCode);
-    } else if ((e.ctrlKey || e.metaKey) && (charCode === 67) && (inField.id !== "inputBuffer")) {
-        $textCopier.show();  // Show so we can select the text for copying
-        $textCopier.focus();
-        $textCopier.select();
-        setTimeout(function() {
-            $textCopier.hide();
-            focusInput();
-        }, 5);
-        // Delay for a short bit, so we can hide it after the default action (copy) is triggered
-    } else if (!isModifier(e)) {
-        focusInput();
-    }
-
-}
-
 function handleTextRowOnMouseUp(row) {
     getSelText();
     if ($textCopier.val() === '') {
@@ -444,18 +464,6 @@ function extractCharCode(e) {
     } else {
         return e;  // Should pretty much never happen
     }
-}
-
-// this is equivalent to the CoffeeScript:
-//      charCode = extractCharCode(e)
-//      return ( e.metaKey or charCode in [16..36] or charCode in [38, 40, 45, 46] or charCode in [112..123] )
-// which means if the key pressed is not a modifier key, focus the input box.
-// So, if you want to modify this code, it's suggestible that you just copy&paste the above CoffeeScript into a
-// a CS => JS converter, and regenerate the code that way–for your own sanity, that is
-function isModifier(e) {
-    var charCode = extractCharCode(e);
-    var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-    return (e.metaKey || (__indexOf.call([16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], charCode) >= 0 || (charCode === 38 || charCode === 40 || charCode === 45 || charCode === 46) || __indexOf.call([112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123], charCode) >= 0));
 }
 
 function setShout() {
