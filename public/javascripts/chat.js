@@ -201,7 +201,7 @@ document.body.onload = function() {
         for (user in data) {
             row = "<tr><td>" +
                 "<input id='"+user+"' value='"+user+"' type='button' " +
-                "class='mousetrap' onclick='copySetup(this.value)' " +
+                "onclick='copySetup(this.value)' " +
                 "style='border:none; background-color: #FFFFFF; width: 100%; text-align: left'>" +
                 "</td></tr>";
             $usersOnline.append(row);
@@ -248,7 +248,7 @@ document.body.onload = function() {
         e.preventDefault();
         agentTypeList.next();
         setShout();
-    });
+    }, 'keydown');
 
     Mousetrap.bind(keyArray, function() {
         focusInput();
@@ -269,7 +269,8 @@ document.body.onload = function() {
     });
 
     Mousetrap.bind('space', function(e) {
-        if (e.target.id === 'container') {
+        if ((e.target.id === 'container') ||
+            (e.target.id === 'copier')) {
             e.preventDefault();
             textScroll();
             focusInput();
@@ -279,7 +280,7 @@ document.body.onload = function() {
     Mousetrap.bind(['ctrl+c', 'command+c'], function(e) {
         // If there are only digit characters in e.target.id...
         // This would mean that e.target is a table row in the chat output.
-        if (!notNumberRE.test(e.target.id)) {
+        if ((e.target.id === 'container') || (!notNumberRE.test(e.target.id))) {
             $textCopier.show();  // Show so we can select the text for copying
             $textCopier.focus();
             $textCopier.select();
@@ -290,7 +291,7 @@ document.body.onload = function() {
         }
     }, 'keydown');
 
-    Mousetrap.bind(['pageup', 'home'], function() {
+    Mousetrap.bind('pageup', function() {
         $container.focus();
     });
 
@@ -412,6 +413,7 @@ function handleTextRowOnMouseUp(row) {
         textCollapse(row);
         $container.focus();
     }
+    return false;
 }
 
 
