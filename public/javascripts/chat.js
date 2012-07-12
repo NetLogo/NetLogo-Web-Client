@@ -237,12 +237,12 @@ document.body.onload = function() {
     });
 
     var keyString =
-        'abcdefghijklmnopqrstuvwxyz' +
+            'abcdefghijklmnopqrstuvwxyz' +
             'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
             '1234567890!@#$%^&*()' +
             '\<>-_=+[{]};:",.?\\|\'`~';
     var keyArray = keyString.split('');
-    var notNumberRE = /\D+/g;
+    var notNumberRE = /\D/g;
 
     Mousetrap.bind('tab', function(e) {
         e.preventDefault();
@@ -252,7 +252,7 @@ document.body.onload = function() {
 
     Mousetrap.bind(keyArray, function() {
         focusInput();
-    });
+    }, 'keydown');
 
     Mousetrap.bind('enter', function(e) {
         if ((e.target.id === 'inputBuffer') && (/\S/g.test($inputBuffer.val()))) {
@@ -289,6 +289,10 @@ document.body.onload = function() {
             }, 50);
         }
     }, 'keydown');
+
+    Mousetrap.bind(['pageup', 'home'], function() {
+        $container.focus();
+    });
 
 };
 
@@ -406,6 +410,7 @@ function handleTextRowOnMouseUp(row) {
     getSelText();
     if ($textCopier.val() === '') {
         textCollapse(row);
+        $container.focus();
     }
 }
 
