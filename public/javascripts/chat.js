@@ -18,155 +18,13 @@ var $textCopier;
 var $agentType;
 var $outputState;
 
-
 /*
- * Other globals
+ * Imports
  */
 
-var ListNode = (function() {
-
-    function ListNode(data, type) {
-        this.data = data;
-        this.next = null;
-        this.prev = null;
-        this.type = type;
-    }
-
-    return ListNode;
-
-})();
-
-var MapNode = (function() {
-
-    function MapNode(type) {
-        this.type = type;
-        this.next = null;
-    }
-
-    return MapNode;
-
-})();
-
-var CircleMap = (function() {
-
-    function CircleMap() {
-        this.head = null;
-        this.last = null;
-        this.current = null;
-    }
-
-    CircleMap.prototype.append = function(newNode) {
-        var hashKey = this.hash(newNode.type);
-        this[hashKey] = newNode;
-        if (this.head === null) {
-            this.head = newNode;
-            this.last = newNode;
-            this.current = newNode;
-        } else {
-            this.last.next = newNode;
-            newNode.next = this.head;
-            this.last = newNode;
-        }
-    };
-
-    CircleMap.prototype.hash = function(value) {
-        return value instanceof Object ? (value.__hash ||
-            (value.__hash = 'object ' + ++arguments.callee.current)) :
-            (typeof value) + ' ' + String(value);
-    };
-
-    CircleMap.prototype.get = function(type) {
-        var hashKey = this.hash(type);
-        return this[hashKey];
-    };
-
-    CircleMap.prototype.getCurrent = function() {
-        return this.current.type;
-    };
-
-    CircleMap.prototype.setCurrent = function(type) {
-        var hashKey = this.hash(type);
-        this.current = this[hashKey];
-    };
-
-    CircleMap.prototype.next = function() {
-        this.current = this.current.next;
-    };
-
-    return CircleMap;
-
-})();
-
-var DoubleList = (function() {
-
-    function DoubleList(maxLen) {
-        this.maxLen = maxLen;
-        this.len = 0;
-        this.head = null;
-        this.tail = null;
-        this.cursor = null;
-        this.current = null;
-    }
-
-    DoubleList.prototype.clearCursor = function() {
-        this.cursor = null;
-        this.current = null;
-    };
-
-    DoubleList.prototype.addCurrent = function() {
-        this.current = new ListNode($inputBuffer.val(), agentTypeList.getCurrent());
-    };
-
-    DoubleList.prototype.append = function(newNode) {
-
-        if (this.head != null) {
-            newNode.prev = this.head;
-            this.head.next = newNode;
-        }
-
-        this.head = newNode;
-
-        if (this.tail === null) {
-            this.tail = this.head;
-        }
-
-        if (this.len < this.maxLen) {
-            this.len++;
-        } else {
-            this.tail = this.tail.next;
-            this.tail.prev = null;
-        }
-
-    };
-
-    return DoubleList;
-
-})();
-
-var TextHolder = (function() {
-
-    function TextHolder(text) {
-        this.text = text;
-        this.command = this.text.split("\n")[0];
-        this.isExpanded = true;
-    }
-
-    TextHolder.prototype.toString = function() {
-        if (this.isExpanded) {
-            return this.text;
-        } else {
-            var result = this.command + '  ...';
-            return result.bold();
-        }
-    };
-
-    TextHolder.prototype.change = function() {
-        this.isExpanded = !this.isExpanded;
-    };
-
-    return TextHolder;
-
-})();
+var TextHolder = exports.TextHolder;
+var DoubleList = exports.DoubleList;
+var CircleMap  = exports.CircleMap;
 
 var userName;
 var socket;
@@ -346,7 +204,7 @@ function initSelectors() {
 
 function initAgentList() {
     var agentTypes = ['observer', 'turtles', 'patches', 'links'];
-    agentTypes.map(function(type) { agentTypeList.append(new MapNode(type)) });
+    agentTypes.map(function(type) { agentTypeList.append(type) });
 }
 
 function messageSwitcher(user, final_text, time) {
@@ -482,7 +340,7 @@ function scroll(key) {
 
     if (key === 38) { // Up arrow
         if (messageList.cursor === null) {
-            messageList.addCurrent();
+            messageList.addCurrent($inputBuffer.val(), agentTypeList.getCurrent());
             messageList.cursor = messageList.head;
         } else {
             messageList.cursor = messageList.cursor.prev != null ? messageList.cursor.prev : messageList.cursor;
@@ -513,16 +371,11 @@ function send(message) {
     var output = $outputState.prop("checked");
     var packet = { Message: message, Shout: shout, Output: output };
     socket.json.send(packet);
-    storeMessage(message, agentTypeList.getCurrent());
+    messageList.append(message, agentTypeList.getCurrent());
     messageList.clearCursor();
     $inputBuffer.val("");
     focusInput();
 
-}
-
-function storeMessage(text, type) {
-    var Message = new ListNode(text, type);
-    messageList.append(Message);
 }
 
 function focusInput() { $inputBuffer.focus() }
