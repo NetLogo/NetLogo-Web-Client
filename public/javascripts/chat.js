@@ -5,10 +5,12 @@
  * Time: 4:50 PM
  */
 
-/*
- * Variables into which to cache jQuery selector results
- */
+// Imports
+var TextHolder = exports.TextHolder;
+var DoubleList = exports.DoubleList;
+var CircleMap  = exports.CircleMap;
 
+// Variables into which to cache jQuery selector results
 var $inputBuffer;
 var $usersOnline;
 var $chatLog;
@@ -18,14 +20,7 @@ var $textCopier;
 var $agentType;
 var $outputState;
 
-/*
- * Imports
- */
-
-var TextHolder = exports.TextHolder;
-var DoubleList = exports.DoubleList;
-var CircleMap  = exports.CircleMap;
-
+// Other globals
 var userName;
 var socket;
 var state = 0;
@@ -36,10 +31,7 @@ var throttledSend;
 var throttleDelay = 100;
 
 
-/*
- * Onload-related instructions
- */
-
+// Onload
 document.body.onload = function() {
     startup();
     initSelectors();
@@ -157,26 +149,6 @@ document.body.onload = function() {
 
 
 /*
- * `String` enhancers
- */
-
-String.prototype.reverse = function() {
-    return this.split("").reverse().join("");
-};
-
-String.prototype.wordReverse = function() {
-    var word, _i, _len;
-    var newMessageArray = [];
-    var messageArray = this.split(" ");
-    for (_i = 0, _len = messageArray.length; _i < _len; _i++) {
-        word = messageArray[_i];
-        newMessageArray[_i] = word.reverse();
-    }
-    return newMessageArray.join(" ");
-};
-
-
-/*
  * Basic page functionality
  */
 
@@ -239,46 +211,6 @@ function textScroll() {
     $container.animate({'scrollTop': bottom}, 'fast');
 }
 
-
-/*
- * Functions triggered by events on the page
- */
-
-function clearChat() {
-    $chatLog.text('');
-    state = 0;
-    logList = [];
-    focusInput();
-}
-function nameSelect(id) {
-    var row = $("#"+id);
-    row.css({backgroundColor: '#0033CC', color: '#FFFFFF', fontWeight: 'bold'});
-}
-function nameDeselect(id) {
-    var row = $('#'+id);
-    row.css({backgroundColor: '#FFFFFF', color: '#000000', fontWeight: 'normal'});
-}
-function copySetup(text) {
-    $copier.attr('name', text);
-    $copier.val(text);
-    $copier.focus();
-    $copier.select();
-}
-
-function handleTextRowOnMouseUp(row) {
-    getSelText();
-    if ($textCopier.val() === '') {
-        textCollapse(row);
-        $container.focus();
-    }
-    return false;
-}
-
-
-/*
- * Helper functions to the trigger functions above
- */
-
 // Credit to Remy Sharp.
 // http://remysharp.com/2010/07/21/throttling-function-calls/
 function throttle(fn, delay) {
@@ -290,35 +222,6 @@ function throttle(fn, delay) {
             fn.apply(context, args);
         }, delay);
     };
-}
-
-function textCollapse(row) {
-    var textObj = logList[row.id];
-    var middle = row.getElementsByClassName('middle')[0];
-    textObj.change();
-    middle.innerHTML = textObj.toString();
-}
-
-// Credit to Jeff Anderson
-// Source: http://www.codetoad.com/javascript_get_selected_text.asp
-function getSelText() {
-
-    var txt = "";
-    if (window.getSelection) {
-        txt = window.getSelection();
-    } else if (document.getSelection) {
-        txt = document.getSelection();
-    } else if (document.selection) {
-        txt = document.selection.createRange().text;
-    } else return;
-
-    // The regular expression 'timestamp' matches time strings of the form hh:mm in 24-hour format.
-    var timestamp = /\t((?:(?:[0-1][0-9])|(?:2[0-3])):[0-5][0-9])$/gm;
-    var modText = txt.toString().replace(timestamp, "   [$1]");
-    var finalText = modText.replace(/\t/g, "   ");
-    $textCopier.hide();  // Hide to avoid ghostly scrollbar issue on Chrome/Safari (on Mac OS)
-    $textCopier.val(finalText);
-
 }
 
 function extractCharCode(e) {
