@@ -10,6 +10,8 @@ var TextHolder = exports.TextHolder;
 var DoubleList = exports.DoubleList;
 var CircleMap  = exports.CircleMap;
 
+const THROTTLE_DELAY = 100;
+
 // Variables into which to cache jQuery selector results
 var $inputBuffer;
 var $usersOnline;
@@ -27,9 +29,6 @@ var state = 0;
 var messageList = new DoubleList(20);
 var agentTypeList = new CircleMap();
 var logList = [];
-var throttledSend;
-var throttleDelay = 100;
-
 
 // Onload
 document.body.onload = function() {
@@ -37,7 +36,7 @@ document.body.onload = function() {
     initSelectors();
     initAgentList();
     $agentType.text(agentTypeList.getCurrent());
-    throttledSend = throttle(send, throttleDelay);
+    var throttledSend = throttle(send, THROTTLE_DELAY);
 
     socket = io.connect();
 
