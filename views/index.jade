@@ -12,6 +12,16 @@ body
   script(type='text/javascript', src='/javascripts/util/doublelist.js')
   script(type='text/javascript', src='/javascripts/event/chat-events.js')
   script(type='text/javascript', src='/javascripts/chat.js')
+  div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right;')
+    table(style='margin: 2px; border-collapse: collapse; table-layout: fixed;')
+      tr(style='height: 1em;')
+        td
+          canvas#resize(width='80', height='10')
+        td(style='width: 35px;') ticks:
+        td#tickCounter(style='width: 245px;')
+        td(style='width: 10px;')
+          input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;')
+    canvas#view(height='400', width='400')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')
