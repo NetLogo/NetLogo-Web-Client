@@ -3,6 +3,7 @@ body
   script(type='text/javascript', src='/socket.io/socket.io.js')
   script(type='text/javascript', src='http://code.jquery.com/jquery.js')
   script(type='text/javascript', src='mousetrap.min.js')
+  script(type='text/javascript', src='/lib/paper.js')
   script(type='text/javascript', src='/javascripts/util/exports-init.js')
   script(type='text/javascript', src='/javascripts/enhance/string-enhance.js')
   script(type='text/javascript', src='/javascripts/util/node/listnode.js')
@@ -12,8 +13,8 @@ body
   script(type='text/javascript', src='/javascripts/util/doublelist.js')
   script(type='text/javascript', src='/javascripts/event/chat-events.js')
   script(type='text/javascript', src='/javascripts/chat.js')
-  div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right;')
-    table(style='margin: 2px; border-collapse: collapse; table-layout: fixed;')
+  div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
+    table(style='margin: 2px; border-collapse: collapse; table-layout: fixed; text-align: left;')
       tr(style='height: 1em;')
         td
           canvas#resize(width='80', height='10')
@@ -21,7 +22,7 @@ body
         td#tickCounter(style='width: 245px;')
         td(style='width: 10px;')
           input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;')
-    canvas#view(height='400', width='400')
+    canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')
