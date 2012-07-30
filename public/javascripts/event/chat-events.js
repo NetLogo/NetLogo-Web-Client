@@ -32,6 +32,10 @@ function handleTextRowOnMouseUp(row) {
     return false;
 }
 
+function threeD() {
+    alert('open 3d window');
+}
+
 
 /*
  * Event-handling utilities

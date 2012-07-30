@@ -3,7 +3,7 @@ body
   script(type='text/javascript', src='/socket.io/socket.io.js')
   script(type='text/javascript', src='http://code.jquery.com/jquery.js')
   script(type='text/javascript', src='mousetrap.min.js')
-  script(type='text/javascript', src='/lib/paper.js')
+  script(type='text/javascript', src='paper.js')
   script(type='text/javascript', src='/javascripts/util/exports-init.js')
   script(type='text/javascript', src='/javascripts/enhance/string-enhance.js')
   script(type='text/javascript', src='/javascripts/util/node/listnode.js')
@@ -13,15 +13,17 @@ body
   script(type='text/javascript', src='/javascripts/util/doublelist.js')
   script(type='text/javascript', src='/javascripts/event/chat-events.js')
   script(type='text/javascript', src='/javascripts/chat.js')
+  script(type='text/paperscript', src='/javascripts/canvas/resize.js', canvas='resize')
+  script(type='text/paperscript', src='/javascripts/canvas/drawing.js', canvas='view')
   div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
-    table(style='margin: 2px; border-collapse: collapse; table-layout: fixed; text-align: left;')
+    table(style='margin-top: 2px; table-layout: fixed; text-align: left;')
       tr(style='height: 1em;')
-        td
-          canvas#resize(width='80', height='10')
+        td(style='vertical-align: middle; padding: 0px')
+          canvas#resize(width='70', height='20')
         td(style='width: 35px;') ticks:
-        td#tickCounter(style='width: 245px;')
+        td#tickCounter(style='width: 250px;')
         td(style='width: 10px;')
-          input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;')
+          input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
     canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')
   h1(style='margin-top: 0')= title
   table
