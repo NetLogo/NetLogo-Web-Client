@@ -20,14 +20,14 @@ for (var _i = 0; _i < 50; _i++) {
     turtleArray[_i] = instance;
 }
 
-
 tool.minDistance = 5;
 
 function onMouseDrag(event) {
-    var num, turtle;
+    var $view = document.getElementById('view');
+    var num, turtle, viewSize = new Point($view.width, $view.height);
     for (num in turtleArray) {
         turtle = turtleArray[num];
-        turtle.position = turtle.position + event.delta;
+        turtle.position = (viewSize + turtle.position + event.delta) % viewSize;
         turtle.fillColor = 'red';
     }
 }
