@@ -6,9 +6,12 @@
  * To change this template use File | Settings | File Templates.
  */
 
+// NetLogo's view has six resize arrows: Up Left, Down Right, Left, Right, Up, Down.
+const numArrows = 6;
+
 var ArrowList = [];
 
-for (var _i = 0; _i < 6; _i++) {
+for (var _i = 0; _i < numArrows; _i++) {
     var segments = [new Point(0,0), new Point(11,0), new Point(0,11)];
     var arrow = new Path(segments);
     arrow.closePath();
