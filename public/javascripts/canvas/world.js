@@ -19,7 +19,7 @@ var world = (function() {
     var maxpycor = 16;
 
     function resize(direction) {
-        if (!running) {
+        if (!world.isRunning()) {
             switch (direction) {
                 case 'up left':
                     maxpxcor--;
@@ -42,6 +42,8 @@ var world = (function() {
                     maxpycor++;
                     break;
             }
+        } else {
+            alert('Resizing is not allowed while running a model.');
         }
     }
 
