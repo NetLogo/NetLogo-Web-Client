@@ -6,10 +6,6 @@
 * To change this template use File | Settings | File Templates.
 */
 
-var patchSize = 13; // in pixels
-var maxpxcor = 16;
-var maxpycor = 16;
-
 var turtleArray = [];
 
 init();
@@ -22,8 +18,8 @@ function init() {
     var $resize = $('#resize');
     var $tickCounter = $('#tickCounter');
 
-    var viewHeight = patchSize * (2 * maxpycor + 1); // in pixels
-    var viewWidth = patchSize * (2 * maxpxcor + 1); // in pixels
+    var viewHeight = world.patchSize() * (2 * world.maxpycor() + 1); // in pixels
+    var viewWidth = world.patchSize() * (2 * world.maxpxcor() + 1); // in pixels
     view.viewSize = new Size(viewWidth, viewHeight);
 
     var tickWidthStr = $ticks.css('width');
@@ -35,38 +31,6 @@ function init() {
     var tickCounterWidth = viewWidth - (tickWidth + buttonWidth + resizeWidth);
     $tickCounter.css('width', tickCounterWidth);
 
-}
-
-function xcorToPixel(xcor) {
-    if (patchSize % 2) {
-        return (patchSize * xcor) + (patchSize * (2 * maxpxcor + 1) - 1) / 2;
-    } else {
-        return (patchSize * xcor) + patchSize * (2 * maxpxcor + 1) / 2;
-    }
-}
-
-function ycorToPixel(ycor) {
-    if (patchSize % 2) {
-        return  (patchSize * (2 * maxpxcor + 1) - 1) / 2 - (patchSize * ycor);
-    } else {
-        return patchSize * (2 * maxpxcor + 1) / 2 - (patchSize * ycor);
-    }
-}
-
-function pixelToXcor(pixel) {
-    if (patchSize % 2) {
-        return (pixel - (patchSize * (2 * maxpxcor + 1) - 1) / 2) / patchSize;
-    } else {
-        return (pixel - patchSize * (2 * maxpxcor + 1) / 2) / patchSize;
-    }
-}
-
-function pixelToYcor(pixel) {
-    if (patchSize % 2) {
-        return ((patchSize * (2 * maxpxcor + 1) - 1) / 2 - pixel) / patchSize;
-    } else {
-        return (patchSize * (2 * maxpxcor + 1) / 2 - pixel) / patchSize;
-    }
 }
 
 function createTurtles() {
