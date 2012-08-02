@@ -10,9 +10,23 @@ var world = (function() {
 
     var isRunning = false;
 
+    // contains turtle objects {} with properties:
+    // fillColor = color
+    // strokeColor = color
+    // shape
+    // heading
+    // visible = !hidden?
+    // name = who
+    // position = [ xcor ycor ]
     var turtles = [];
+    // contains patch objects with properties: pcolor plabel plabel-color pxcor pycor
     var patches = [];
+    // contains link objects with properties: color end1 end2 isHidden label label-color shape thickness tie-mode
     var links = [];
+
+    var turtleChanges = {};
+    var patchChanges = {};
+    var linkChanges = {};
 
     var patchSize = 13; // in pixels
     var maxpxcor = 16;
@@ -105,13 +119,17 @@ var world = (function() {
 
         isRunning: function() { return isRunning },
 
-        turtles: function() { return turtles },
-        patches: function() { return patches },
-        links: function() { return links },
+        getTurtles: function() { return turtles },
+        getPatches: function() { return patches },
+        getLinks: function() { return links },
 
         patchSize: function() { return patchSize },
         maxpxcor: function() { return maxpxcor },
         maxpycor: function() { return maxpycor },
+
+        getTurtleChanges: function() { return turtleChanges },
+        getPatchChanges: function() { return patchChanges },
+        getLinkChanges: function() { return linkChanges },
 
         resize: resize,
 

@@ -34,16 +34,24 @@ function init() {
 }
 
 function createTurtles() {
-    for (var _i = 0; _i < 50; _i++) {
-        var instance = new Path.RegularPolygon(new Point(0,0), 3, 10);
-        instance.style = {
-            strokeColor: 'white',
-            fillColor: 'blue'
-        };
-        instance.name = "turtle " + _i; // a turtle with the name 'turtle (x)' have the id (x + 10)
-        instance.position = Point.random() * view.size;
-        instance.rotate(Math.random() * 360);
-        turtleArray[_i] = instance;
+    var turtles = world.getTurtles();
+    var _i, length = turtles.length;
+    for (_i = 0; _i < length; _i++) {
+
+        var turtle = turtles[_i];
+        var color = turtle.color;
+        var turtleProp;
+        var turtlePath = new Path();
+
+        for (turtleProp in turtle) {
+            if (turtleProp === 'position') {
+                turtlePath[turtleProp] = new Point(turtle[turtleProp]);
+            } else {
+                turtlePath[turtleProp] = turtle[turtleProp];
+            }
+        }
+
+        turtleArray[turtlePath.name] = turtlePath;
     }
 }
 
@@ -62,5 +70,22 @@ function onMouseUp(event) {
     for (num in turtleArray) {
         turtle = turtleArray[num];
         turtle.fillColor = color;
+    }
+}
+
+function updateTurtles() {
+    var turtlesChanges = world.getTurtleChanges();
+    var turtleWho;
+    for (turtleWho in turtlesChanges) {
+        var turtle = turtleArray[turtleWho];
+        var turtleChanges = turtlesChanges[turtleWho];
+        var prop;
+        for (prop in turtleChanges) {
+            if (prop === 'position') {
+                turtle[prop] = new Point(turtleChanges[prop]);
+            } else {
+                turtle[prop] = turtleChanges[prop];
+            }
+        }
     }
 }
