@@ -6,7 +6,34 @@
  * To change this template use File | Settings | File Templates.
  */
 
+/*
+The input from the server should have the following format:
+
+Changes =
+{
+    Turtles: {
+        who: {
+            who:
+            color:
+            xcor:
+            ycor:
+            shape:
+            heading:
+            isHidden:
+        }
+    }
+    Patches: {}
+    Links: {}
+ }
+ */
+
 var view = (function() {
+
+    var paper;
+
+    var turtles = [];
+    var patches = [];
+    var links = [];
 
     var patchSize = 13;
     var maxpxcor = 16;
@@ -33,10 +60,39 @@ var view = (function() {
         var tickCounterWidth = viewWidth - (tickWidth + buttonWidth + resizeWidth);
         $tickCounter.css('width', tickCounterWidth);
 
+        paper = Raphael('view', viewWidth, viewHeight);
+
+    }
+
+    function updateView(changes) {
+        var turtlesChanges = changes.Turtles;
+        var patchesChanges = changes.Patches;
+        var linksChanges = changes.Links;
+        updateTurtles(turtlesChanges);
+        updatePatches(patchesChanges);
+        updateLinks(linksChanges);
+    }
+
+    function updateTurtles(changes) {
+        var who;
+        for (who in changes) {
+
+            var turtleChanges = changes[who];
+            var turtle = turtles[who];
+
+            var property;
+            for (property in turtleChanges) {
+                turtle.data(property, turtleChanges[property]);
+            }
+
+            // use updated data to calculate element attributes
+        }
     }
 
     return {
+
         init: init
+
     }
 
 })();
