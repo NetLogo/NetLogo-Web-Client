@@ -11,8 +11,19 @@ body
   script(type='text/javascript', src='/javascripts/util/node/textholder.js')
   script(type='text/javascript', src='/javascripts/util/circlemap.js')
   script(type='text/javascript', src='/javascripts/util/doublelist.js')
+  script(type='text/javascript', src='/drawing/view.js')
   script(type='text/javascript', src='/javascripts/event/chat-events.js')
   script(type='text/javascript', src='/javascripts/chat.js')
+  div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
+    table#viewHeader(style='margin-top: 2px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
+      tr
+        td(style='vertical-align: middle; padding: 0px')
+          canvas#resize(width='70', height='20')
+        td#ticks(style='padding: 0px') ticks:
+        td#tickCounter(style='width: 250px; padding: 0px')
+        td#button(style='padding: 0px')
+          input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
+    #view(style='background-color: #000000; vertical-align: bottom; margin: 3px; height: 400px; width: 400px')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')

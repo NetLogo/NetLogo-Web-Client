@@ -32,6 +32,7 @@ var logList = [];
 
 // Onload
 document.body.onload = function() {
+    view.init();
     startup();
     initSelectors();
     initAgentList();
