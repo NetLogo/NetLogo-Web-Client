@@ -73,6 +73,7 @@ function onMouseUp(event) {
     }
 }
 
+/*
 function updateTurtles() {
     var turtlesChanges = world.getTurtleChanges();
     var turtleWho;
@@ -89,3 +90,4 @@ function updateTurtles() {
         }
     }
 }
+*/

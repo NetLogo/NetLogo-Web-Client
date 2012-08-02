@@ -6,27 +6,67 @@
  * To change this template use File | Settings | File Templates.
  */
 
+/*
+The input from the server should have the following format:
+
+input =
+{
+    type: 'create' 'update' 'remove'
+    Agents: {
+        Turtles: {
+            id: {
+                id:
+                who:
+                breed:
+                color:
+                xcor:
+                ycor:
+                shape:
+                heading:
+                isHidden:
+                label:
+                labelColor:
+                penMode:
+                penSize:
+            }
+        }
+        Patches: {
+            id: {
+                id:
+                pcolor:
+                plabel:
+                plabelColor:
+                pxcor:
+                pycor:
+            }
+        }
+        Links: {
+            id: {
+                id:
+                breed:
+                color:
+                end1:
+                end2:
+                isHidden:
+                label:
+                labelColor:
+                shape:
+                thickness:
+            }
+        }
+    }
+}
+
+ The objects turtles, patches, and links (below) will have the same formats as Turtles, Patches, Links (above).
+ */
+
 var world = (function() {
 
     var isRunning = false;
 
-    // contains turtle objects {} with properties:
-    // fillColor = color
-    // strokeColor = color
-    // shape
-    // heading
-    // visible = !hidden?
-    // name = who
-    // position = [ xcor ycor ]
-    var turtles = [];
-    // contains patch objects with properties: pcolor plabel plabel-color pxcor pycor
-    var patches = [];
-    // contains link objects with properties: color end1 end2 isHidden label label-color shape thickness tie-mode
-    var links = [];
-
-    var turtleChanges = {};
-    var patchChanges = {};
-    var linkChanges = {};
+    var turtles = {};
+    var patches = {};
+    var links = {};
 
     var patchSize = 13; // in pixels
     var maxpxcor = 16;
@@ -97,21 +137,101 @@ var world = (function() {
         }
     }
 
-    function setTurtles(newTurtles) {
-        if (typeof newTurtles === typeof turtles) {
-            turtles = newTurtles;
+    function updateWorld(input) {
+        var Agents = input.Agents;
+        if (input.type === 'create') {
+            createAgents(Agents);
+        } else if (input.type === 'update') {
+            updateAgents(Agents);
+        } else if (input.type === 'remove') {
+            removeAgents(Agents);
         }
     }
 
-    function setPatches(newPatches) {
-        if (typeof newPatches === typeof patches) {
-            patches = newPatches;
+    function createAgents(agentsAdditions) {
+        var turtlesAdditions = agentsAdditions.Turtles;
+        var linksAdditions = agentsAdditions.Links;
+        addTurtles(turtlesAdditions);
+        addLinks(linksAdditions);
+    }
+
+    function updateAgents(agentsChanges) {
+        var turtlesChanges = agentsChanges.Turtles;
+        var patchesChanges = agentsChanges.Patches;
+        var linksChanges = agentsChanges.Links;
+        updateTurtles(turtlesChanges);
+        updatePatches(patchesChanges);
+        updateLinks(linksChanges);
+    }
+
+    function removeAgents(agentsDeaths) {
+        var turtleDeaths = agentsDeaths.Turtles;
+        var linksDeaths = agentsDeaths.Links;
+        removeTurtles(turtleDeaths);
+        removeLinks(linksDeaths);
+    }
+
+    function addTurtles(additions) {
+        var id;
+        for (id in additions) {
+            turtles[id] = additions[id];
         }
     }
 
-    function setLinks(newLinks) {
-        if (typeof newLinks === typeof links) {
-            links = newLinks;
+    function addLinks(additions) {
+        var id;
+        for (id in additions) {
+            links[id] = additions[id];
+        }
+    }
+
+    function updateTurtles(changes) {
+        var id;
+        for (id in changes) {
+            var turtleChanges = changes[id];
+            var turtle = turtles[id];
+            var prop;
+            for (prop in turtleChanges) {
+                turtle[prop] = turtleChanges[prop];
+            }
+        }
+    }
+
+    function updatePatches(changes) {
+        var id;
+        for (id in changes) {
+            var patchChanges = changes[id];
+            var patch = patches[id];
+            var prop;
+            for (prop in patchChanges) {
+                patch[prop] = patchChanges[prop];
+            }
+        }
+    }
+
+    function updateLinks(changes) {
+        var id;
+        for (id in changes) {
+            var linkChanges = changes[id];
+            var link = links[id];
+            var prop;
+            for (prop in linkChanges) {
+                link[prop] = linkChanges[prop];
+            }
+        }
+    }
+
+    function removeTurtles(deaths) {
+        var id;
+        for (id in deaths) {
+            delete turtles[id];
+        }
+    }
+
+    function removeLinks(deaths) {
+        var id;
+        for (id in deaths) {
+            delete links[id];
         }
     }
 
@@ -127,10 +247,6 @@ var world = (function() {
         maxpxcor: function() { return maxpxcor },
         maxpycor: function() { return maxpycor },
 
-        getTurtleChanges: function() { return turtleChanges },
-        getPatchChanges: function() { return patchChanges },
-        getLinkChanges: function() { return linkChanges },
-
         resize: resize,
 
         changeRunState: changeRunState,
@@ -140,9 +256,7 @@ var world = (function() {
         xcorToPixel: xcorToPixel,
         ycorToPixel: ycorToPixel,
 
-        setTurtles: setTurtles,
-        setPatches: setPatches,
-        setLinks: setLinks
+        updateWorld: updateWorld
 
     };
 
