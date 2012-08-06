@@ -119,6 +119,7 @@ function updateView() {
                             break;
                     }
                 }
+                world.clean(agentType, agentNum);
             }
         }
     }
