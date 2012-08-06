@@ -1,5 +1,7 @@
 .idea/misc.xml
 .idea/workspace.xml
 .idea/codeStyleSettings.xml
+.idea/jsLibraryMappings.xml
+.idea/Web Sockets.iml
 /views/something.coffee
 /views/check.html
