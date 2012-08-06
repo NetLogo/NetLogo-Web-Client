@@ -3,5 +3,6 @@
 .idea/codeStyleSettings.xml
 .idea/jsLibraryMappings.xml
 .idea/Web Sockets.iml
+.idea/Web-Sockets.iml
 /views/something.coffee
 /views/check.html
