@@ -18,45 +18,55 @@ input =
                 id:
                 who:
                 breed:
-                color:
+                color: <6-digit hex number>
                 xcor:
                 ycor:
                 shape:
                 heading:
-                isHidden:
+                isVisible:
                 label:
-                labelColor:
+                labelColor: <6-digit hex number>
                 penMode:
                 penSize:
+                isDirty:
             }
         },
         patches: {
             <id>: {
                 id:
-                pcolor:
+                pcolor: <6-digit hex number>
                 plabel:
-                plabelColor:
+                plabelColor: <6-digit hex number>
                 pxcor:
                 pycor:
+                isDirty:
             }
         },
         links: {
             <id>: {
                 id:
                 breed:
-                color:
+                color: <6-digit hex number>
                 end1:
                 end2:
-                isHidden:
+                isVisible:
                 label:
-                labelColor:
+                labelColor: <6-digit hex number>
                 shape:
                 thickness:
+                isDirty:
             }
         }
     }
 }
 
+The isDirty property will record three states:
+    1.) changed since last world update,   (1)
+    2.) unchanged since last world update, (0)
+    3.) marked for deletion.               (-1)
+
+This will allow the paperscript to save time by not redrawing agents that haven't changed.
+The server should not send information changing the value of isDirty.
  */
 
 var world = (function() {
@@ -151,6 +161,7 @@ var world = (function() {
             var agentList = agentsAdditions[agentType];
             for (var agentNum in agentList) {
                 agents[agentType][agentNum] = agentList[agentNum];
+                agents[agentType][agentNum].isDirty = 1;
             }
         }
     }
@@ -163,6 +174,7 @@ var world = (function() {
                 for (var agentProp in agent) {
                     agents[agentNum][agentProp] = agent[agentProp];
                 }
+                agent.isDirty = 1;
             }
         }
     }
@@ -171,7 +183,7 @@ var world = (function() {
         for (var agentType in agentsDeaths) {
             var agentList = agentsDeaths[agentType];
             for (var agentNum in agentList) {
-                delete agents[agentType][agentNum];
+                agents[agentType][agentNum].isDirty = -1;
             }
         }
     }
@@ -180,6 +192,8 @@ var world = (function() {
 
         isRunning: function() { return isRunning },
 
+        getAgents: function() { return agents },
+
         getTurtles: function() { return agents.turtles },
         getPatches: function() { return agents.patches },
         getLinks: function() { return agents.links },
@@ -187,6 +201,10 @@ var world = (function() {
         patchSize: function() { return patchSize },
         maxpxcor: function() { return maxpxcor },
         maxpycor: function() { return maxpycor },
+
+        kill: function(agentType, id) { delete agents[agentType][id] },
+
+        clean: function(agentType, id) { agents[agentType][id].isDirty = 0 },
 
         resize: resize,
 

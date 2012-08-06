@@ -6,7 +6,34 @@
 * To change this template use File | Settings | File Templates.
 */
 
-var turtleArray = [];
+var agents = {};
+var agentPaths = {};
+
+var Shapes = (function() {
+
+    var center = new Point({
+        x: world.xcorToPixel(0),
+        y: world.ycorToPixel(0)
+    });
+
+    var triangle = function() {
+        var triangleLabel = new PointText(new Point(0,0));
+        var trianglePath = new Path.RegularPolygon(center, 3, 10);
+        return new Group([trianglePath, triangleLabel]);
+    };
+
+    var square = function() {
+        var squareLabel = new PointText(0,0);
+        var squarePath = new Path.RegularPolygon(center, 4, 10);
+        return new Group([squarePath, squareLabel]);
+    };
+
+    return {
+        Triangle: triangle,
+        Square: square
+    }
+
+})();
 
 init();
 createTurtles();
@@ -33,6 +60,78 @@ function init() {
 
 }
 
+function updateView() {
+    agents = world.getAgents();
+    for (var agentType in agents) {
+
+        var agentList = agents[agentType];
+        for (var agentNum in agentList) {
+
+            var agent = agentList[agentNum];
+            var agentPath = agentPaths[agentNum];
+            if (agent.isDirty === -1) { // This agent is marked for death.
+
+                delete agentPaths[agentNum];
+                agentPath.remove();
+                world.kill(agentType, agentNum);
+
+            } else if (agent.isDirty === 1) { // This agent has been changed.
+
+                for (var agentProp in agent) {
+
+                    var propValue = agent[agentProp];
+
+                    switch (agentProp) {
+                        case "isVisible":
+                            agentPath.visible = propValue;
+                            break;
+                        case "color" || "pcolor":
+                            agentPath.firstChild.fillColor = propValue;
+                            agentPath.firstChild.strokeColor = propValue;
+                            break;
+                        case "shape":
+                            var oldPath = agentPath.firstChild;
+                            var newPath = Shapes[propValue];
+                            newPath.position = oldPath.position;
+                            newPath.style = oldPath.style;
+                            newPath.visible = oldPath.visible;
+                            newPath.name = oldPath.name;
+                            agentPath.removeChildren(0);
+                            agentPath.insertChild(0, newPath);
+                            break;
+                        case "xcor":
+                            agentPath.position.x = propValue;
+                            break;
+                        case "ycor":
+                            agentPath.position.y = propValue;
+                            break;
+                        case "heading":
+                            var oldHeading = parseInt(agentPath.name);
+                            var diff = oldHeading - propValue;
+                            agentPath.firstChild.rotate(diff);
+                            agentPath.name = propValue.toString();
+                            break;
+                        case "label" || "plabel":
+                            agentPath.lastChild.content = propValue;
+                            break;
+                        case "labelColor" || "plabelColor":
+                            agentPath.lastChild.fillColor = agent[agentProp];
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+function onFrame(event) {
+    updateView();
+}
+
+// Need to refine use of name to record heading.
+// Keep track of whose name will be used, and refactor for clarity (path vs label vs group).
+
+/*
 function createTurtles() {
     var turtles = world.getTurtles();
     var _i, length = turtles.length;
@@ -52,28 +151,10 @@ function createTurtles() {
         }
 
         turtleArray[turtlePath.name] = turtlePath;
+
     }
 }
 
-function onMouseDrag(event) {
-    var num, turtle, viewSize = new Point(view.viewSize);
-    for (num in turtleArray) {
-        turtle = turtleArray[num];
-        turtle.position = (viewSize + turtle.position + event.delta) % viewSize;
-        turtle.fillColor = 'red';
-    }
-}
-
-function onMouseUp(event) {
-    var num, turtle;
-    var color = new RgbColor(Math.random(), Math.random(), Math.random());
-    for (num in turtleArray) {
-        turtle = turtleArray[num];
-        turtle.fillColor = color;
-    }
-}
-
-/*
 function updateTurtles() {
     var turtlesChanges = world.getTurtleChanges();
     var turtleWho;
