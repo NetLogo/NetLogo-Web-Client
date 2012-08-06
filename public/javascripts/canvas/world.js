@@ -11,10 +11,10 @@ The input from the server should have the following format:
 
 input =
 {
-    type: 'create' 'update' 'remove'
-    Agents: {
-        Turtles: {
-            id: {
+    changeType: 'create' 'update' 'remove',
+    agents: {
+        turtles: {
+            <id>: {
                 id:
                 who:
                 breed:
@@ -29,9 +29,9 @@ input =
                 penMode:
                 penSize:
             }
-        }
-        Patches: {
-            id: {
+        },
+        patches: {
+            <id>: {
                 id:
                 pcolor:
                 plabel:
@@ -39,9 +39,9 @@ input =
                 pxcor:
                 pycor:
             }
-        }
-        Links: {
-            id: {
+        },
+        links: {
+            <id>: {
                 id:
                 breed:
                 color:
@@ -57,16 +57,13 @@ input =
     }
 }
 
- The objects turtles, patches, and links (below) will have the same formats as Turtles, Patches, Links (above).
  */
 
 var world = (function() {
 
     var isRunning = false;
 
-    var turtles = {};
-    var patches = {};
-    var links = {};
+    var agents = { turtles: {}, patches: {}, links: {} };
 
     var patchSize = 13; // in pixels
     var maxpxcor = 16;
@@ -138,100 +135,44 @@ var world = (function() {
     }
 
     function updateWorld(input) {
-        var Agents = input.Agents;
-        if (input.type === 'create') {
-            createAgents(Agents);
-        } else if (input.type === 'update') {
-            updateAgents(Agents);
-        } else if (input.type === 'remove') {
-            removeAgents(Agents);
+        var type = input.changeType;
+        var inputAgents = input.agents;
+        if (type === 'create') {
+            createAgents(inputAgents);
+        } else if (type === 'update') {
+            updateAgents(inputAgents);
+        } else if (type === 'remove') {
+            removeAgents(inputAgents);
         }
     }
 
     function createAgents(agentsAdditions) {
-        var turtlesAdditions = agentsAdditions.Turtles;
-        var linksAdditions = agentsAdditions.Links;
-        addTurtles(turtlesAdditions);
-        addLinks(linksAdditions);
+        for (var agentType in agentsAdditions) {
+            var agentList = agentsAdditions[agentType];
+            for (var agentNum in agentList) {
+                agents[agentType][agentNum] = agentList[agentNum];
+            }
+        }
     }
 
     function updateAgents(agentsChanges) {
-        var turtlesChanges = agentsChanges.Turtles;
-        var patchesChanges = agentsChanges.Patches;
-        var linksChanges = agentsChanges.Links;
-        updateTurtles(turtlesChanges);
-        updatePatches(patchesChanges);
-        updateLinks(linksChanges);
+        for (var agentType in agentsChanges) {
+            var agentList = agentsChanges[agentType];
+            for (var agentNum in agentList) {
+                var agent = agentList[agentNum];
+                for (var agentProp in agent) {
+                    agents[agentNum][agentProp] = agent[agentProp];
+                }
+            }
+        }
     }
 
     function removeAgents(agentsDeaths) {
-        var turtleDeaths = agentsDeaths.Turtles;
-        var linksDeaths = agentsDeaths.Links;
-        removeTurtles(turtleDeaths);
-        removeLinks(linksDeaths);
-    }
-
-    function addTurtles(additions) {
-        var id;
-        for (id in additions) {
-            turtles[id] = additions[id];
-        }
-    }
-
-    function addLinks(additions) {
-        var id;
-        for (id in additions) {
-            links[id] = additions[id];
-        }
-    }
-
-    function updateTurtles(changes) {
-        var id;
-        for (id in changes) {
-            var turtleChanges = changes[id];
-            var turtle = turtles[id];
-            var prop;
-            for (prop in turtleChanges) {
-                turtle[prop] = turtleChanges[prop];
+        for (var agentType in agentsDeaths) {
+            var agentList = agentsDeaths[agentType];
+            for (var agentNum in agentList) {
+                delete agents[agentType][agentNum];
             }
-        }
-    }
-
-    function updatePatches(changes) {
-        var id;
-        for (id in changes) {
-            var patchChanges = changes[id];
-            var patch = patches[id];
-            var prop;
-            for (prop in patchChanges) {
-                patch[prop] = patchChanges[prop];
-            }
-        }
-    }
-
-    function updateLinks(changes) {
-        var id;
-        for (id in changes) {
-            var linkChanges = changes[id];
-            var link = links[id];
-            var prop;
-            for (prop in linkChanges) {
-                link[prop] = linkChanges[prop];
-            }
-        }
-    }
-
-    function removeTurtles(deaths) {
-        var id;
-        for (id in deaths) {
-            delete turtles[id];
-        }
-    }
-
-    function removeLinks(deaths) {
-        var id;
-        for (id in deaths) {
-            delete links[id];
         }
     }
 
@@ -239,9 +180,9 @@ var world = (function() {
 
         isRunning: function() { return isRunning },
 
-        getTurtles: function() { return turtles },
-        getPatches: function() { return patches },
-        getLinks: function() { return links },
+        getTurtles: function() { return agents.turtles },
+        getPatches: function() { return agents.patches },
+        getLinks: function() { return agents.links },
 
         patchSize: function() { return patchSize },
         maxpxcor: function() { return maxpxcor },
