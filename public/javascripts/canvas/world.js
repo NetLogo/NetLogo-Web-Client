@@ -47,8 +47,10 @@ input =
                 id:
                 breed:
                 color: <6-digit hex number>
-                end1: <turtle id>
-                end2: <turtle id>
+                end1xcor:
+                end1ycor:
+                end2xcor:
+                end2ycor:
                 isVisible: <boolean>
                 label:
                 labelColor: <6-digit hex number>

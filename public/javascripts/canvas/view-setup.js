@@ -62,25 +62,13 @@ var Shapes = (function() {
         return new Group([patchPath, patchLabel]);
     };
 
-    var link = function(end1, end2) {
-        var linkPath = new Path();
-        var segments = [
-            new Point(agentPaths.turtles[end1].position),
-            new Point(agentPaths.turtles[end2].position)
-        ];
-        linkPath.addSegments(segments);
-        var linkLabel = new PointText(linkPath.position);
-        return new Group([linkPath, linkLabel]);
-    };
-
     return {
         Default: Default,
         Triangle: triangle,
         Square: square,
         Circle: circle,
         Star: star,
-        Patch: patch,
-        Link: link
+        Patch: patch
     }
 
 })();
@@ -94,8 +82,8 @@ function init() {
     var $resize = $('#resize');
     var $tickCounter = $('#tickCounter');
 
-    var viewHeight = world.patchSize() * (2 * world.maxpycor() + 1); // in pixels
-    var viewWidth = world.patchSize() * (2 * world.maxpxcor() + 1); // in pixels
+    var viewHeight = world.patchSize() * world.worldHeight(); // in pixels
+    var viewWidth = world.patchSize() * world.worldWidth(); // in pixels
     view.viewSize = new Size(viewWidth, viewHeight);
 
     var tickWidthStr = $ticks.css('width');
@@ -172,6 +160,21 @@ function updateView() {
                             }
                         }
 
+                        if (agentType === "links") {
+                            var updatedEnd1 = {
+                                x: agent.end1xcor,
+                                y: agent.end1ycor
+                            };
+                            var updatedEnd2 = {
+                                x: agent.end2xcor,
+                                y: agent.end2ycor
+                            };
+                            var updatedLinkPath = new Path.Line(updatedEnd1, updatedEnd2);
+                            updatedLinkPath.style = agentGroup.firstChild.style;
+                            agentGroup.removeChildren(0);
+                            agentGroup.insertChild(0, updatedLinkPath);
+                        }
+
                     } else { // The agent was created during this frame.
 
                         switch (agentType) {
@@ -210,9 +213,17 @@ function updateView() {
                                 agentPaths[agentType][agentNum] = newPatchGroup;
                                 break;
                             case "links":
-                                var newLinkGroup = Shapes.Link(agent.end1, agent.end2);
-                                var newLinkPath = newLinkGroup.firstChild;
-                                var newLinkLabel = newLinkGroup.lastChild;
+                                var end1 = {
+                                    x: agent.end1xcor,
+                                    y: agent.end1ycor
+                                };
+                                var end2 = {
+                                    x: agent.end2xcor,
+                                    y: agent.end2ycor
+                                };
+                                var newLinkPath = new Path.Line(end1, end2);
+                                var newLinkLabel = new PointText(newLinkPath.position);
+                                var newLinkGroup = new Group([newLinkPath, newLinkLabel]);
                                 newLinkPath.style = {
                                     strokeColor: agent.color,
                                     strokeWidth: agent.thickness,
@@ -239,45 +250,3 @@ function updateView() {
 function onFrame(event) {
     updateView();
 }
-
-/*
-function createTurtles() {
-    var turtles = world.getTurtles();
-    var _i, length = turtles.length;
-    for (_i = 0; _i < length; _i++) {
-
-        var turtle = turtles[_i];
-        var color = turtle.color;
-        var turtleProp;
-        var turtlePath = new Path();
-
-        for (turtleProp in turtle) {
-            if (turtleProp === 'position') {
-                turtlePath[turtleProp] = new Point(turtle[turtleProp]);
-            } else {
-                turtlePath[turtleProp] = turtle[turtleProp];
-            }
-        }
-
-        turtleArray[turtlePath.name] = turtlePath;
-
-    }
-}
-
-function updateTurtles() {
-    var turtlesChanges = world.getTurtleChanges();
-    var turtleWho;
-    for (turtleWho in turtlesChanges) {
-        var turtle = turtleArray[turtleWho];
-        var turtleChanges = turtlesChanges[turtleWho];
-        var prop;
-        for (prop in turtleChanges) {
-            if (prop === 'position') {
-                turtle[prop] = new Point(turtleChanges[prop]);
-            } else {
-                turtle[prop] = turtleChanges[prop];
-            }
-        }
-    }
-}
-*/
