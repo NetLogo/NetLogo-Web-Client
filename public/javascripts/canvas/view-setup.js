@@ -16,6 +16,20 @@ var Shapes = (function() {
         y: world.ycorToPixel(0)
     });
 
+    var Default = function() {
+        var defaultLabel = new PointText(0,0);
+        var defaultPath = new Path();
+        var segments = [
+            new Point(6, 0),
+            new Point(0, 15),
+            new Point(6, 12),
+            new Point(12, 15)
+        ];
+        defaultPath.addSegments(segments);
+        defaultPath.position = center;
+        return new Group([defaultPath, defaultLabel]);
+    };
+
     var triangle = function() {
         var triangleLabel = new PointText(new Point(0,0));
         var trianglePath = new Path.RegularPolygon(center, 3, 10);
@@ -28,15 +42,30 @@ var Shapes = (function() {
         return new Group([squarePath, squareLabel]);
     };
 
+    var circle = function() {
+        var circleLabel = new PointText(0,0);
+        var circlePath = new Path.Circle(center, 10);
+        return new Group([circlePath, circleLabel]);
+    };
+
+    var star = function() {
+        var starLabel = new PointText(0,0);
+        var starPath = new Path.Star(center, 5, 4, 10);
+        starPath.rotate(180);
+        return new Group([starPath, starLabel]);
+    };
+
     return {
+        Default: Default,
         Triangle: triangle,
-        Square: square
+        Square: square,
+        Circle: circle,
+        Star: star
     }
 
 })();
 
 init();
-createTurtles();
 
 function init() {
 
@@ -68,11 +97,11 @@ function updateView() {
         for (var agentNum in agentList) {
 
             var agent = agentList[agentNum];
-            var agentPath = agentPaths[agentNum];
+            var agentGroup = agentPaths[agentNum];
             if (agent.isDirty === -1) { // This agent is marked for death.
 
+                agentGroup.remove();
                 delete agentPaths[agentNum];
-                agentPath.remove();
                 world.kill(agentType, agentNum);
 
             } else if (agent.isDirty === 1) { // This agent has been changed.
@@ -83,39 +112,38 @@ function updateView() {
 
                     switch (agentProp) {
                         case "isVisible":
-                            agentPath.visible = propValue;
+                            agentGroup.visible = propValue;
                             break;
                         case "color" || "pcolor":
-                            agentPath.firstChild.fillColor = propValue;
-                            agentPath.firstChild.strokeColor = propValue;
+                            agentGroup.firstChild.fillColor = propValue;
+                            agentGroup.firstChild.strokeColor = propValue;
                             break;
                         case "shape":
-                            var oldPath = agentPath.firstChild;
+                            var oldPath = agentGroup.firstChild;
                             var newPath = Shapes[propValue];
                             newPath.position = oldPath.position;
                             newPath.style = oldPath.style;
-                            newPath.visible = oldPath.visible;
                             newPath.name = oldPath.name;
-                            agentPath.removeChildren(0);
-                            agentPath.insertChild(0, newPath);
+                            agentGroup.removeChildren(0);
+                            agentGroup.insertChild(0, newPath);
                             break;
                         case "xcor":
-                            agentPath.position.x = propValue;
+                            agentGroup.position.x = propValue;
                             break;
                         case "ycor":
-                            agentPath.position.y = propValue;
+                            agentGroup.position.y = propValue;
                             break;
                         case "heading":
-                            var oldHeading = parseInt(agentPath.name);
+                            var oldHeading = parseInt(agentGroup.name);
                             var diff = oldHeading - propValue;
-                            agentPath.firstChild.rotate(diff);
-                            agentPath.name = propValue.toString();
+                            agentGroup.firstChild.rotate(diff);
+                            agentGroup.firstChild.name = propValue.toString();
                             break;
                         case "label" || "plabel":
-                            agentPath.lastChild.content = propValue;
+                            agentGroup.lastChild.content = propValue;
                             break;
                         case "labelColor" || "plabelColor":
-                            agentPath.lastChild.fillColor = agent[agentProp];
+                            agentGroup.lastChild.fillColor = agent[agentProp];
                             break;
                     }
                 }
@@ -128,9 +156,6 @@ function updateView() {
 function onFrame(event) {
     updateView();
 }
-
-// Need to refine use of name to record heading.
-// Keep track of whose name will be used, and refactor for clarity (path vs label vs group).
 
 /*
 function createTurtles() {

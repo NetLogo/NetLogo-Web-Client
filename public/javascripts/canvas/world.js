@@ -19,12 +19,12 @@ input =
                 who:
                 breed:
                 color: <6-digit hex number>
-                xcor:
-                ycor:
+                xcor: <int>
+                ycor:<int>
                 shape:
-                heading:
-                isVisible:
-                label:
+                heading: <int>
+                isVisible: <boolean>
+                label: <string>
                 labelColor: <6-digit hex number>
                 penMode:
                 penSize:
@@ -37,8 +37,8 @@ input =
                 pcolor: <6-digit hex number>
                 plabel:
                 plabelColor: <6-digit hex number>
-                pxcor:
-                pycor:
+                pxcor: <int>
+                pycor: <int>
                 isDirty:
             }
         },
@@ -49,7 +49,7 @@ input =
                 color: <6-digit hex number>
                 end1:
                 end2:
-                isVisible:
+                isVisible: <boolean>
                 label:
                 labelColor: <6-digit hex number>
                 shape:
