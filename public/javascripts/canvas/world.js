@@ -11,7 +11,7 @@ The input from the server should have the following format:
 
 input =
 {
-    changeType: 'create' 'update' 'remove',
+    changeType: <'create', 'update', 'remove'>,
     agents: {
         turtles: {
             <id>: {
@@ -21,7 +21,7 @@ input =
                 color: <6-digit hex number>
                 xcor: <int>
                 ycor:<int>
-                shape:
+                shape: <'Default', 'Triangle', 'Square', 'Circle', 'Star'>
                 heading: <int>
                 isVisible: <boolean>
                 label: <string>
@@ -47,8 +47,8 @@ input =
                 id:
                 breed:
                 color: <6-digit hex number>
-                end1:
-                end2:
+                end1: <turtle id>
+                end2: <turtle id>
                 isVisible: <boolean>
                 label:
                 labelColor: <6-digit hex number>
@@ -78,6 +78,9 @@ var world = (function() {
     var patchSize = 13; // in pixels
     var maxpxcor = 16;
     var maxpycor = 16;
+
+    var worldHeight = (2 * maxpycor + 1);
+    var worldWidth = (2 * maxpxcor + 1);
 
     function resize(direction) {
         if (!world.isRunning()) {
@@ -114,33 +117,33 @@ var world = (function() {
 
     function xcorToPixel(xcor) {
         if (patchSize % 2) {
-            return (patchSize * xcor) + (patchSize * (2 * maxpxcor + 1) - 1) / 2;
+            return (patchSize * xcor) + (patchSize * worldWidth - 1) / 2;
         } else {
-            return (patchSize * xcor) + patchSize * (2 * maxpxcor + 1) / 2;
+            return (patchSize * xcor) + patchSize * worldWidth / 2;
         }
     }
 
     function ycorToPixel(ycor) {
         if (patchSize % 2) {
-            return  (patchSize * (2 * maxpycor + 1) - 1) / 2 - (patchSize * ycor);
+            return  (patchSize * worldHeight - 1) / 2 - (patchSize * ycor);
         } else {
-            return patchSize * (2 * maxpycor + 1) / 2 - (patchSize * ycor);
+            return patchSize * worldHeight / 2 - (patchSize * ycor);
         }
     }
 
     function pixelToXcor(pixel) {
         if (patchSize % 2) {
-            return (pixel - (patchSize * (2 * maxpxcor + 1) - 1) / 2) / patchSize;
+            return (pixel - (patchSize * worldWidth - 1) / 2) / patchSize;
         } else {
-            return (pixel - patchSize * (2 * maxpxcor + 1) / 2) / patchSize;
+            return (pixel - patchSize * worldWidth / 2) / patchSize;
         }
     }
 
     function pixelToYcor(pixel) {
         if (patchSize % 2) {
-            return ((patchSize * (2 * maxpycor + 1) - 1) / 2 - pixel) / patchSize;
+            return ((patchSize * worldHeight - 1) / 2 - pixel) / patchSize;
         } else {
-            return (patchSize * (2 * maxpycor + 1) / 2 - pixel) / patchSize;
+            return (patchSize * worldHeight / 2 - pixel) / patchSize;
         }
     }
 
@@ -201,6 +204,9 @@ var world = (function() {
         patchSize: function() { return patchSize },
         maxpxcor: function() { return maxpxcor },
         maxpycor: function() { return maxpycor },
+
+        worldHeight: function() { return worldHeight },
+        worldWidth: function() { return worldWidth },
 
         kill: function(agentType, id) { delete agents[agentType][id] },
 

@@ -7,7 +7,7 @@
 */
 
 var agents = {};
-var agentPaths = {};
+var agentPaths = { turtles: {}, patches: {}, links: {} };
 
 var Shapes = (function() {
 
@@ -17,7 +17,7 @@ var Shapes = (function() {
     });
 
     var Default = function() {
-        var defaultLabel = new PointText(0,0);
+        var defaultLabel = new PointText(center);
         var defaultPath = new Path();
         var segments = [
             new Point(6, 0),
@@ -26,33 +26,51 @@ var Shapes = (function() {
             new Point(12, 15)
         ];
         defaultPath.addSegments(segments);
+        defaultPath.closePath();
         defaultPath.position = center;
         return new Group([defaultPath, defaultLabel]);
     };
 
     var triangle = function() {
-        var triangleLabel = new PointText(new Point(0,0));
+        var triangleLabel = new PointText(new Point(center));
         var trianglePath = new Path.RegularPolygon(center, 3, 10);
         return new Group([trianglePath, triangleLabel]);
     };
 
     var square = function() {
-        var squareLabel = new PointText(0,0);
+        var squareLabel = new PointText(center);
         var squarePath = new Path.RegularPolygon(center, 4, 10);
         return new Group([squarePath, squareLabel]);
     };
 
     var circle = function() {
-        var circleLabel = new PointText(0,0);
+        var circleLabel = new PointText(center);
         var circlePath = new Path.Circle(center, 10);
         return new Group([circlePath, circleLabel]);
     };
 
     var star = function() {
-        var starLabel = new PointText(0,0);
+        var starLabel = new PointText(center);
         var starPath = new Path.Star(center, 5, 4, 10);
         starPath.rotate(180);
         return new Group([starPath, starLabel]);
+    };
+
+    var patch = function(size) {
+        var patchPath = new Path.Rectangle(center, new Size(size, size));
+        var patchLabel = new PointText(patchPath.position);
+        return new Group([patchPath, patchLabel]);
+    };
+
+    var link = function(end1, end2) {
+        var linkPath = new Path();
+        var segments = [
+            new Point(agentPaths.turtles[end1].position),
+            new Point(agentPaths.turtles[end2].position)
+        ];
+        linkPath.addSegments(segments);
+        var linkLabel = new PointText(linkPath.position);
+        return new Group([linkPath, linkLabel]);
     };
 
     return {
@@ -60,7 +78,9 @@ var Shapes = (function() {
         Triangle: triangle,
         Square: square,
         Circle: circle,
-        Star: star
+        Star: star,
+        Patch: patch,
+        Link: link
     }
 
 })();
@@ -91,63 +111,126 @@ function init() {
 
 function updateView() {
     agents = world.getAgents();
-    for (var agentType in agents) {
+    if (typeof agents !== 'undefined') {
 
-        var agentList = agents[agentType];
-        for (var agentNum in agentList) {
+        for (var agentType in agents) {
 
-            var agent = agentList[agentNum];
-            var agentGroup = agentPaths[agentNum];
-            if (agent.isDirty === -1) { // This agent is marked for death.
+            var agentList = agents[agentType];
+            for (var agentNum in agentList) {
 
-                agentGroup.remove();
-                delete agentPaths[agentNum];
-                world.kill(agentType, agentNum);
+                var agent = agentList[agentNum];
+                var agentGroup = agentPaths[agentType][agentNum];
+                if (agent.isDirty === -1) { // This agent is marked for death.
 
-            } else if (agent.isDirty === 1) { // This agent has been changed.
+                    agentGroup.remove();
+                    delete agentPaths[agentType][agentNum];
+                    world.kill(agentType, agentNum);
 
-                for (var agentProp in agent) {
+                } else if (agent.isDirty === 1) { // This agent has been changed or created during this frame.
 
-                    var propValue = agent[agentProp];
+                    if (typeof agentGroup !== "undefined") { // If the agent existed but has been changed...
 
-                    switch (agentProp) {
-                        case "isVisible":
-                            agentGroup.visible = propValue;
-                            break;
-                        case "color" || "pcolor":
-                            agentGroup.firstChild.fillColor = propValue;
-                            agentGroup.firstChild.strokeColor = propValue;
-                            break;
-                        case "shape":
-                            var oldPath = agentGroup.firstChild;
-                            var newPath = Shapes[propValue];
-                            newPath.position = oldPath.position;
-                            newPath.style = oldPath.style;
-                            newPath.name = oldPath.name;
-                            agentGroup.removeChildren(0);
-                            agentGroup.insertChild(0, newPath);
-                            break;
-                        case "xcor":
-                            agentGroup.position.x = propValue;
-                            break;
-                        case "ycor":
-                            agentGroup.position.y = propValue;
-                            break;
-                        case "heading":
-                            var oldHeading = parseInt(agentGroup.name);
-                            var diff = oldHeading - propValue;
-                            agentGroup.firstChild.rotate(diff);
-                            agentGroup.firstChild.name = propValue.toString();
-                            break;
-                        case "label" || "plabel":
-                            agentGroup.lastChild.content = propValue;
-                            break;
-                        case "labelColor" || "plabelColor":
-                            agentGroup.lastChild.fillColor = agent[agentProp];
-                            break;
+                        for (var agentProp in agent) {
+
+                            var propValue = agent[agentProp];
+
+                            switch (agentProp) {
+                                case "isVisible":
+                                    agentGroup.visible = propValue;
+                                    break;
+                                case "color" || "pcolor":
+                                    agentGroup.firstChild.fillColor = propValue;
+                                    agentGroup.firstChild.strokeColor = propValue;
+                                    break;
+                                case "shape":
+                                    var oldPath = agentGroup.firstChild;
+                                    var newPath = Shapes[propValue];
+                                    newPath.position = oldPath.position;
+                                    newPath.style = oldPath.style;
+                                    newPath.name = oldPath.name;
+                                    agentGroup.removeChildren(0);
+                                    agentGroup.insertChild(0, newPath);
+                                    break;
+                                case "xcor":
+                                    agentGroup.position.x = propValue;
+                                    break;
+                                case "ycor":
+                                    agentGroup.position.y = propValue;
+                                    break;
+                                case "heading":
+                                    var oldHeading = parseInt(agentGroup.name);
+                                    var diff = oldHeading - propValue;
+                                    agentGroup.firstChild.rotate(diff);
+                                    agentGroup.firstChild.name = propValue.toString();
+                                    break;
+                                case "label" || "plabel":
+                                    agentGroup.lastChild.content = propValue;
+                                    break;
+                                case "labelColor" || "plabelColor":
+                                    agentGroup.lastChild.fillColor = agent[agentProp];
+                                    break;
+                            }
+                        }
+
+                    } else { // The agent was created during this frame.
+
+                        switch (agentType) {
+                            case "turtles":
+                                var shape = agent.shape;
+                                var newTurtleGroup = Shapes[shape];
+                                var newTurtlePath = newTurtleGroup.firstChild;
+                                var newTurtleLabel = newTurtleGroup.lastChild;
+                                newTurtleGroup.position = {
+                                    x: world.xcorToPixel(agent.xcor),
+                                    y: world.ycorToPixel(agent.ycor)
+                                };
+                                newTurtlePath.fillColor = agent.color;
+                                newTurtlePath.strokeColor = agent.color;
+                                newTurtlePath.name = agent.heading.toString();
+                                newTurtlePath.rotate(agent.heading);
+                                newTurtleLabel.fillColor = agent.labelColor;
+                                newTurtleLabel.content = agent.label;
+                                newTurtleGroup.visible = agent.isVisible;
+                                newTurtleGroup.name = agent.id;
+                                agentPaths[agentType][agentNum] = newTurtleGroup;
+                                break;
+                            case "patches":
+                                var newPatchGroup = Shapes.Patch(world.patchSize());
+                                var newPatchPath = newPatchGroup.firstChild;
+                                var newPatchLabel = newPatchGroup.lastChild;
+                                newPatchGroup.position = {
+                                    x: world.xcorToPixel(agent.pxcor),
+                                    y: world.ycorToPixel(agent.pycor)
+                                };
+                                newPatchPath.fillColor = agent.pcolor;
+                                newPatchPath.strokeColor = agent.pcolor;
+                                newPatchLabel.fillColor = agent.plabelColor;
+                                newPatchLabel.content = agent.plabel;
+                                newPatchGroup.name = agent.id;
+                                agentPaths[agentType][agentNum] = newPatchGroup;
+                                break;
+                            case "links":
+                                var newLinkGroup = Shapes.Link(agent.end1, agent.end2);
+                                var newLinkPath = newLinkGroup.firstChild;
+                                var newLinkLabel = newLinkGroup.lastChild;
+                                newLinkPath.style = {
+                                    strokeColor: agent.color,
+                                    strokeWidth: agent.thickness,
+                                    strokeCap: 'round'
+                                };
+                                newLinkLabel.fillColor = agent.labelColor;
+                                newLinkLabel.content = agent.label;
+                                newLinkGroup.visible = agent.isVisible;
+                                newLinkGroup.name = agent.id;
+                                agentPaths[agentType][agentNum] = newLinkGroup;
+                                break;
+                        }
+
                     }
+
+                    world.clean(agentType, agentNum);
+
                 }
-                world.clean(agentType, agentNum);
             }
         }
     }
