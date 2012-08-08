@@ -16,7 +16,7 @@ var Shapes = (function() {
         y: world.ycorToPixel(0)
     });
 
-    var Default = function() {
+    function Default() {
         var defaultLabel = new PointText(center);
         var defaultPath = new Path();
         var segments = [
@@ -29,38 +29,38 @@ var Shapes = (function() {
         defaultPath.closePath();
         defaultPath.position = center;
         return new Group([defaultPath, defaultLabel]);
-    };
+    }
 
-    var triangle = function() {
+    function triangle() {
         var triangleLabel = new PointText(new Point(center));
         var trianglePath = new Path.RegularPolygon(center, 3, 10);
         return new Group([trianglePath, triangleLabel]);
-    };
+    }
 
-    var square = function() {
+    function square() {
         var squareLabel = new PointText(center);
         var squarePath = new Path.RegularPolygon(center, 4, 10);
         return new Group([squarePath, squareLabel]);
-    };
+    }
 
-    var circle = function() {
+    function circle() {
         var circleLabel = new PointText(center);
         var circlePath = new Path.Circle(center, 10);
         return new Group([circlePath, circleLabel]);
-    };
+    }
 
-    var star = function() {
+    function star() {
         var starLabel = new PointText(center);
         var starPath = new Path.Star(center, 5, 4, 10);
         starPath.rotate(180);
         return new Group([starPath, starLabel]);
-    };
+    }
 
-    var patch = function(size) {
+    function patch(size) {
         var patchPath = new Path.Rectangle(center, new Size(size, size));
         var patchLabel = new PointText(patchPath.position);
         return new Group([patchPath, patchLabel]);
-    };
+    }
 
     return {
         Default: Default,
