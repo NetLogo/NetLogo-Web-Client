@@ -147,7 +147,7 @@ function updateView() {
                                     agentGroup.position.y = propValue;
                                     break;
                                 case "heading":
-                                    var oldHeading = parseInt(agentGroup.name);
+                                    var oldHeading = parseInt(agentGroup.firstChild.name);
                                     var diff = oldHeading - propValue;
                                     agentGroup.firstChild.rotate(diff);
                                     agentGroup.firstChild.name = propValue.toString();
