@@ -21,7 +21,7 @@ var Shapes = (function() {
         y: world.ycorToPixel(0)
     });
 
-    function Default() {
+    function _default() {
         turtleLayer.activate();
         var defaultLabel = new PointText(center);
         var defaultPath = new Path();
@@ -74,7 +74,7 @@ var Shapes = (function() {
     }
 
     return {
-        Default: Default,
+        Default: _default,
         Triangle: triangle,
         Square: square,
         Circle: circle,
@@ -84,32 +84,8 @@ var Shapes = (function() {
 
 })();
 
-init();
-
 function onFrame(event) {
     updateView();
-}
-
-function init() {
-
-    var $ticks = $('#ticks');
-    var $button = $('#button');
-    var $resize = $('#resize');
-    var $tickCounter = $('#tickCounter');
-
-    var viewHeight = world.patchSize() * world.worldHeight(); // in pixels
-    var viewWidth = world.patchSize() * world.worldWidth(); // in pixels
-    view.viewSize = new Size(viewWidth, viewHeight);
-
-    var tickWidthStr = $ticks.css('width');
-    var buttonWidthStr = $button.css('width');
-    var resizeWidthStr = $resize.css('width');
-    var tickWidth = parseInt(tickWidthStr.substr(0, tickWidthStr.length - 2));
-    var buttonWidth = parseInt(buttonWidthStr.substr(0, buttonWidthStr.length - 2));
-    var resizeWidth = parseInt(resizeWidthStr.substr(0, resizeWidthStr.length - 2));
-    var tickCounterWidth = viewWidth - (tickWidth + buttonWidth + resizeWidth);
-    $tickCounter.css('width', tickCounterWidth);
-
 }
 
 function updateView() {

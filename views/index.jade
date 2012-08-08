@@ -14,15 +14,12 @@ body
   script(type='text/javascript', src='/javascripts/canvas/world.js')
   script(type='text/javascript', src='/javascripts/event/chat-events.js')
   script(type='text/javascript', src='/javascripts/chat.js')
-  script(type='text/paperscript', src='/javascripts/canvas/resize.js', canvas='resize')
   script(type='text/paperscript', src='/javascripts/canvas/view-setup.js', canvas='view')
   div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
-    table#viewHeader(style='margin-top: 2px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
+    table#viewHeader(style='margin-top: 2px; margin-left: 3px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
       tr
-        td(style='vertical-align: middle; padding: 0px')
-          canvas#resize(width='70', height='20')
         td#ticks(style='padding: 0px') ticks:
-        td#tickCounter(style='width: 250px; padding: 0px')
+        td#tickCounter(style='width: 320px; padding: 0px')
         td#button(style='padding: 0px')
           input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
     canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')

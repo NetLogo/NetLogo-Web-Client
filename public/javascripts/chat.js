@@ -21,6 +21,7 @@ var $copier;
 var $textCopier;
 var $agentType;
 var $outputState;
+var $tickCounter;
 
 // Other globals
 var userName;
@@ -35,6 +36,7 @@ document.body.onload = function() {
     startup();
     initSelectors();
     initAgentList();
+    initView();
     $agentType.text(agentTypeList.getCurrent());
     var throttledSend = throttle(send, THROTTLE_DELAY);
 
@@ -171,11 +173,30 @@ function initSelectors() {
     $textCopier  = $("#textCopier");
     $agentType   = $("#agentType");
     $outputState = $("#outputState");
+    $tickCounter = $("#tickCounter");
 }
 
 function initAgentList() {
     var agentTypes = ['observer', 'turtles', 'patches', 'links'];
     agentTypes.map(function(type) { agentTypeList.append(type) });
+}
+
+function initView() {
+
+    var $ticks = $('#ticks');
+    var $button = $('#button');
+
+    var viewHeight = world.patchSize() * world.worldHeight(); // in pixels
+    var viewWidth = world.patchSize() * world.worldWidth(); // in pixels
+    paper.view.viewSize = new paper.Size(viewWidth, viewHeight);
+
+    var tickWidthStr = $ticks.css('width');
+    var buttonWidthStr = $button.css('width');
+    var tickWidth = parseInt(tickWidthStr.substr(0, tickWidthStr.length - 2));
+    var buttonWidth = parseInt(buttonWidthStr.substr(0, buttonWidthStr.length - 2));
+    var tickCounterWidth = viewWidth - (tickWidth + buttonWidth);
+    $tickCounter.css('width', tickCounterWidth);
+
 }
 
 function messageSwitcher(user, final_text, time) {
