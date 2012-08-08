@@ -7,6 +7,7 @@
 */
 
 var agents = {};
+var oldAgents = {};
 var agentPaths = { turtles: {}, patches: {}, links: {} };
 
 var patchLayer = project.activeLayer;
@@ -136,32 +137,35 @@ function updateView() {
                         for (var agentProp in agent) {
 
                             var propValue = agent[agentProp];
-                            switch (agentProp) {
-                                case "isVisible":
-                                    agentGroup.visible = propValue;
-                                    break;
-                                case "color" || "pcolor":
-                                    agentGroup.firstChild.fillColor = propValue;
-                                    agentGroup.firstChild.strokeColor = propValue;
-                                    break;
-                                case "shape":
-                                    changeShape(agentGroup, propValue);
-                                    break;
-                                case "xcor":
-                                    agentGroup.position.x = propValue;
-                                    break;
-                                case "ycor":
-                                    agentGroup.position.y = propValue;
-                                    break;
-                                case "heading":
-                                    changeHeading(agentGroup, propValue);
-                                    break;
-                                case "label" || "plabel":
-                                    agentGroup.lastChild.content = propValue;
-                                    break;
-                                case "labelColor" || "plabelColor":
-                                    agentGroup.lastChild.fillColor = agent[agentProp];
-                                    break;
+                            var oldPropValue = oldAgents[agentType][agentNum][agentProp];
+                            if (propValue !== oldPropValue) {
+                                switch (agentProp) {
+                                    case "isVisible":
+                                        agentGroup.visible = propValue;
+                                        break;
+                                    case "color" || "pcolor":
+                                        agentGroup.firstChild.fillColor = propValue;
+                                        agentGroup.firstChild.strokeColor = propValue;
+                                        break;
+                                    case "shape":
+                                        changeShape(agentGroup, propValue);
+                                        break;
+                                    case "xcor":
+                                        agentGroup.position.x = propValue;
+                                        break;
+                                    case "ycor":
+                                        agentGroup.position.y = propValue;
+                                        break;
+                                    case "heading":
+                                        changeHeading(agentGroup, propValue);
+                                        break;
+                                    case "label" || "plabel":
+                                        agentGroup.lastChild.content = propValue;
+                                        break;
+                                    case "labelColor" || "plabelColor":
+                                        agentGroup.lastChild.fillColor = agent[agentProp];
+                                        break;
+                                }
                             }
                         }
 
@@ -181,6 +185,9 @@ function updateView() {
                 }
             }
         }
+
+        oldAgents = agents;
+
     }
 }
 
