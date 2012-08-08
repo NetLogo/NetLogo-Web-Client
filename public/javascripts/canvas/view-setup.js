@@ -116,7 +116,8 @@ function updateView() {
 
                 } else if (agent.isDirty === 1) { // This agent has been changed or created during this frame.
 
-                    if (typeof agentGroup !== "undefined") { // If the agent existed but has been changed...
+                    if ((typeof agentGroup !== "undefined") && (agentGroup.visible || agent.isVisible)) {
+                        // If the agent existed but has been changed, and is not remaining hidden...
 
                         for (var agentProp in agent) {
 
