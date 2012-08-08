@@ -172,6 +172,7 @@ function updateView() {
                             };
                             var updatedLinkPath = new Path.Line(updatedEnd1, updatedEnd2);
                             updatedLinkPath.style = agentGroup.firstChild.style;
+                            agentGroup.lastChild.point = updatedLinkPath.position;
                             agentGroup.removeChildren(0);
                             agentGroup.insertChild(0, updatedLinkPath);
                         }
