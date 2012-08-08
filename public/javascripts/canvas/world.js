@@ -166,7 +166,7 @@ var world = (function() {
             var agentList = agentsAdditions[agentType];
             for (var agentNum in agentList) {
                 agents[agentType][agentNum] = agentList[agentNum];
-                agents[agentType][agentNum].isDirty = 1;
+                agents[agentType][agentNum].isDirty = DirtyState.DIRTY;
             }
         }
     }
@@ -179,7 +179,7 @@ var world = (function() {
                 for (var agentProp in agent) {
                     agents[agentNum][agentProp] = agent[agentProp];
                 }
-                agent.isDirty = 1;
+                agent.isDirty = DirtyState.DIRTY;
             }
         }
     }
@@ -188,7 +188,7 @@ var world = (function() {
         for (var agentType in agentsDeaths) {
             var agentList = agentsDeaths[agentType];
             for (var agentNum in agentList) {
-                agents[agentType][agentNum].isDirty = -1;
+                agents[agentType][agentNum].isDirty = DirtyState.DEAD;
             }
         }
     }
@@ -212,7 +212,7 @@ var world = (function() {
 
         kill: function(agentType, id) { delete agents[agentType][id] },
 
-        clean: function(agentType, id) { agents[agentType][id].isDirty = 0 },
+        clean: function(agentType, id) { agents[agentType][id].isDirty = DirtyState.CLEAN },
 
         resize: resize,
 
@@ -226,5 +226,13 @@ var world = (function() {
         updateWorld: updateWorld
 
     };
+
+})();
+
+var DirtyState = (function() {
+
+    this.CLEAN = 0;
+    this.DIRTY = 1;
+    this.DEAD = -1;
 
 })();

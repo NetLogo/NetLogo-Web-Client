@@ -118,13 +118,13 @@ function updateView() {
 
                 var agent = agentList[agentNum];
                 var agentGroup = agentPaths[agentType][agentNum];
-                if (agent.isDirty === -1) { // This agent is marked for death.
+                if (agent.isDirty === DirtyState.DEAD) { // This agent is marked for death.
 
                     agentGroup.remove();
                     delete agentPaths[agentType][agentNum];
                     world.kill(agentType, agentNum);
 
-                } else if (agent.isDirty === 1) { // This agent has been changed or created during this frame.
+                } else if (agent.isDirty === DirtyState.DIRTY) { // This agent has been changed or created during this frame.
 
                     if ((typeof agentGroup !== "undefined") && (agentGroup.visible || agent.isVisible)) {
                         // If the agent existed but has been changed, and is not remaining hidden...
