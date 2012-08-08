@@ -9,6 +9,10 @@
 var agents = {};
 var agentPaths = { turtles: {}, patches: {}, links: {} };
 
+var patchLayer = project.activeLayer;
+var linkLayer = new Layer();
+var turtleLayer = new Layer();
+
 var Shapes = (function() {
 
     var center = new Point({
@@ -17,6 +21,7 @@ var Shapes = (function() {
     });
 
     function Default() {
+        turtleLayer.activate();
         var defaultLabel = new PointText(center);
         var defaultPath = new Path();
         var segments = [
@@ -32,24 +37,28 @@ var Shapes = (function() {
     }
 
     function triangle() {
+        turtleLayer.activate();
         var triangleLabel = new PointText(new Point(center));
         var trianglePath = new Path.RegularPolygon(center, 3, 10);
         return new Group([trianglePath, triangleLabel]);
     }
 
     function square() {
+        turtleLayer.activate();
         var squareLabel = new PointText(center);
         var squarePath = new Path.RegularPolygon(center, 4, 10);
         return new Group([squarePath, squareLabel]);
     }
 
     function circle() {
+        turtleLayer.activate();
         var circleLabel = new PointText(center);
         var circlePath = new Path.Circle(center, 10);
         return new Group([circlePath, circleLabel]);
     }
 
     function star() {
+        turtleLayer.activate();
         var starLabel = new PointText(center);
         var starPath = new Path.Star(center, 5, 4, 10);
         starPath.rotate(180);
@@ -57,6 +66,7 @@ var Shapes = (function() {
     }
 
     function patch(size) {
+        patchLayer.activate();
         var patchPath = new Path.Rectangle(center, new Size(size, size));
         var patchLabel = new PointText(patchPath.position);
         return new Group([patchPath, patchLabel]);
@@ -162,6 +172,7 @@ function updateView() {
                         }
 
                         if (agentType === "links") {
+                            linkLayer.activate();
                             var updatedEnd1 = {
                                 x: agent.end1xcor,
                                 y: agent.end1ycor
@@ -181,6 +192,7 @@ function updateView() {
 
                         switch (agentType) {
                             case "turtles":
+                                turtleLayer.activate();
                                 var shape = agent.shape;
                                 var newTurtleGroup = Shapes[shape];
                                 var newTurtlePath = newTurtleGroup.firstChild;
@@ -200,6 +212,7 @@ function updateView() {
                                 agentPaths[agentType][agentNum] = newTurtleGroup;
                                 break;
                             case "patches":
+                                patchLayer.activate();
                                 var newPatchGroup = Shapes.Patch(world.patchSize());
                                 var newPatchPath = newPatchGroup.firstChild;
                                 var newPatchLabel = newPatchGroup.lastChild;
@@ -215,6 +228,7 @@ function updateView() {
                                 agentPaths[agentType][agentNum] = newPatchGroup;
                                 break;
                             case "links":
+                                linkLayer.activate();
                                 var end1 = {
                                     x: agent.end1xcor,
                                     y: agent.end1ycor
