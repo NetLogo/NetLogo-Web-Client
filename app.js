@@ -72,7 +72,6 @@ io.sockets.on('connection', function (socket) {
 
         console.log("Server Receiving: " + data);
 
-
         $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
                { agentType: shout, cmd: message },
                function(data) {
