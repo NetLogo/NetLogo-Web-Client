@@ -89,10 +89,7 @@ document.body.onload = function() {
 
     socket.on('tick', function(data) {
         world.updateWorld(data);
-        if ($tickCounter.text() !== "") {
-            var ticks = parseInt($tickCounter.text());
-            $tickCounter.text(++ticks);
-        } else { $tickCounter.text("1") }
+        $tickCounter.text(data.tick);
     });
 
     var keyString =

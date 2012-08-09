@@ -11,6 +11,7 @@ The input from the server should have the following format:
 
 input =
 {
+    tick: <int>,
     changeType: <'create', 'update', 'remove'>,
     agents: {
         turtles: {
