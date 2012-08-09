@@ -121,7 +121,6 @@ function updateView() {
                                         break;
                                     case "color" || "pcolor":
                                         agentGroup.firstChild.fillColor = propValue;
-                                        agentGroup.firstChild.strokeColor = propValue;
                                         break;
                                     case "shape":
                                         changeShape(agentGroup, propValue);
@@ -194,7 +193,6 @@ function createTurtle(agent, agentType, agentNum) {
         y: world.ycorToPixel(agent.ycor)
     };
     newTurtlePath.fillColor = agent.color;
-    newTurtlePath.strokeColor = agent.color;
     newTurtlePath.name = agent.heading.toString();
     newTurtlePath.rotate(agent.heading);
     newTurtleLabel.fillColor = agent.labelColor;
@@ -214,7 +212,6 @@ function createPatch(agent, agentType, agentNum) {
         y: world.ycorToPixel(agent.pycor)
     };
     newPatchPath.fillColor = agent.pcolor;
-    newPatchPath.strokeColor = agent.pcolor;
     newPatchLabel.fillColor = agent.plabelColor;
     newPatchLabel.content = agent.plabel;
     newPatchGroup.name = agent.id;
