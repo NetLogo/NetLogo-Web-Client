@@ -118,7 +118,7 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             };
-        } else if (message === 'create turtles') {
+        } else if (message === 'ct') {
             info = {
                 tick: 1,
                 creations: {
@@ -127,11 +127,11 @@ io.sockets.on('connection', function (socket) {
                             id: 0,
                             shape: 'Default',
                             color: '#FF0000',
-                            heading: (Math.random() * 360),
+                            heading: 0,
                             label: "",
                             labelColor: "",
                             isVisible: true,
-                            xcor: 1,
+                            xcor: 0,
                             ycor: 0,
                             isDirty: DirtyState.DIRTY
                         },
@@ -139,32 +139,21 @@ io.sockets.on('connection', function (socket) {
                             id: 1,
                             shape: 'Default',
                             color: '#00FF00',
-                            heading: (Math.random() * 360),
+                            heading: 0,
                             label: "",
                             isVisible: true,
-                            xcor: 0,
-                            ycor: 1,
+                            xcor: -8,
+                            ycor: 0,
                             isDirty: DirtyState.DIRTY
                         },
                         2: {
                             id: 2,
                             shape: 'Default',
                             color: '#0000FF',
-                            heading: (Math.random() * 360),
+                            heading: 0,
                             label: "",
                             isVisible: true,
-                            xcor: 1,
-                            ycor: 1,
-                            isDirty: DirtyState.DIRTY
-                        },
-                        3: {
-                            id: 3,
-                            shape: 'Default',
-                            color: '#FFFFFF',
-                            heading: (Math.random() * 360),
-                            label: "",
-                            isVisible: true,
-                            xcor: 0,
+                            xcor: 8,
                             ycor: 0,
                             isDirty: DirtyState.DIRTY
                         }
