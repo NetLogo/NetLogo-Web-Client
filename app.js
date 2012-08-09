@@ -78,6 +78,90 @@ io.sockets.on('connection', function (socket) {
                }
         );
 
+        var info;
+
+        if (message === 'create patches') {
+            info = {
+                tick: 1,
+                changeType: 'create',
+                agents: {
+                    patches: {
+                        0: {
+                            id: 0,
+                            pcolor: '#FF0000',
+                            pxcor: 0,
+                            pycor: 0,
+                            isDirty: DirtyState.DIRTY
+                        },
+                        1: {
+                            id: 1,
+                            pcolor: '#00FF00',
+                            pxcor: 1,
+                            pycor: 1,
+                            isDirty: DirtyState.DIRTY
+                        },
+                        2: {
+                            id: 2,
+                            pcolor: '#0000FF',
+                            pxcor: 1,
+                            pycor: 0,
+                            isDirty: DirtyState.DIRTY
+                        },
+                        3: {
+                            id: 3,
+                            pcolor: '#FFFFFF',
+                            pxcor: 0,
+                            pycor: 1,
+                            isDirty: DirtyState.DIRTY
+                        }
+                    }
+                }
+            };
+        } else if (message === 'create turtles') {
+            info = {
+                tick: 1,
+                changeType: 'create',
+                agents: {
+                   turtles: {
+                        0: {
+                            id: 0,
+                            color: '#FF0000',
+                            xcor: 1,
+                            ycor: 0,
+                            shape: 'Default',
+                            isDirty: DirtyState.DIRTY
+                        },
+                        1: {
+                            id: 1,
+                            color: '#00FF00',
+                            xcor: 0,
+                            ycor: 1,
+                            shape: 'Default',
+                            isDirty: DirtyState.DIRTY
+                        },
+                        2: {
+                            id: 2,
+                            color: '#0000FF',
+                            xcor: 1,
+                            ycor: 1,
+                            shape: 'Default',
+                            isDirty: DirtyState.DIRTY
+                        },
+                        3: {
+                            id: 3,
+                            color: '#FFFFFF',
+                            xcor: 0,
+                            ycor: 0,
+                            shape: 'Default',
+                            isDirty: DirtyState.DIRTY
+                        }
+                    }
+                }
+            };
+        }
+
+        socket.emit('tick',info);
+
     });
 
     socket.on('disconnect', function() {
