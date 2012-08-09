@@ -6,7 +6,6 @@
 * To change this template use File | Settings | File Templates.
 */
 
-var agents = {};
 var oldAgents = {};
 var agentPaths = { turtles: {}, patches: {}, links: {} };
 
@@ -89,7 +88,7 @@ function onFrame(event) {
 }
 
 function updateView() {
-    agents = $.extend(true, {}, world.getAgents()); // Take a deep copy of `world`'s agents
+    var agents = $.extend(true, {}, world.getAgents()); // Take a deep copy of `world`'s agents
     if (typeof agents !== {}) {
 
         for (var agentType in agents) {
