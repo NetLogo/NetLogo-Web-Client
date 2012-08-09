@@ -76,13 +76,11 @@ This will allow the paperscript to save time by not redrawing agents that haven'
 The server should not send information changing the value of isDirty.
  */
 
-var DirtyState = (function() {
-
-    this.CLEAN = 0;
-    this.DIRTY = 1;
-    this.DEAD = -1;
-
-})();
+var DirtyState = {
+    CLEAN: 0,
+    DIRTY: 1,
+    DEAD: -1
+};
 
 exports.DirtyState = DirtyState;
 

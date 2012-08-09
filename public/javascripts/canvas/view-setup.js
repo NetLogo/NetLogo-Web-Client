@@ -90,7 +90,7 @@ function onFrame(event) {
 
 function updateView() {
     agents = world.getAgents();
-    if (typeof agents !== 'undefined') {
+    if (typeof agents !== {}) {
 
         for (var agentType in agents) {
 
