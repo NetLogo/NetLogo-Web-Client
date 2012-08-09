@@ -89,7 +89,7 @@ function onFrame(event) {
 }
 
 function updateView() {
-    agents = world.getAgents();
+    agents = $.extend(true, {}, world.getAgents()); // Take a deep copy of `world`'s agents
     if (typeof agents !== {}) {
 
         for (var agentType in agents) {
