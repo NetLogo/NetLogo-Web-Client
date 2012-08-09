@@ -83,8 +83,7 @@ io.sockets.on('connection', function (socket) {
         if (message === 'create patches') {
             info = {
                 tick: 1,
-                changeType: 'create',
-                agents: {
+                creations: {
                     patches: {
                         0: {
                             id: 0,
@@ -120,8 +119,7 @@ io.sockets.on('connection', function (socket) {
         } else if (message === 'create turtles') {
             info = {
                 tick: 1,
-                changeType: 'create',
-                agents: {
+                creations: {
                    turtles: {
                         0: {
                             id: 0,

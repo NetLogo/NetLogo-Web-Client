@@ -12,53 +12,57 @@ The input from the server should have the following format:
 input =
 {
     tick: <int>,
-    changeType: <'create', 'update', 'remove'>,
-    agents: {
-        turtles: {
-            <id>: {
-                id:
-                who:
-                breed:
-                color: <6-digit hex number>
-                xcor: <int>
-                ycor:<int>
-                shape: <'Default', 'Triangle', 'Square', 'Circle', 'Star'>
-                heading: <int>
-                isVisible: <boolean>
-                label: <string>
-                labelColor: <6-digit hex number>
-                penMode:
-                penSize:
-                isDirty:
-            }
-        },
-        patches: {
-            <id>: {
-                id:
-                pcolor: <6-digit hex number>
-                plabel:
-                plabelColor: <6-digit hex number>
-                pxcor: <int>
-                pycor: <int>
-                isDirty:
-            }
-        },
-        links: {
-            <id>: {
-                id:
-                breed:
-                color: <6-digit hex number>
-                end1xcor:
-                end1ycor:
-                end2xcor:
-                end2ycor:
-                isVisible: <boolean>
-                label:
-                labelColor: <6-digit hex number>
-                shape:
-                thickness:
-                isDirty:
-            }
+    creations: <obj>,
+    updates: <obj>,
+    removals: <obj>
+}
+
+<obj> =
+{
+    turtles: {
+        <id>: {
+            id:
+            who:
+            breed:
+            color: <6-digit hex number>
+            xcor: <int>
+            ycor:<int>
+            shape: <'Default', 'Triangle', 'Square', 'Circle', 'Star'>
+            heading: <int>
+            isVisible: <boolean>
+            label: <string>
+            labelColor: <6-digit hex number>
+            penMode:
+            penSize:
+            isDirty:
+        }
+    },
+    patches: {
+        <id>: {
+            id:
+            pcolor: <6-digit hex number>
+            plabel:
+            plabelColor: <6-digit hex number>
+            pxcor: <int>
+            pycor: <int>
+            isDirty:
+        }
+    },
+    links: {
+        <id>: {
+            id:
+            breed:
+            color: <6-digit hex number>
+            end1xcor:
+            end1ycor:
+            end2xcor:
+            end2ycor:
+            isVisible: <boolean>
+            label:
+            labelColor: <6-digit hex number>
+            shape:
+            thickness:
+            isDirty:
         }
     }
 }
@@ -151,16 +155,31 @@ var world = (function() {
     }
 
     function updateWorld(input) {
-        var type = input.changeType;
-        var inputAgents = input.agents;
-        if (type === 'create') {
-            createAgents(inputAgents);
-        } else if (type === 'update') {
-            updateAgents(inputAgents);
-        } else if (type === 'remove') {
-            removeAgents(inputAgents);
+        for (var prop in input) {
+            var changeAgents = changeFunction(prop);
+            changeAgents(input[prop]);
         }
     }
+
+    function changeFunction(prop) {
+        var retFunc;
+        switch (prop) {
+            case 'creations':
+                retFunc = createAgents;
+                break;
+            case 'updates':
+                retFunc = updateAgents;
+                break;
+            case 'removals':
+                retFunc = removeAgents;
+                break;
+            default:
+                retFunc = doNothing;
+        }
+        return retFunc;
+    }
+
+    function doNothing(anything) {}
 
     function createAgents(agentsAdditions) {
         for (var agentType in agentsAdditions) {
