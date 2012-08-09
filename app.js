@@ -64,18 +64,15 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('message', function (data) {
 
-        var output = data.Output;
         var shout = data.Shout;
         var message = data.Message;
-        var serverState = 0;
-        var final_message = message;
 
         console.log("Server Receiving: " + data);
 
         $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
                { agentType: shout, cmd: message },
                function(data) {
-                   var packet = { user: name, processed_message: data, server_state: 0 };
+                   var packet = { user: name, processed_message: data };
                    console.log("Server Sending: " + packet);
                    io.sockets.json.send(packet);
                }

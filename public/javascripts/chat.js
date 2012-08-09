@@ -20,7 +20,6 @@ var $container;
 var $copier;
 var $textCopier;
 var $agentType;
-var $outputState;
 var $tickCounter;
 
 // Other globals
@@ -177,7 +176,6 @@ function initSelectors() {
     $copier      = $("#copier");
     $textCopier  = $("#textCopier");
     $agentType   = $("#agentType");
-    $outputState = $("#outputState");
     $tickCounter = $("#tickCounter");
 }
 
@@ -296,8 +294,7 @@ function scroll(key) {
 function send(message) {
 
     var shout = $agentType.text();
-    var output = $outputState.prop("checked");
-    var packet = { Message: message, Shout: shout, Output: output };
+    var packet = { Message: message, Shout: shout };
     socket.json.send(packet);
     messageList.append(message, agentTypeList.getCurrent());
     messageList.clearCursor();
