@@ -160,6 +160,32 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             };
+        } else if (message === "ut") {
+            info = {
+                tick: 9001,
+                updates: {
+                    turtles: {
+                        0: {
+                            color: "#FF0000",
+                            heading: 180,
+                            ycor: 3
+                        }
+                    }
+                }
+            }
+        } else if (message === "rt") {
+            info = {
+                tick: 1,
+                updates: {
+                    turtles: {
+                        0: {
+                            color: "#FFFFFF",
+                            heading: 0,
+                            ycor: 0
+                        }
+                    }
+                }
+            }
         }
 
         socket.emit('tick',info);
