@@ -186,7 +186,7 @@ function getCreateFunction(agentType) {
 function createTurtle(agent, agentType, agentNum) {
     turtleLayer.activate();
     var shape = agent.shape;
-    var newTurtleGroup = Shapes[shape];
+    var newTurtleGroup = Shapes[shape]();
     var newTurtlePath = newTurtleGroup.firstChild;
     var newTurtleLabel = newTurtleGroup.lastChild;
     newTurtleGroup.position = {
