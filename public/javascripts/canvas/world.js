@@ -131,35 +131,20 @@ var world = (function() {
     }
 
     function xcorToPixel(xcor) {
-        if (patchSize % 2) {
-            return (patchSize * xcor) + (patchSize * worldWidth - 1) / 2;
-        } else {
-            return (patchSize * xcor) + patchSize * worldWidth / 2;
-        }
+        return (patchSize * xcor) + (worldWidth * patchSize / 2);
     }
 
     function ycorToPixel(ycor) {
-        if (patchSize % 2) {
-            return  (patchSize * worldHeight - 1) / 2 - (patchSize * ycor);
-        } else {
-            return patchSize * worldHeight / 2 - (patchSize * ycor);
-        }
+        return (patchSize * -ycor) + (worldWidth * patchSize / 2);
     }
 
+    //@ These are wrong...
     function pixelToXcor(pixel) {
-        if (patchSize % 2) {
-            return (pixel - (patchSize * worldWidth - 1) / 2) / patchSize;
-        } else {
-            return (pixel - patchSize * worldWidth / 2) / patchSize;
-        }
+        return pixel / patchSize;
     }
 
     function pixelToYcor(pixel) {
-        if (patchSize % 2) {
-            return ((patchSize * worldHeight - 1) / 2 - pixel) / patchSize;
-        } else {
-            return (patchSize * worldHeight / 2 - pixel) / patchSize;
-        }
+        return pixel / patchSize;
     }
 
     function updateWorld(input) {
