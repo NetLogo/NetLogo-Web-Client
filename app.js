@@ -3,6 +3,8 @@
  * Module dependencies.
  */
 
+var DirtyState = require('./public/javascripts/canvas/world.js');
+
 var express = require('express')
     , routes = require('./routes')
     , $      = require('jquery');

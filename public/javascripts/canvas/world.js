@@ -256,3 +256,5 @@ var DirtyState = (function() {
     this.DEAD = -1;
 
 })();
+
+exports.DirtyState = DirtyState;
