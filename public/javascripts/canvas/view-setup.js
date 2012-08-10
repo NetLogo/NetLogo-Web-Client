@@ -22,7 +22,6 @@ var Shapes = (function() {
 
     function _default() {
         turtleLayer.activate();
-        var defaultLabel = new PointText(center);
         var defaultPath = new Path();
         var segments = [
             new Point(6, 0),
@@ -34,54 +33,49 @@ var Shapes = (function() {
         defaultPath.closePath();
         defaultPath.position = center;
         defaultPath.name = 'path';
-        defaultLabel.name = 'label';
-        return new Group([defaultPath, defaultLabel]);
+        return defaultPath;
     }
 
     function triangle() {
         turtleLayer.activate();
-        var triangleLabel = new PointText(new Point(center));
         var trianglePath = new Path.RegularPolygon(center, 3, 10);
         trianglePath.name = 'path';
-        triangleLabel.name = 'label';
-        return new Group([trianglePath, triangleLabel]);
+        return trianglePath;
     }
 
     function square() {
         turtleLayer.activate();
-        var squareLabel = new PointText(center);
         var squarePath = new Path.RegularPolygon(center, 4, 10);
         squarePath.name = 'path';
-        squareLabel.name = 'label';
-        return new Group([squarePath, squareLabel]);
+        return squarePath;
     }
 
     function circle() {
         turtleLayer.activate();
-        var circleLabel = new PointText(center);
         var circlePath = new Path.Circle(center, 10);
         circlePath.name = 'path';
-        circleLabel.name = 'label';
-        return new Group([circlePath, circleLabel]);
+        return circlePath;
     }
 
     function star() {
         turtleLayer.activate();
-        var starLabel = new PointText(center);
         var starPath = new Path.Star(center, 5, 4, 10);
         starPath.name = 'path';
-        starLabel.name = 'label';
         starPath.rotate(180);
-        return new Group([starPath, starLabel]);
+        return starPath;
     }
 
     function patch(size) {
         patchLayer.activate();
         var patchPath = new Path.Rectangle(center, new Size(size, size));
-        var patchLabel = new PointText(patchPath.position);
         patchPath.name = 'path';
-        patchLabel.name = 'label';
-        return new Group([patchPath, patchLabel]);
+        return patchPath;
+    }
+
+    function group(path) {
+        var agentLabel = new PointText(path.position);
+        agentLabel.name = 'label';
+        return new Group([path, agentLabel]);
     }
 
     return {
@@ -90,7 +84,8 @@ var Shapes = (function() {
         Square: square,
         Circle: circle,
         Star: star,
-        Patch: patch
+        Patch: patch,
+        Group: group
     }
 
 })();
@@ -202,8 +197,8 @@ function getCreateFunction(agentType) {
 function createTurtle(agent, agentType, agentNum) {
     turtleLayer.activate();
     var shape = agent.shape;
-    var newTurtleGroup = Shapes[shape]();
-    var newTurtlePath = newTurtleGroup.children['path'];
+    var newTurtlePath = Shapes[shape]();
+    var newTurtleGroup = Shapes.Group(newTurtlePath);
     var newTurtleLabel = newTurtleGroup.children['label'];
     newTurtleGroup.position = {
         x: world.xcorToPixel(agent.xcor),
@@ -220,8 +215,8 @@ function createTurtle(agent, agentType, agentNum) {
 
 function createPatch(agent, agentType, agentNum) {
     patchLayer.activate();
-    var newPatchGroup = Shapes.Patch(world.patchSize());
-    var newPatchPath = newPatchGroup.children['path'];
+    var newPatchPath = Shapes.Patch(world.patchSize());
+    var newPatchGroup = Shapes.Group(newPatchPath);
     var newPatchLabel = newPatchGroup.children['label'];
     newPatchGroup.position = {
         x: world.xcorToPixel(agent.pxcor),
@@ -281,13 +276,11 @@ function updateLink(agent, agentGroup) {
 
 function changeShape(agentGroup, propValue) {
     var oldPath = agentGroup.children['path'];
-    var newGroup = Shapes[propValue]();
-    var newPath = newGroup.children['path'];
-    var oldLabel = agentGroup.children['label'];
-    newGroup.position = agentGroup.position;
+    var newPath = Shapes[propValue]();
+    newPath.position = oldPath.position;
     newPath.style = oldPath.style;
-    agentGroup.removeChildren(0);
-    agentGroup.addChildren([newPath, oldLabel]);
+    agentGroup.removeChildren(0,1);
+    agentGroup.addChild(newPath);
 }
 
 function destroyAgent(agentGroup, agentType, agentNum) {
