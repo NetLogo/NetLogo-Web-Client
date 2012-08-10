@@ -82,7 +82,7 @@ io.sockets.on('connection', function (socket) {
 
         var info;
 
-        if (message === 'create patches') {
+        if (message === 'cp') {
             info = {
                 tick: 1,
                 creations: {
@@ -90,29 +90,29 @@ io.sockets.on('connection', function (socket) {
                         0: {
                             id: 0,
                             pcolor: '#FF0000',
-                            pxcor: 0,
-                            pycor: 0,
+                            pxcor: -16,
+                            pycor: -16,
                             isDirty: DirtyState.DIRTY
                         },
                         1: {
                             id: 1,
                             pcolor: '#00FF00',
-                            pxcor: 1,
-                            pycor: 1,
+                            pxcor: -16,
+                            pycor: 16,
                             isDirty: DirtyState.DIRTY
                         },
                         2: {
                             id: 2,
                             pcolor: '#0000FF',
-                            pxcor: 1,
-                            pycor: 0,
+                            pxcor: 16,
+                            pycor: -16,
                             isDirty: DirtyState.DIRTY
                         },
                         3: {
                             id: 3,
                             pcolor: '#FFFFFF',
-                            pxcor: 0,
-                            pycor: 1,
+                            pxcor: 16,
+                            pycor: 16,
                             isDirty: DirtyState.DIRTY
                         }
                     }
@@ -160,6 +160,34 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             };
+        } else if (message === 'fd') {
+            info = {
+                tick: 10,
+                updates: {
+                    turtles: {
+                        0: {
+                            ycor: 9
+                        },
+                        1: {
+                            ycor: 9
+                        },
+                        2: {
+                            ycor: 9
+                        }
+                    }
+                }
+            };
+        } else if (message === 'kt') {
+            info = {
+                tick: 20,
+                removals: {
+                    turtles: {
+                        0: {},
+                        1: {},
+                        2: {}
+                    }
+                }
+            }
         }
 
         socket.emit('tick',info);
