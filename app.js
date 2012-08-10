@@ -194,9 +194,9 @@ io.sockets.on('connection', function (socket) {
                 updates: {
                     turtles: {
                         0: {
-                            color: "#FF0000",
+                            color: "#FFFFFF",
                             heading: 180,
-                            ycor: 3
+                            ycor: 6
                         }
                     }
                 }
@@ -207,7 +207,7 @@ io.sockets.on('connection', function (socket) {
                 updates: {
                     turtles: {
                         0: {
-                            color: "#FFFFFF",
+                            color: "#FF0000",
                             heading: 0,
                             ycor: 0
                         }
