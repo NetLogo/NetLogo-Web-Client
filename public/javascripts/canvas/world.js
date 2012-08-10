@@ -189,10 +189,11 @@ var world = (function() {
             var agentList = agentsChanges[agentType];
             for (var agentNum in agentList) {
                 var agent = agentList[agentNum];
+                var myAgent = agents[agentType][agentNum];
                 for (var agentProp in agent) {
-                    agents[agentNum][agentProp] = agent[agentProp];
+                    myAgent[agentProp] = agent[agentProp];
                 }
-                agent.isDirty = DirtyState.DIRTY;
+                myAgent.isDirty = DirtyState.DIRTY;
             }
         }
     }
