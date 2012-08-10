@@ -112,14 +112,12 @@ function updateView() {
                 var agentGroup = agentPaths[agentType][agentNum];
                 if (agent.isDirty === DirtyState.DEAD) { // This agent is marked for death.
 
-                    agentGroup.remove();
-                    delete agentPaths[agentType][agentNum];
-                    world.kill(agentType, agentNum);
+                    destroyAgent(agentGroup, agentType, agentNum);
 
-                } else if (agent.isDirty === DirtyState.DIRTY) { // This agent has been changed or created during this frame.
+                } else if (agent.isDirty === DirtyState.DIRTY) { // This agent has been changed during this frame.
 
-                    if ((typeof agentGroup !== "undefined") && (agentGroup.visible || agent.isVisible)) {
-                        // If the agent existed but has been changed, and is not remaining hidden...
+                    if (agentGroup.visible || agent.isVisible) {
+                        // If the agent is not remaining hidden...
 
                         for (var agentProp in agent) {
 
@@ -161,12 +159,18 @@ function updateView() {
                             updateLink(agent, agentGroup);
                         }
 
-                    } else { // The agent was created during this frame.
-
-                        var creationFunction = getCreateFunction(agentType);
-                        creationFunction(agent, agentType, agentNum);
-
                     }
+
+                    world.clean(agentType, agentNum);
+
+                } else if (agent.isDirty === DirtyState.BORN) { // The agent was created during this frame.
+
+                    if (typeof agentGroup !== 'undefined') {
+                        destroyAgent(agentGroup, agentType, agentNum);
+                    }
+
+                    var creationFunction = getCreateFunction(agentType);
+                    creationFunction(agent, agentType, agentNum);
 
                     world.clean(agentType, agentNum);
 
@@ -286,3 +290,8 @@ function changeShape(agentGroup, propValue) {
     agentGroup.addChildren([newPath, oldLabel]);
 }
 
+function destroyAgent(agentGroup, agentType, agentNum) {
+    agentGroup.remove();
+    delete agentPaths[agentType][agentNum];
+    world.kill(agentType, agentNum);
+}

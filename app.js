@@ -82,7 +82,7 @@ io.sockets.on('connection', function (socket) {
 
         var info;
 
-        if (message === 'cp') {
+        if (message === 'cp') { // test create patches
             info = {
                 tick: 1,
                 creations: {
@@ -118,7 +118,7 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             };
-        } else if (message === 'ct') {
+        } else if (message === 'ct') { // test create turtles
             info = {
                 tick: 1,
                 creations: {
@@ -133,7 +133,7 @@ io.sockets.on('connection', function (socket) {
                             isVisible: true,
                             xcor: 0,
                             ycor: 0,
-                            isDirty: DirtyState.DIRTY
+                            isDirty: DirtyState.BORN
                         },
                         1: {
                             id: 1,
@@ -144,7 +144,7 @@ io.sockets.on('connection', function (socket) {
                             isVisible: true,
                             xcor: -16,
                             ycor: 0,
-                            isDirty: DirtyState.DIRTY
+                            isDirty: DirtyState.BORN
                         },
                         2: {
                             id: 2,
@@ -155,12 +155,12 @@ io.sockets.on('connection', function (socket) {
                             isVisible: true,
                             xcor: 16,
                             ycor: 0,
-                            isDirty: DirtyState.DIRTY
+                            isDirty: DirtyState.BORN
                         }
                     }
                 }
             };
-        } else if (message === 'fd') {
+        } else if (message === 'fd') { // test move ycor
             info = {
                 tick: 10,
                 updates: {
@@ -177,7 +177,7 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             };
-        } else if (message === 'kt') {
+        } else if (message === 'kt') { // test kill turtles
             info = {
                 tick: 20,
                 removals: {
@@ -188,7 +188,7 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
-        } else if (message === "ut") {
+        } else if (message === "ut") { // test rotation, color change
             info = {
                 tick: 9001,
                 updates: {
@@ -201,7 +201,7 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
-        } else if (message === "rt") {
+        } else if (message === "rt") { // test rotation, color change
             info = {
                 tick: 1,
                 updates: {
@@ -214,7 +214,7 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
-        } else if (message === 'cs') {
+        } else if (message === 'cs') { // test change shapes, labels, label color
             info = {
                 tick: 234,
                 updates: {
@@ -227,7 +227,51 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
+        } else if (message === 'voff') { // test isVisible
+            info = {
+                tick: 789,
+                updates: {
+                    turtles: {
+                        1: {
+                            isVisible: false
+                        }
+                    }
+                }
+            }
+        } else if (message === 'vc') { // test isVisible
+            info = {
+                tick: 790,
+                updates: {
+                    turtles: {
+                        0: {
+                            isVisible: false
+                        },
+                        1: {
+                            isVisible: true
+                        }
+                    }
+                }
+            }
+        } else if (message === 'von') { // test isVisible
+            info = {
+                tick: 791,
+                updates: {
+                    turtles: {
+                        0: {
+                            isVisible: true
+                        }
+                    }
+                }
+            }
         }
+
+        /*
+        tests to create
+
+        * create links
+        * update links
+        *
+        * */
 
         socket.emit('tick',info);
 

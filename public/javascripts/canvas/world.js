@@ -67,10 +67,11 @@ input =
     }
 }
 
-The isDirty property will record three states:
-    1.) changed since last world update,   (1)
-    2.) unchanged since last world update, (0)
-    3.) marked for deletion.               (-1)
+The isDirty property will record four states:
+    1.) unchanged since last world update, (0)
+    2.) changed since last world update,   (1)
+    3.) marked for deletion,               (2)
+    4.) created since the last update.     (3)
 
 This will allow the paperscript to save time by not redrawing agents that haven't changed.
 The server should not send information changing the value of isDirty.
@@ -79,7 +80,8 @@ The server should not send information changing the value of isDirty.
 var DirtyState = {
     CLEAN: 0,
     DIRTY: 1,
-    DEAD: -1
+    DEAD: 2,
+    BORN: 3
 };
 
 exports.DirtyState = DirtyState;
@@ -179,7 +181,7 @@ var world = (function() {
             var agentList = agentsAdditions[agentType];
             for (var agentNum in agentList) {
                 agents[agentType][agentNum] = agentList[agentNum];
-                agents[agentType][agentNum].isDirty = DirtyState.DIRTY;
+                agents[agentType][agentNum].isDirty = DirtyState.BORN;
             }
         }
     }
