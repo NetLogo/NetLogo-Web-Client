@@ -142,7 +142,7 @@ io.sockets.on('connection', function (socket) {
                             heading: 0,
                             label: "",
                             isVisible: true,
-                            xcor: -8,
+                            xcor: -16,
                             ycor: 0,
                             isDirty: DirtyState.DIRTY
                         },
@@ -153,7 +153,7 @@ io.sockets.on('connection', function (socket) {
                             heading: 0,
                             label: "",
                             isVisible: true,
-                            xcor: 8,
+                            xcor: 16,
                             ycor: 0,
                             isDirty: DirtyState.DIRTY
                         }
@@ -166,13 +166,13 @@ io.sockets.on('connection', function (socket) {
                 updates: {
                     turtles: {
                         0: {
-                            ycor: 9
+                            ycor: 2
                         },
                         1: {
                             ycor: 9
                         },
                         2: {
-                            ycor: 9
+                            ycor: 16
                         }
                     }
                 }

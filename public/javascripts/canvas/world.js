@@ -135,7 +135,7 @@ var world = (function() {
     }
 
     function ycorToPixel(ycor) {
-        return (patchSize * -ycor) + (worldWidth * patchSize / 2);
+        return (patchSize * -1 * ycor) + (worldWidth * patchSize / 2);
     }
 
     //@ These are wrong...

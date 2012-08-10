@@ -125,10 +125,10 @@ function updateView() {
                                         changeShape(agentGroup, propValue);
                                         break;
                                     case "xcor":
-                                        agentGroup.position.x = propValue;
+                                        agentGroup.position.x = world.xcorToPixel(propValue);
                                         break;
                                     case "ycor":
-                                        agentGroup.position.y = propValue;
+                                        agentGroup.position.y = world.ycorToPixel(propValue);
                                         break;
                                     case "heading":
                                         changeHeading(agentGroup, propValue);
