@@ -214,6 +214,19 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
+        } else if (message === 'cs') {
+            info = {
+                tick: 234,
+                updates: {
+                    turtles: {
+                        0: {
+                            shape: "Star",
+                            label: "This is a star",
+                            labelColor: "#FF00FF"
+                        }
+                    }
+                }
+            }
         }
 
         socket.emit('tick',info);

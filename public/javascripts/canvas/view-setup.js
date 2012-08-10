@@ -277,10 +277,12 @@ function updateLink(agent, agentGroup) {
 
 function changeShape(agentGroup, propValue) {
     var oldPath = agentGroup.children['path'];
-    var newPath = Shapes[propValue]();
-    newPath.position = oldPath.position;
+    var newGroup = Shapes[propValue]();
+    var newPath = newGroup.children['path'];
+    var oldLabel = agentGroup.children['label'];
+    newGroup.position = agentGroup.position;
     newPath.style = oldPath.style;
     agentGroup.removeChildren(0);
-    agentGroup.insertChild(0, newPath);
+    agentGroup.addChildren([newPath, oldLabel]);
 }
 
