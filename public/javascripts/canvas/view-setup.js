@@ -33,6 +33,8 @@ var Shapes = (function() {
         defaultPath.addSegments(segments);
         defaultPath.closePath();
         defaultPath.position = center;
+        defaultPath.name = 'path';
+        defaultLabel.name = 'label';
         return new Group([defaultPath, defaultLabel]);
     }
 
@@ -40,6 +42,8 @@ var Shapes = (function() {
         turtleLayer.activate();
         var triangleLabel = new PointText(new Point(center));
         var trianglePath = new Path.RegularPolygon(center, 3, 10);
+        trianglePath.name = 'path';
+        triangleLabel.name = 'label';
         return new Group([trianglePath, triangleLabel]);
     }
 
@@ -47,6 +51,8 @@ var Shapes = (function() {
         turtleLayer.activate();
         var squareLabel = new PointText(center);
         var squarePath = new Path.RegularPolygon(center, 4, 10);
+        squarePath.name = 'path';
+        squareLabel.name = 'label';
         return new Group([squarePath, squareLabel]);
     }
 
@@ -54,6 +60,8 @@ var Shapes = (function() {
         turtleLayer.activate();
         var circleLabel = new PointText(center);
         var circlePath = new Path.Circle(center, 10);
+        circlePath.name = 'path';
+        circleLabel.name = 'label';
         return new Group([circlePath, circleLabel]);
     }
 
@@ -61,6 +69,8 @@ var Shapes = (function() {
         turtleLayer.activate();
         var starLabel = new PointText(center);
         var starPath = new Path.Star(center, 5, 4, 10);
+        starPath.name = 'path';
+        starLabel.name = 'label';
         starPath.rotate(180);
         return new Group([starPath, starLabel]);
     }
@@ -69,6 +79,8 @@ var Shapes = (function() {
         patchLayer.activate();
         var patchPath = new Path.Rectangle(center, new Size(size, size));
         var patchLabel = new PointText(patchPath.position);
+        patchPath.name = 'path';
+        patchLabel.name = 'label';
         return new Group([patchPath, patchLabel]);
     }
 
@@ -119,7 +131,7 @@ function updateView() {
                                         agentGroup.visible = propValue;
                                         break;
                                     case "color" || "pcolor":
-                                        agentGroup.firstChild.fillColor = propValue;
+                                        agentGroup.children['path'].fillColor = propValue;
                                         break;
                                     case "shape":
                                         changeShape(agentGroup, propValue);
@@ -131,13 +143,15 @@ function updateView() {
                                         agentGroup.position.y = world.ycorToPixel(propValue);
                                         break;
                                     case "heading":
-                                        changeHeading(agentGroup, propValue);
+                                        var oldHeading = oldAgents[agentType][agentNum][agentProp];
+                                        var rotation = oldHeading - propValue;
+                                        agentGroup.children['path'].rotate(rotation);
                                         break;
                                     case "label" || "plabel":
-                                        agentGroup.lastChild.content = propValue;
+                                        agentGroup.children['label'].content = propValue;
                                         break;
                                     case "labelColor" || "plabelColor":
-                                        agentGroup.lastChild.fillColor = agent[agentProp];
+                                        agentGroup.children['label'].fillColor = agent[agentProp];
                                         break;
                                 }
                             }
@@ -185,14 +199,13 @@ function createTurtle(agent, agentType, agentNum) {
     turtleLayer.activate();
     var shape = agent.shape;
     var newTurtleGroup = Shapes[shape]();
-    var newTurtlePath = newTurtleGroup.firstChild;
-    var newTurtleLabel = newTurtleGroup.lastChild;
+    var newTurtlePath = newTurtleGroup.children['path'];
+    var newTurtleLabel = newTurtleGroup.children['label'];
     newTurtleGroup.position = {
         x: world.xcorToPixel(agent.xcor),
         y: world.ycorToPixel(agent.ycor)
     };
     newTurtlePath.fillColor = agent.color;
-    newTurtlePath.name = agent.heading.toString();
     newTurtlePath.rotate(agent.heading);
     newTurtleLabel.fillColor = agent.labelColor;
     newTurtleLabel.content = agent.label;
@@ -204,8 +217,8 @@ function createTurtle(agent, agentType, agentNum) {
 function createPatch(agent, agentType, agentNum) {
     patchLayer.activate();
     var newPatchGroup = Shapes.Patch(world.patchSize());
-    var newPatchPath = newPatchGroup.firstChild;
-    var newPatchLabel = newPatchGroup.lastChild;
+    var newPatchPath = newPatchGroup.children['path'];
+    var newPatchLabel = newPatchGroup.children['label'];
     newPatchGroup.position = {
         x: world.xcorToPixel(agent.pxcor),
         y: world.ycorToPixel(agent.pycor)
@@ -230,6 +243,8 @@ function createLink(agent, agentType, agentNum) {
     var newLinkPath = new Path.Line(end1, end2);
     var newLinkLabel = new PointText(newLinkPath.position);
     var newLinkGroup = new Group([newLinkPath, newLinkLabel]);
+    newLinkPath.name = 'path';
+    newLinkLabel.name = 'label';
     newLinkPath.style = {
         strokeColor: agent.color,
         strokeWidth: agent.thickness,
@@ -253,25 +268,19 @@ function updateLink(agent, agentGroup) {
         y: agent.end2ycor
     };
     var updatedLinkPath = new Path.Line(updatedEnd1, updatedEnd2);
-    updatedLinkPath.style = agentGroup.firstChild.style;
-    agentGroup.lastChild.point = updatedLinkPath.position;
+    updatedLinkPath.name = 'path';
+    updatedLinkPath.style = agentGroup.children['path'].style;
+    agentGroup.children['label'].point = updatedLinkPath.position;
     agentGroup.removeChildren(0);
     agentGroup.insertChild(0, updatedLinkPath);
 }
 
 function changeShape(agentGroup, propValue) {
-    var oldPath = agentGroup.firstChild;
-    var newPath = Shapes[propValue];
+    var oldPath = agentGroup.children['path'];
+    var newPath = Shapes[propValue]();
     newPath.position = oldPath.position;
     newPath.style = oldPath.style;
-    newPath.name = oldPath.name;
     agentGroup.removeChildren(0);
     agentGroup.insertChild(0, newPath);
 }
 
-function changeHeading(agentGroup, propValue) {
-    var oldHeading = parseInt(agentGroup.firstChild.name);
-    var diff = oldHeading - propValue;
-    agentGroup.firstChild.rotate(diff);
-    agentGroup.firstChild.name = propValue.toString();
-}
