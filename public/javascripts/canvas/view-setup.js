@@ -127,7 +127,7 @@ function updateView() {
                                         agentGroup.children['path'].fillColor = propValue;
                                         break;
                                     case "shape":
-                                        changeShape(agentGroup, propValue);
+                                        changeShape(agentGroup, propValue, agent.heading);
                                         break;
                                     case "xcor":
                                         agentGroup.position.x = world.xcorToPixel(propValue);
@@ -274,10 +274,11 @@ function updateLink(agent, agentGroup) {
     agentGroup.insertChild(0, updatedLinkPath);
 }
 
-function changeShape(agentGroup, propValue) {
+function changeShape(agentGroup, propValue, heading) {
     var oldPath = agentGroup.children['path'];
     var newPath = Shapes[propValue]();
     newPath.position = oldPath.position;
+    newPath.rotate(heading);
     newPath.style = oldPath.style;
     agentGroup.removeChildren(0,1);
     agentGroup.addChild(newPath);
