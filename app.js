@@ -265,15 +265,59 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
+        } else if (message === 'cl') {
+            info = {
+                tick: 56,
+                creations: {
+                    links: {
+                        0: {
+                            id: 0,
+                            color: '#00FFFF',
+                            end1xcor: 5,
+                            end1ycor: 5,
+                            end2xcor: 0,
+                            end2ycor: 0,
+                            isVisible: true,
+                            thickness: 1,
+                            label: '',
+                            labelColor: '',
+                            isDirty: DirtyState.BORN
+                        },
+                        1: {
+                            id: 1,
+                            color: '#FF0000',
+                            end1xcor: 0,
+                            end1ycor: 5,
+                            end2xcor: -5,
+                            end2ycor: 0,
+                            isVisible: true,
+                            thickness: 5,
+                            label: 'links',
+                            labelColor: '#FF0000',
+                            isDirty: DirtyState.BORN
+                        }
+                    }
+                }
+            }
+        } else if (message === 'ul') {
+            info = {
+                tick: 78,
+                updates: {
+                    links: {
+                        0: {
+                            end1xcor: 8,
+                            thickness: 8,
+                            label: 'second link',
+                            labelColor: '#00FFFF'
+                        },
+                        1: {
+                            end2ycor: -2,
+                            color: '#FF00FF'
+                        }
+                    }
+                }
+            }
         }
-
-        /*
-        tests to create
-
-        * create links
-        * update links
-        *
-        * */
 
         socket.emit('tick',info);
 
