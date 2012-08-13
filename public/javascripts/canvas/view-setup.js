@@ -108,6 +108,7 @@ function updateView() {
                 if (agent.isDirty === DirtyState.DEAD) { // This agent is marked for death.
 
                     destroyAgent(agentGroup, agentType, agentNum);
+                    world.kill(agentType, agentNum);
 
                 } else if (agent.isDirty === DirtyState.DIRTY) { // This agent has been changed during this frame.
 
@@ -291,5 +292,4 @@ function changeShape(agentGroup, propValue, heading) {
 function destroyAgent(agentGroup, agentType, agentNum) {
     agentGroup.remove();
     delete agentPaths[agentType][agentNum];
-    world.kill(agentType, agentNum);
 }
