@@ -232,12 +232,12 @@ function createPatch(agent, agentType, agentNum) {
 function createLink(agent, agentType, agentNum) {
     linkLayer.activate();
     var end1 = {
-        x: agent.end1xcor,
-        y: agent.end1ycor
+        x: world.xcorToPixel(agent.end1xcor),
+        y: world.ycorToPixel(agent.end1ycor)
     };
     var end2 = {
-        x: agent.end2xcor,
-        y: agent.end2ycor
+        x: world.xcorToPixel(agent.end2xcor),
+        y: world.ycorToPixel(agent.end2ycor)
     };
     var newLinkPath = new Path.Line(end1, end2);
     var newLinkLabel = new PointText(newLinkPath.position);
@@ -259,12 +259,12 @@ function createLink(agent, agentType, agentNum) {
 function updateLink(agent, agentGroup) {
     linkLayer.activate();
     var updatedEnd1 = {
-        x: agent.end1xcor,
-        y: agent.end1ycor
+        x: world.xcorToPixel(agent.end1xcor),
+        y: world.ycorToPixel(agent.end1ycor)
     };
     var updatedEnd2 = {
-        x: agent.end2xcor,
-        y: agent.end2ycor
+        x: world.xcorToPixel(agent.end2xcor),
+        y: world.ycorToPixel(agent.end2ycor)
     };
     var updatedLinkPath = new Path.Line(updatedEnd1, updatedEnd2);
     updatedLinkPath.name = 'path';
