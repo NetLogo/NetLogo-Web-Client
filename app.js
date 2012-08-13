@@ -88,28 +88,28 @@ io.sockets.on('connection', function (socket) {
                 creations: {
                     patches: {
                         0: {
-                            id: 0,
+                            id: '0',
                             pcolor: '#FF0000',
                             pxcor: -16,
                             pycor: -16,
                             isDirty: DirtyState.DIRTY
                         },
                         1: {
-                            id: 1,
+                            id: '1',
                             pcolor: '#00FF00',
                             pxcor: -16,
                             pycor: 16,
                             isDirty: DirtyState.DIRTY
                         },
                         2: {
-                            id: 2,
+                            id: '2',
                             pcolor: '#0000FF',
                             pxcor: 16,
                             pycor: -16,
                             isDirty: DirtyState.DIRTY
                         },
                         3: {
-                            id: 3,
+                            id: '3',
                             pcolor: '#FFFFFF',
                             pxcor: 16,
                             pycor: 16,
@@ -124,7 +124,7 @@ io.sockets.on('connection', function (socket) {
                 creations: {
                    turtles: {
                         0: {
-                            id: 0,
+                            id: '0',
                             shape: 'Default',
                             color: '#FF0000',
                             heading: 0,
@@ -136,7 +136,7 @@ io.sockets.on('connection', function (socket) {
                             isDirty: DirtyState.BORN
                         },
                         1: {
-                            id: 1,
+                            id: '1',
                             shape: 'Default',
                             color: '#00FF00',
                             heading: 0,
@@ -148,7 +148,7 @@ io.sockets.on('connection', function (socket) {
                             isDirty: DirtyState.BORN
                         },
                         2: {
-                            id: 2,
+                            id: '2',
                             shape: 'Default',
                             color: '#0000FF',
                             heading: 0,
@@ -271,7 +271,7 @@ io.sockets.on('connection', function (socket) {
                 creations: {
                     links: {
                         0: {
-                            id: 0,
+                            id: '0',
                             color: '#00FFFF',
                             end1xcor: 5,
                             end1ycor: 5,
@@ -284,7 +284,7 @@ io.sockets.on('connection', function (socket) {
                             isDirty: DirtyState.BORN
                         },
                         1: {
-                            id: 1,
+                            id: '1',
                             color: '#FF0000',
                             end1xcor: 0,
                             end1ycor: 5,
@@ -317,6 +317,60 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             }
+        } else if (message === 'kl') {
+            info = {
+                tick: 92,
+                removals: {
+                    links: {
+                        0: {},
+                        1: {}
+                    }
+                }
+            }
+        } else if (message === 'ct2') {
+            info = {
+                tick: 1,
+                creations: {
+                   turtles: {
+                        0: {
+                            id: '0',
+                            shape: 'Default',
+                            color: '#FFFF00',
+                            heading: 0,
+                            label: "",
+                            labelColor: "",
+                            isVisible: true,
+                            xcor: 0,
+                            ycor: 5,
+                            isDirty: DirtyState.BORN
+                        },
+                        1: {
+                            id: '1',
+                            shape: 'Default',
+                            color: '#00FFFF',
+                            heading: 0,
+                            label: "",
+                            labelColor: "",
+                            isVisible: true,
+                            xcor: -16,
+                            ycor: 5,
+                            isDirty: DirtyState.BORN
+                        },
+                        2: {
+                            id: '2',
+                            shape: 'Default',
+                            color: '#FF00FF',
+                            heading: 0,
+                            label: "",
+                            labelColor: "",
+                            isVisible: true,
+                            xcor: 16,
+                            ycor: 5,
+                            isDirty: DirtyState.BORN
+                        }
+                    }
+                }
+            };
         }
 
         socket.emit('tick',info);
