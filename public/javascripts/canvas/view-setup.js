@@ -114,6 +114,10 @@ function updateView() {
                     if (agentGroup.visible || agent.isVisible) {
                         // If the agent is not remaining hidden...
 
+                        if (agentType === "links") {
+                            updateLink(agent, agentGroup);
+                        }
+
                         for (var agentProp in agent) {
 
                             var propValue = agent[agentProp];
@@ -124,7 +128,9 @@ function updateView() {
                                         agentGroup.visible = propValue;
                                         break;
                                     case "color" || "pcolor":
-                                        agentGroup.children['path'].fillColor = propValue;
+                                        if (agentType === 'links') {
+                                            agentGroup.children['path'].strokeColor = propValue;
+                                        } else { agentGroup.children['path'].fillColor = propValue }
                                         break;
                                     case "shape":
                                         changeShape(agentGroup, propValue, agent.heading);
@@ -140,6 +146,9 @@ function updateView() {
                                         var rotation = oldHeading - propValue;
                                         agentGroup.children['path'].rotate(rotation);
                                         break;
+                                    case "thickness":
+                                        agentGroup.children['path'].strokeWidth = propValue;
+                                        break;
                                     case "label" || "plabel":
                                         agentGroup.children['label'].content = propValue;
                                         break;
@@ -149,11 +158,6 @@ function updateView() {
                                 }
                             }
                         }
-
-                        if (agentType === "links") {
-                            updateLink(agent, agentGroup);
-                        }
-
                     }
 
                     world.clean(agentType, agentNum);
@@ -270,7 +274,7 @@ function updateLink(agent, agentGroup) {
     updatedLinkPath.name = 'path';
     updatedLinkPath.style = agentGroup.children['path'].style;
     agentGroup.children['label'].point = updatedLinkPath.position;
-    agentGroup.removeChildren(0);
+    agentGroup.removeChildren(0, 1);
     agentGroup.insertChild(0, updatedLinkPath);
 }
 
@@ -281,7 +285,7 @@ function changeShape(agentGroup, propValue, heading) {
     newPath.rotate(heading);
     newPath.style = oldPath.style;
     agentGroup.removeChildren(0,1);
-    agentGroup.addChild(newPath);
+    agentGroup.insertChild(0, newPath);
 }
 
 function destroyAgent(agentGroup, agentType, agentNum) {
