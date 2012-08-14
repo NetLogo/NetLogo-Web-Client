@@ -25,9 +25,9 @@ var Shapes = (function() {
         var defaultPath = new Path();
         var segments = [
             new Point(6, 0),
-            new Point(0, 15),
-            new Point(6, 12),
-            new Point(12, 15)
+            new Point(0, 13),
+            new Point(6, 10),
+            new Point(12, 13)
         ];
         defaultPath.addSegments(segments);
         defaultPath.closePath();
@@ -38,28 +38,28 @@ var Shapes = (function() {
 
     function triangle() {
         turtleLayer.activate();
-        var trianglePath = new Path.RegularPolygon(center, 3, 10);
+        var trianglePath = new Path.RegularPolygon(center, 3, 7);
         trianglePath.name = 'path';
         return trianglePath;
     }
 
     function square() {
         turtleLayer.activate();
-        var squarePath = new Path.RegularPolygon(center, 4, 10);
+        var squarePath = new Path.RegularPolygon(center, 4, 7);
         squarePath.name = 'path';
         return squarePath;
     }
 
     function circle() {
         turtleLayer.activate();
-        var circlePath = new Path.Circle(center, 10);
+        var circlePath = new Path.Circle(center, 7);
         circlePath.name = 'path';
         return circlePath;
     }
 
     function star() {
         turtleLayer.activate();
-        var starPath = new Path.Star(center, 5, 4, 10);
+        var starPath = new Path.Star(center, 5, 3, 8);
         starPath.name = 'path';
         starPath.rotate(180);
         return starPath;
