@@ -158,6 +158,30 @@ io.sockets.on('connection', function (socket) {
                             xcor: 16,
                             ycor: 0,
                             isDirty: DirtyState.BORN
+                        },
+                        3: {
+                            id: '3',
+                            shape: 'Circle',
+                            color: '#FFFF00',
+                            heading: 30,
+                            label: '',
+                            labelColor: '',
+                            isVisible: true,
+                            xcor: 8,
+                            ycor: -4,
+                            isDirty: DirtyState.BORN
+                        },
+                        4: {
+                            id: '4',
+                            shape: 'Triangle',
+                            color: '#00FFFF',
+                            heading: 330,
+                            label: 'triangle',
+                            labelColor: '#00FF00',
+                            isVisible: true,
+                            xcor: -8,
+                            ycor: -4,
+                            isDirty: DirtyState.BORN
                         }
                     }
                 }
