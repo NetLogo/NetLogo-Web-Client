@@ -16,7 +16,7 @@ const THROTTLE_DELAY = 100;
 var $inputBuffer;
 var $usersOnline;
 var $chatLog;
-var $container;
+var $chatContainer;
 var $copier;
 var $textCopier;
 var $agentType;
@@ -80,9 +80,9 @@ document.body.onload = function() {
         }
 
         logList[state] = new TextHolder(final_text);
-        var difference = $container[0].scrollHeight - $container.scrollTop();
+        var difference = $chatContainer[0].scrollHeight - $chatContainer.scrollTop();
         $chatLog.append(messageSwitcher(user, final_text, time));
-        if ((difference === $container.innerHeight()) || (user === userName)) { textScroll(); }
+        if ((difference === $chatContainer.innerHeight()) || (user === userName)) { textScroll(); }
 
     });
 
@@ -147,7 +147,7 @@ document.body.onload = function() {
     }, 'keydown');
 
     Mousetrap.bind('pageup', function() {
-        $container.focus();
+        $chatContainer.focus();
     });
 
 };
@@ -169,14 +169,14 @@ function startup() {
 
 // Caching jQuery selector results for easy access throughout the code
 function initSelectors() {
-    $inputBuffer = $("#inputBuffer");
-    $usersOnline = $("#usersOnline");
-    $chatLog     = $("#chatLog");
-    $container   = $("#container");
-    $copier      = $("#copier");
-    $textCopier  = $("#textCopier");
-    $agentType   = $("#agentType");
-    $tickCounter = $("#tickCounter");
+    $inputBuffer   = $("#inputBuffer");
+    $usersOnline   = $("#usersOnline");
+    $chatLog       = $("#chatLog");
+    $chatContainer = $("#chatContainer");
+    $copier        = $("#copier");
+    $textCopier    = $("#textCopier");
+    $agentType     = $("#agentType");
+    $tickCounter   = $("#tickCounter");
 }
 
 function initAgentList() {
@@ -227,11 +227,11 @@ function messageSwitcher(user, final_text, time) {
 }
 
 function textScroll() {
-    var bottom = $container[0].scrollHeight - $container.height();
-    var font = $container.css('font-size');
+    var bottom = $chatContainer[0].scrollHeight - $chatContainer.height();
+    var font = $chatContainer.css('font-size');
     var size = parseInt(font.substr(0, font.length - 2));
-    $container.scrollTop(bottom - size);
-    $container.animate({'scrollTop': bottom}, 'fast');
+    $chatContainer.scrollTop(bottom - size);
+    $chatContainer.animate({'scrollTop': bottom}, 'fast');
 }
 
 // Credit to Remy Sharp.

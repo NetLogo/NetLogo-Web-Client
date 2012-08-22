@@ -27,7 +27,7 @@ function handleTextRowOnMouseUp(row) {
     getSelText();
     if ($textCopier.val() === '') {
         textCollapse(row);
-        $container.focus();
+        $chatContainer.focus();
     }
     return false;
 }
