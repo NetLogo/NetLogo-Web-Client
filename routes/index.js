@@ -6,7 +6,7 @@ var $ = require('jquery');
  */
 
 exports.index = function(req, res) {
-    res.render('index', { title: "Philip's Chat"})
+    res.render('index', { title: "NetLogo"})
 };
 
 exports.thing = function(req, res) {
