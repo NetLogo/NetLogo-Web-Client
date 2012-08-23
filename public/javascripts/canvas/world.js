@@ -12,12 +12,18 @@ The input from the server should have the following format:
 input =
 {
     tick: <int>,
-    creations: <obj>,
-    updates: <obj>,
-    removals: <obj>
+    globals: <obj1>
+    creations: <obj2>,
+    updates: <obj2>,
+    removals: <obj2>,
 }
 
-<obj> =
+<obj1> =
+{
+    <reporter>: <value>
+}
+
+<obj2> =
 {
     turtles: {
         <id>: {
@@ -91,6 +97,8 @@ var world = (function() {
     var isRunning = false;
 
     var agents = { turtles: {}, patches: {}, links: {} };
+
+    var globals = {};
 
     var patchSize = 13; // in pixels
     var maxpxcor = 16;
@@ -168,6 +176,9 @@ var world = (function() {
             case 'removals':
                 retFunc = removeAgents;
                 break;
+            case 'globals':
+                retFunc = setGlobals;
+                break;
             default:
                 retFunc = doNothing;
         }
@@ -175,6 +186,8 @@ var world = (function() {
     }
 
     function doNothing(anything) {}
+
+    function setGlobals(newGlobals) {globals = newGlobals}
 
     function createAgents(agentsAdditions) {
         for (var agentType in agentsAdditions) {
@@ -214,6 +227,8 @@ var world = (function() {
         isRunning: function() { return isRunning },
 
         getAgents: function() { return agents },
+
+        getGlobals: function() { return globals },
 
         getTurtles: function() { return agents.turtles },
         getPatches: function() { return agents.patches },

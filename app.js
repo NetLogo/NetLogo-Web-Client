@@ -401,6 +401,23 @@ io.sockets.on('connection', function (socket) {
 
     });
 
+    socket.on('button',function(data) {
+        io.sockets.emit('new button', data);
+    });
+
+    socket.on('monitor', function(data) {
+        var reporter = data.reporter;
+        var precision = data.precision;
+        var font = data.font;
+        var name = data.id;
+        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+            {reporter: reporter, precision: precision}
+        );
+
+        var newMonitorInfo = {id: name, font: font, reporter: reporter};
+        io.sockets.emit('new monitor', newMonitorInfo);
+    });
+
     socket.on('disconnect', function() {
         removeUser(name);
     });

@@ -30,6 +30,12 @@ var $buttonAgents;
 var $buttonKey;
 var $buttonDisable;
 var $allButtonFields;
+var $monitorDialog;
+var $monitorReporter;
+var $monitorDisplay;
+var $monitorPrecision;
+var $monitorFont;
+var $allMonitorFields;
 
 // Other globals
 var userName;
@@ -98,7 +104,19 @@ document.body.onload = function() {
 
     socket.on('tick', function(data) {
         world.updateWorld(data);
+        var globals = world.getGlobals();
+        for (var reporter in globals) {
+            $("#"+reporter).val(globals[reporter]);
+        }
         $tickCounter.text(data.tick);
+    });
+
+    socket.on('new button', function(data) {
+        createButton(data);
+    });
+
+    socket.on('new monitor', function(data) {
+        createMonitor(data);
     });
 
     var keyString =
@@ -192,13 +210,27 @@ function initJQueryUI() {
                 autoOpen: false,
                 title: "Button",
                 buttons: {
-                    Ok: createButton(),
+                    Ok: alertButton,
                     Cancel: function() { $buttonDialog.dialog('close') }
                 },
                 close: function() {
                     $allButtonFields.val("");
                 }
             });
+
+        $monitorDialog.dialog({
+            autoOpen: false,
+            title: "Monitor",
+            buttons: {
+                Ok: alertMonitor,
+                Cancel: function() { $monitorDialog.dialog('close') }
+            },
+            close: function() {
+                $allMonitorFields.val('');
+                $monitorPrecision.val(17);
+                $monitorFont.val(11);
+            }
+        })
     });
 }
 
@@ -231,6 +263,12 @@ function initSelectors() {
     $buttonKey       = $("#buttonKey");
     $buttonDisable   = $("#buttonDisable");
     $allButtonFields = $( [] ).add($buttonCommands).add($buttonDisplay).add($buttonKey);
+    $monitorDialog   = $("#monitorDialog");
+    $monitorReporter  = $("#monitorReporter");
+    $monitorDisplay   = $("#monitorDisplay");
+    $monitorPrecision = $("#monitorPrecision");
+    $monitorFont      = $("#monitorFont");
+    $allMonitorFields = $( []).add($monitorDisplay).add($monitorReporter);
 }
 
 function initAgentList() {
@@ -367,41 +405,65 @@ function createWidget(type) {
                 $buttonDialog.dialog('open');
             };
             break;
+        case 'monitor':
+            retfunc = function() {
+                $monitorDialog.dialog('open');
+            };
+            break;
     }
     return retfunc;
 }
 
-function createButton() {
+function alertButton() {
     var buttonID = $buttonDisplay.val() ? $buttonDisplay.val() : $buttonCommands.val();
-    var newButtonHTML = "<div><button id='" + buttonID +
-        "' name='" + $buttonDisable.prop('checked') +
-        "' accesskey='" + $buttonKey.val() +
-        "' value='" + JSON.stringify({Message: $buttonCommands.val(), Shout: $buttonAgents.val(), Forever: $buttonForever.prop('checked')}) +
+    var buttonInfo = {
+        id: buttonID,
+        command: $buttonCommands.val(),
+        isDisabled: $buttonDisable.prop('checked'),
+        actionKey: $buttonKey.val(),
+        isForever: $buttonForever.prop('checked'),
+        agents: $buttonAgents.val()
+    };
+    socket.emit('button', buttonInfo);
+}
+
+function createButton(data) {
+    var id = data.id;
+    var command = data.command;
+    var isDisabled = data.isDisabled;
+    var agents = data.agents;
+    var isForever = data.isForever;
+    var actionKey = data.actionKey;
+    var newButtonHTML = "<div><button id='" + id +
+        "' name='" + isDisabled +
+        "' accesskey='" + actionKey +
+        "' value='" + JSON.stringify({Message: command, Shout: agents, Forever: isForever}) +
         //TODO make server account for possible 'Forever' (if (data.Forever) {...})
         "'>" +
-        buttonID +
+        id +
         "</button></div>";
     $interface.append(newButtonHTML);
 
     var agentIcon = '',
         foreverIcon = '';
-    if ($buttonForever.prop('checked')) { foreverIcon = 'ui-icon-refresh' }
-    if ($buttonAgents.val() === 'turtles') {
+    if (isForever) { foreverIcon = 'ui-icon-refresh' }
+    if (agents === 'turtles') {
         agentIcon = 'ui-icon-clipboard';
-    } else if ($buttonAgents.val() === 'patches') {
+    } else if (agents === 'patches') {
         agentIcon = 'ui-icon-stop';
-    } else if ($buttonAgents.val() === 'links') {
+    } else if (agents === 'links') {
         agentIcon = 'ui-icon-link';
     }
 
-    $('#'+buttonID)
+    $('#'+id)
         .button({
             icons: { primary: agentIcon, secondary: foreverIcon },
-            label: buttonID
+            label: id
         })
         .click(function() {
-            buttonSend(document.getElementById(buttonID));
+            buttonSend(document.getElementById(id));
         });
+    //TODO make these draggable
 
     $buttonDialog.dialog('close');
 }
@@ -410,4 +472,30 @@ function buttonSend(button) {
     if ((button.name === 'false') || ($tickCounter.text() !== "")) {
         socket.json.send(JSON.parse(button.value));
     }
+}
+
+function alertMonitor() {
+    var monitorInfo = {
+        id: $monitorDisplay.val(),
+        reporter: $monitorReporter.val(),
+        precision: $monitorPrecision.val(),
+        font: $monitorFont.val()
+    };
+    socket.emit('monitor', monitorInfo);
+}
+
+function createMonitor(data) {
+    var monitorID = data.id;
+    var reporter = data.reporter;
+    var monitorFont = data.font;
+    var newMonitorHTML = "<div style='background-color: #CC9966; outline: 2px outset #CC9966;' id='" + monitorID + "'>"+
+            "<label for='" + reporter + " input'>"+monitorID+"</label>"+
+            "<br>"+
+            "<input readonly='readonly' type='text' value='' id='" + reporter + " input'>"+
+        "</div>";
+    $interface.append(newMonitorHTML);
+    $("#"+monitorID).draggable({
+        containment: 'parent',
+        revert: 'valid'
+    })
 }
