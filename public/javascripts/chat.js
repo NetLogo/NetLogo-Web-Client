@@ -21,6 +21,15 @@ var $copier;
 var $textCopier;
 var $agentType;
 var $tickCounter;
+var $interface;
+var $buttonDialog;
+var $buttonCommands;
+var $buttonForever;
+var $buttonDisplay;
+var $buttonAgents;
+var $buttonKey;
+var $buttonDisable;
+var $allButtonFields;
 
 // Other globals
 var userName;
@@ -32,8 +41,9 @@ var logList = [];
 
 // Onload
 document.body.onload = function() {
-    startup();
     initSelectors();
+    initJQueryUI();
+    startup();
     initAgentList();
     initView();
     $agentType.text(agentTypeList.getCurrent());
@@ -157,6 +167,41 @@ document.body.onload = function() {
  * Basic page functionality
  */
 
+function initJQueryUI() {
+    $(function() {
+
+
+        $("#viewContainer")
+            .droppable().
+            draggable({
+                containment: 'parent'
+            });
+
+        $('#add').button({icons: {secondary: 'ui-icon-plus'}})
+            .click(function() {
+                var type = prompt("What would you like to add?");
+                if (typeof type !== 'undefined') {
+                    var createFunction = createWidget(type);
+                    createFunction();
+                }
+            });
+
+        $('#addOptions').selectmenu();
+
+        $buttonDialog.dialog({
+                autoOpen: false,
+                title: "Button",
+                buttons: {
+                    Ok: createButton(),
+                    Cancel: function() { $buttonDialog.dialog('close') }
+                },
+                close: function() {
+                    $allButtonFields.val("");
+                }
+            });
+    });
+}
+
 function startup() {
     userName = prompt("Please type your user name:");
     $.post('/', { username: userName }, function(data) {
@@ -177,6 +222,15 @@ function initSelectors() {
     $textCopier    = $("#textCopier");
     $agentType     = $("#agentType");
     $tickCounter   = $("#tickCounter");
+    $interface     = $("#interface");
+    $buttonDialog  = $("#buttonDialog");
+    $buttonCommands  = $("#buttonCommands");
+    $buttonForever   = $("#buttonForever");
+    $buttonDisplay   = $("#buttonDisplay");
+    $buttonAgents    = $("#buttonAgents");
+    $buttonKey       = $("#buttonKey");
+    $buttonDisable   = $("#buttonDisable");
+    $allButtonFields = $( [] ).add($buttonCommands).add($buttonDisplay).add($buttonKey);
 }
 
 function initAgentList() {
@@ -304,3 +358,56 @@ function send(message) {
 }
 
 function focusInput() { $inputBuffer.focus() }
+
+function createWidget(type) {
+    var retfunc = function() { alert("That wasn't a valid NetLogo widget!") };
+    switch (type) {
+        case 'button':
+            retfunc = function() {
+                $buttonDialog.dialog('open');
+            };
+            break;
+    }
+    return retfunc;
+}
+
+function createButton() {
+    var buttonID = $buttonDisplay.val() ? $buttonDisplay.val() : $buttonCommands.val();
+    var newButtonHTML = "<div><button id='" + buttonID +
+        "' name='" + $buttonDisable.prop('checked') +
+        "' accesskey='" + $buttonKey.val() +
+        "' value='" + JSON.stringify({Message: $buttonCommands.val(), Shout: $buttonAgents.val(), Forever: $buttonForever.prop('checked')}) +
+        //TODO make server account for possible 'Forever' (if (data.Forever) {...})
+        "'>" +
+        buttonID +
+        "</button></div>";
+    $interface.append(newButtonHTML);
+
+    var agentIcon = '',
+        foreverIcon = '';
+    if ($buttonForever.prop('checked')) { foreverIcon = 'ui-icon-refresh' }
+    if ($buttonAgents.val() === 'turtles') {
+        agentIcon = 'ui-icon-clipboard';
+    } else if ($buttonAgents.val() === 'patches') {
+        agentIcon = 'ui-icon-stop';
+    } else if ($buttonAgents.val() === 'links') {
+        agentIcon = 'ui-icon-link';
+    }
+
+    $('#'+buttonID)
+        .button({
+            icons: { primary: agentIcon, secondary: foreverIcon },
+            label: buttonID
+        })
+        .click(function() {
+            buttonSend(document.getElementById(buttonID));
+        });
+
+    $buttonDialog.dialog('close');
+}
+
+function buttonSend(button) {
+    if ((button.name === 'false') || ($tickCounter.text() !== "")) {
+        socket.json.send(JSON.parse(button.value));
+    }
+}

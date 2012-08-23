@@ -1,7 +1,8 @@
 head
   script(type='text/javascript', src='/socket.io/socket.io.js')
-  script(type='text/javascript', src='http://code.jquery.com/jquery.js')
+  script(type='text/javascript', src='//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js')
   script(type='text/javascript', src='jquery-ui-1.8.23.min.js')
+  link(rel='stylesheet', href='/stylesheets/ui-lightness/jquery-ui-1.8.23.css')
   script(type='text/javascript', src='jquery.ui.selectmenu.js')
   script(type='text/javascript', src='mousetrap.min.js')
   script(type='text/javascript', src='paper.js')
@@ -17,19 +18,66 @@ head
   script(type='text/javascript', src='/javascripts/chat.js')
   script(type='text/paperscript', src='/javascripts/canvas/view-setup.js', canvas='view')
 body
-  div(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
-    table#viewHeader(style='margin-top: 2px; margin-left: 3px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
-      tr
-        td#ticks(style='padding: 0px') ticks:
-        td#tickCounter(style='width: 320px; padding: 0px')
-        td#button(style='padding: 0px')
-          input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
-    canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')
+  #interface(style='border: 2px inset #CCCCCC; float: right; padding: 3px; height: 1000px; width: 450px;')
+    button#add(type='button)
+      | Add
+    select#addOptions
+      option(value='button')
+        | Button
+      option(value='slider')
+        | Slider
+      option(value='switch')
+        | Switch
+      option(value='chooser')
+        | Chooser
+      option(value='input')
+        | Input
+      option(value='monitor')
+        | Monitor
+      option(value='plot')
+        | Plot
+      option(value='output')
+        | Output
+      option(value='note')
+        | Note
+    #buttonDialog
+      table
+        tr
+          td
+            label(for='buttonAgents') Agent(s)
+            select#buttonAgents
+              option(value='observer') observer
+              option(value='turtles') turtles
+              option(value='patches') patches
+              option(value='links') links
+          td
+            input#buttonForever(type='checkbox')
+            label(for='buttonForever') Forever
+      br
+      input#buttonDisable(type='checkbox')
+      label(for='buttonDisable') Disable until ticks start
+      br
+      label(for='buttonCommands') Commands
+      input#buttonCommands(type='text', required='required')
+      br
+      label(for='buttonDisplay') Display name
+      input#buttonDisplay(type='text')
+      br
+      label(for='buttonKey') Action Key
+      input#buttonKey(maxlength='1')
+    #viewContainer(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
+      table#viewHeader(style='margin-top: 2px; margin-left: 3px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
+        tr
+          td#ticks(style='padding: 0px') ticks:
+          td#tickCounter(style='width: 320px; padding: 0px')
+          td#button(style='padding: 0px')
+            input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
+      canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')
       th(style='width: 520px')
-        | Chat Log
+        | Command Log
       td
         input(type="button", value="Clear", onclick="clearChat()", style="width: 50px")
   table#chat(style='border: none; table-layout: fixed')
