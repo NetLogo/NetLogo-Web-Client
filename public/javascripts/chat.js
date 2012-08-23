@@ -188,7 +188,6 @@ document.body.onload = function() {
 function initJQueryUI() {
     $(function() {
 
-
         $("#viewContainer")
             .droppable().
             draggable({
@@ -425,6 +424,8 @@ function alertButton() {
         agents: $buttonAgents.val()
     };
     socket.emit('button', buttonInfo);
+
+    $buttonDialog.dialog('close');
 }
 
 function createButton(data) {
@@ -464,8 +465,6 @@ function createButton(data) {
             buttonSend(document.getElementById(id));
         });
     //TODO make these draggable
-
-    $buttonDialog.dialog('close');
 }
 
 function buttonSend(button) {
@@ -482,14 +481,16 @@ function alertMonitor() {
         font: $monitorFont.val()
     };
     socket.emit('monitor', monitorInfo);
+
+    $monitorDialog.dialog('close');
 }
 
 function createMonitor(data) {
     var monitorID = data.id;
     var reporter = data.reporter;
     var monitorFont = data.font;
-    var newMonitorHTML = "<div style='background-color: #CC9966; outline: 2px outset #CC9966;' id='" + monitorID + "'>"+
-            "<label for='" + reporter + " input'>"+monitorID+"</label>"+
+    var newMonitorHTML = "<div style='background-color: #CC9966; display: inline-block; outline: 2px outset #CC9966;' id='" + monitorID + "'>"+
+            "<label style='margin-left: 3px' for='" + reporter + " input'>"+monitorID+"</label>"+
             "<br>"+
             "<input readonly='readonly' type='text' value='' id='" + reporter + " input'>"+
         "</div>";
