@@ -549,8 +549,9 @@ function buttonSend(button) {
 }
 
 function alertMonitor() {
+    var monitorID = $monitorDisplay.val() ? $monitorDisplay.val() : $monitorReporter.val();
     var monitorInfo = {
-        id: $monitorDisplay.val(),
+        id: monitorID,
         reporter: $monitorReporter.val(),
         precision: $monitorPrecision.val(),
         font: $monitorFont.val()
