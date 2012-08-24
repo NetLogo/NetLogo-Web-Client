@@ -48,6 +48,9 @@ var $sliderInitVal;
 var $sliderUnits;
 var $sliderIsVertical;
 
+var $switchDialog;
+var $switchVar;
+
 // Other globals
 var userName;
 var socket;
@@ -117,7 +120,7 @@ document.body.onload = function() {
         world.updateWorld(data);
         var globals = world.getGlobals();
         for (var reporter in globals) {
-            $("#"+reporter+" input").val(globals[reporter]);
+            $("#"+reporter+"-input").val(globals[reporter]);
         }
         $tickCounter.text(data.tick);
     });
@@ -138,6 +141,16 @@ document.body.onload = function() {
         var sliderID = data.id;
         var newValue = data.value;
         $("#"+sliderID).slider("value", newValue);
+    });
+
+    socket.on('new switch', function(data) {
+        createSwitch(data);
+    });
+
+    socket.on('switch change', function(data) {
+        var switchID = data.id;
+        var newValue = data.value;
+        $("#"+switchID).slider('value', newValue);
     });
 
     var keyString =
@@ -229,6 +242,10 @@ function initJQueryUI() {
             .click(function() {
                 createWidget('slider')();
             });
+        $("#addSwitch").button({icons: {secondary: 'ui-icon-plus'}})
+            .click(function() {
+                createWidget('switch')();
+            });
 
 //      $('#add').button({icons: {secondary: 'ui-icon-plus'}})
 //          .click(function() {
@@ -289,6 +306,18 @@ function initJQueryUI() {
             }
         });
 
+        $switchDialog.dialog({
+            autoOpen: false,
+            title: 'Slider',
+            buttons: {
+                Ok: alertSwitch,
+                Cancel: function() { $switchDialog.dialog('close') }
+            },
+            close: function() {
+                $switchVar.val("");
+            }
+        });
+
     });
 }
 
@@ -338,6 +367,9 @@ function initSelectors() {
     $sliderInitVal    = $("#sliderInitVal");
     $sliderUnits      = $("#sliderUnits");
     $sliderIsVertical = $("#sliderIsVertical");
+
+    $switchDialog     = $("#switchDialog");
+    $switchVar        = $("#switchVar");
 }
 
 function initAgentList() {
@@ -484,6 +516,11 @@ function createWidget(type) {
                 $sliderDialog.dialog('open');
             };
             break;
+        case 'switch':
+            retfunc = function() {
+                $switchDialog.dialog('open');
+            };
+            break;
     }
     return retfunc;
 }
@@ -566,9 +603,9 @@ function createMonitor(data) {
     var reporter = data.reporter;
     var monitorFont = data.font;
     var newMonitorHTML = "<div style='background-color: #CC9966; display: inline-block; outline: 2px outset #CC9966;' id='" + monitorID + "'>"+
-            "<label style='margin-left: 3px' for='" + reporter + " input'>"+monitorID+"</label>"+
+            "<label style='margin-left: 3px' for='" + reporter + "-input'>"+monitorID+"</label>"+
             "<br>"+
-            "<input readonly='readonly' type='text' id='" + reporter + " input'>"+
+            "<input readonly='readonly' type='text' id='" + reporter + "-input'>"+
         "</div>";
     $interface.append(newMonitorHTML);
     $("#"+monitorID).draggable({
@@ -608,12 +645,12 @@ function createSlider(data) {
         //TODO get table to rotate properly
     }
     var newSliderHTML =
-        "<div style='"+divStyle+"' id='"+name+name+"'>"+
+        "<div style='"+divStyle+"' id='"+name+"-wrapper'>"+
             "<div id='"+name+"'></div>"+
             "<table width='150px' style='margin: 0px'>"+
                 "<tr>"+
                     "<td>"+name+"</td>"+
-                    "<td style='text-align: right;' id='"+name+name+name+"'>"+initial+" "+units+"</td>"+
+                    "<td style='text-align: right;' id='"+name+"-value'>"+initial+" "+units+"</td>"+
                 "</tr>"+
             "</table>"+
         "</div>";
@@ -626,14 +663,49 @@ function createSlider(data) {
         orientation: orientation,
         slide: function(event, ui) {
             socket.emit('slider change', {id: name, value: ui.value});
-            $("#"+name+name+name).text(ui.value + " " + units);
+            $("#"+name+"-value").text(ui.value + " " + units);
         },
         change: function(event, ui) {
-            $("#"+name+name+name).text(ui.value + " " + units);
+            $("#"+name+"-value").text(ui.value + " " + units);
         }
     });
-    $("#"+name+name).draggable({
+    $("#"+name+"-wrapper").draggable({
         containment: 'parent',
         revert: 'valid'
+    });
+}
+
+function alertSwitch() {
+    var switchInfo = { variable: $switchVar.val() };
+    socket.emit('switch', switchInfo);
+    $switchDialog.dialog('close');
+}
+
+function createSwitch(data) {
+    var switchID = data.variable;
+    var divID = switchID + "-wrapper";
+    var divStyle = 'background-color: #99CC99; display: inline-block; outline: 2px outset #99CC99;' +
+        'padding-right: 10px; vertical-align: middle';
+    var newSwitchHTML =
+        "<div style='"+divStyle+"' id='"+divID+"'>"+
+            "<table>"+
+                "<tr>"+
+                    "<td><div style='height: 20px; margin: 7px;' id='"+switchID+"'></div></td>"+
+                    "<td><div style='font-size: 8pt; margin-right: 10px;'>On<br>Off</div></td>"+
+                    "<td>"+switchID+"</td>"+
+                "</tr>"+
+            "</table>"+
+        "</div>";
+    $interface.append(newSwitchHTML);
+    $("#"+switchID).slider({
+        max: 1,
+        orientation: 'vertical',
+        slide: function(event, ui) {
+            socket.emit('switch change', {id: switchID, value: ui.value});
+        }
+    });
+    $("#"+divID).draggable({
+        containment: 'parent',
+        revert:'valid'
     });
 }

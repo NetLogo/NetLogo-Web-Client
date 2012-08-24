@@ -36,6 +36,9 @@ body
     button#addSlider(type='button')
       | Add Slider
     br
+    button#addSwitch(type='button')
+      | Add Switch
+    br
     button#add(type='button', hidden='hidden')
       | Add
     select#addOptions(hidden='hidden')
@@ -114,11 +117,14 @@ body
             input#sliderMax(value='100')
       label(for='sliderInitVal') Value
       input#sliderInitVal(type='number', value='50')
-      label(for'sliderUnits') Units (optional)
+      label(for='sliderUnits') Units (optional)
       input#sliderUnits(type='text')
       br
       input#sliderIsVertical(type='checkbox')
       label(for='sliderIsVertical') vertical?
+    #switchDialog
+      label(for='switchVar') Global Variable
+      input#switchVar(type='text')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')

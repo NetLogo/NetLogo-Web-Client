@@ -440,6 +440,20 @@ io.sockets.on('connection', function (socket) {
         socket.broadcast.emit('slider change', data);
     });
 
+    socket.on('switch', function(data) {
+        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+            {global: data.variable}
+        );
+        io.sockets.emit('new switch', data);
+    });
+
+    socket.on('switch change', function(data) {
+        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+            {global: data.id, value: data.value}
+        );
+        socket.broadcast.emit('switch change', data);
+    });
+
     socket.on('disconnect', function() {
         removeUser(name);
     });
