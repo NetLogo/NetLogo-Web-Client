@@ -22,6 +22,7 @@ var $textCopier;
 var $agentType;
 var $tickCounter;
 var $interface;
+
 var $buttonDialog;
 var $buttonCommands;
 var $buttonForever;
@@ -30,12 +31,22 @@ var $buttonAgents;
 var $buttonKey;
 var $buttonDisable;
 var $allButtonFields;
+
 var $monitorDialog;
 var $monitorReporter;
 var $monitorDisplay;
 var $monitorPrecision;
 var $monitorFont;
 var $allMonitorFields;
+
+var $sliderDialog;
+var $sliderVar;
+var $sliderMin;
+var $sliderStep;
+var $sliderMax;
+var $sliderInitVal;
+var $sliderUnits;
+var $sliderIsVertical;
 
 // Other globals
 var userName;
@@ -106,7 +117,7 @@ document.body.onload = function() {
         world.updateWorld(data);
         var globals = world.getGlobals();
         for (var reporter in globals) {
-            $("#"+reporter).val(globals[reporter]);
+            $("#"+reporter+" input").val(globals[reporter]);
         }
         $tickCounter.text(data.tick);
     });
@@ -117,6 +128,16 @@ document.body.onload = function() {
 
     socket.on('new monitor', function(data) {
         createMonitor(data);
+    });
+
+    socket.on('new slider', function(data) {
+        createSlider(data);
+    });
+
+    socket.on('slider change', function(data) {
+        var sliderID = data.id;
+        var newValue = data.value;
+        $("#"+sliderID).slider("value", newValue);
     });
 
     var keyString =
@@ -191,7 +212,8 @@ function initJQueryUI() {
         $("#viewContainer")
             .droppable().
             draggable({
-                containment: 'parent'
+                containment: 'parent',
+                tolerance: 'touch'
             });
 
         $('#add').button({icons: {secondary: 'ui-icon-plus'}})
@@ -206,16 +228,18 @@ function initJQueryUI() {
         $('#addOptions').selectmenu();
 
         $buttonDialog.dialog({
-                autoOpen: false,
-                title: "Button",
-                buttons: {
-                    Ok: alertButton,
-                    Cancel: function() { $buttonDialog.dialog('close') }
-                },
-                close: function() {
-                    $allButtonFields.val("");
-                }
-            });
+            autoOpen: false,
+            title: "Button",
+            buttons: {
+                Ok: alertButton,
+                Cancel: function() { $buttonDialog.dialog('close') }
+            },
+            close: function() {
+                $allButtonFields.val("");
+                $buttonDisable.prop('checked', false);
+                $buttonForever.prop('checked', false);
+            }
+        });
 
         $monitorDialog.dialog({
             autoOpen: false,
@@ -229,7 +253,28 @@ function initJQueryUI() {
                 $monitorPrecision.val(17);
                 $monitorFont.val(11);
             }
-        })
+        });
+
+        $sliderDialog.dialog({
+            autoOpen: false,
+            title: "Slider",
+            width: 520,
+            height: 285,
+            buttons: {
+                Ok: alertSlider,
+                Cancel: function() { $sliderDialog.dialog('close') }
+            },
+            close: function() {
+                $sliderMin.val(0);
+                $sliderStep.val(1);
+                $sliderMax.val(100);
+                $sliderInitVal.val(50);
+                $sliderVar.val('');
+                $sliderUnits.val('');
+                $sliderIsVertical.prop('checked', false);
+            }
+        });
+
     });
 }
 
@@ -245,29 +290,40 @@ function startup() {
 
 // Caching jQuery selector results for easy access throughout the code
 function initSelectors() {
-    $inputBuffer   = $("#inputBuffer");
-    $usersOnline   = $("#usersOnline");
-    $chatLog       = $("#chatLog");
-    $chatContainer = $("#chatContainer");
-    $copier        = $("#copier");
-    $textCopier    = $("#textCopier");
-    $agentType     = $("#agentType");
-    $tickCounter   = $("#tickCounter");
-    $interface     = $("#interface");
-    $buttonDialog  = $("#buttonDialog");
-    $buttonCommands  = $("#buttonCommands");
-    $buttonForever   = $("#buttonForever");
-    $buttonDisplay   = $("#buttonDisplay");
-    $buttonAgents    = $("#buttonAgents");
-    $buttonKey       = $("#buttonKey");
-    $buttonDisable   = $("#buttonDisable");
-    $allButtonFields = $( [] ).add($buttonCommands).add($buttonDisplay).add($buttonKey);
-    $monitorDialog   = $("#monitorDialog");
+    $inputBuffer      = $("#inputBuffer");
+    $usersOnline      = $("#usersOnline");
+    $chatLog          = $("#chatLog");
+    $chatContainer    = $("#chatContainer");
+    $copier           = $("#copier");
+    $textCopier       = $("#textCopier");
+    $agentType        = $("#agentType");
+    $tickCounter      = $("#tickCounter");
+    $interface        = $("#interface");
+
+    $buttonDialog     = $("#buttonDialog");
+    $buttonCommands   = $("#buttonCommands");
+    $buttonForever    = $("#buttonForever");
+    $buttonDisplay    = $("#buttonDisplay");
+    $buttonAgents     = $("#buttonAgents");
+    $buttonKey        = $("#buttonKey");
+    $buttonDisable    = $("#buttonDisable");
+    $allButtonFields  = $( [] ).add($buttonCommands).add($buttonDisplay).add($buttonKey);
+
+    $monitorDialog    = $("#monitorDialog");
     $monitorReporter  = $("#monitorReporter");
     $monitorDisplay   = $("#monitorDisplay");
     $monitorPrecision = $("#monitorPrecision");
     $monitorFont      = $("#monitorFont");
-    $allMonitorFields = $( []).add($monitorDisplay).add($monitorReporter);
+    $allMonitorFields = $( [] ).add($monitorDisplay).add($monitorReporter);
+
+    $sliderDialog     = $("#sliderDialog");
+    $sliderVar        = $("#sliderVar");
+    $sliderMin        = $("#sliderMin");
+    $sliderStep       = $("#sliderStep");
+    $sliderMax        = $("#sliderMax");
+    $sliderInitVal    = $("#sliderInitVal");
+    $sliderUnits      = $("#sliderUnits");
+    $sliderIsVertical = $("#sliderIsVertical");
 }
 
 function initAgentList() {
@@ -409,6 +465,11 @@ function createWidget(type) {
                 $monitorDialog.dialog('open');
             };
             break;
+        case 'slider':
+            retfunc = function() {
+                $sliderDialog.dialog('open');
+            };
+            break;
     }
     return retfunc;
 }
@@ -492,11 +553,72 @@ function createMonitor(data) {
     var newMonitorHTML = "<div style='background-color: #CC9966; display: inline-block; outline: 2px outset #CC9966;' id='" + monitorID + "'>"+
             "<label style='margin-left: 3px' for='" + reporter + " input'>"+monitorID+"</label>"+
             "<br>"+
-            "<input readonly='readonly' type='text' value='' id='" + reporter + " input'>"+
+            "<input readonly='readonly' type='text' id='" + reporter + " input'>"+
         "</div>";
     $interface.append(newMonitorHTML);
     $("#"+monitorID).draggable({
         containment: 'parent',
         revert: 'valid'
-    })
+    });
+}
+
+function alertSlider() {
+    var sliderInfo = {
+        variable: $sliderVar.val(),
+        min: $sliderMin.val(),
+        step: $sliderStep.val(),
+        max: $sliderMax.val(),
+        initial: $sliderInitVal.val(),
+        units: $sliderUnits.val(),
+        isVertical: $sliderIsVertical.prop('checked')
+    };
+    socket.emit('slider', sliderInfo);
+
+    $sliderDialog.dialog('close');
+}
+
+function createSlider(data) {
+    var name = data.variable;
+    var min = parseInt(data.min);
+    var step = parseInt(data.step);
+    var max = parseInt(data.max);
+    var initial = parseInt(data.initial);
+    var units = data.units;
+    var isVertical = data.isVertical;
+    var divStyle = 'background-color: #99CC99; display: inline-block; outline: 2px outset #99CC99; ' +
+        'padding-top: 5px; padding-left: 8px; padding-right: 10px;';
+    var orientation = 'horizontal';
+    if (isVertical) {
+        orientation = 'vertical';
+        //TODO get table to rotate properly
+    }
+    var newSliderHTML =
+        "<div style='"+divStyle+"' id='"+name+name+"'>"+
+            "<div id='"+name+"'></div>"+
+            "<table width='150px' style='margin: 0px'>"+
+                "<tr>"+
+                    "<td>"+name+"</td>"+
+                    "<td style='text-align: right;' id='"+name+name+name+"'>"+initial+" "+units+"</td>"+
+                "</tr>"+
+            "</table>"+
+        "</div>";
+    $interface.append(newSliderHTML);
+    $("#"+name).slider({
+        max: max,
+        min: min,
+        step: step,
+        value: initial,
+        orientation: orientation,
+        slide: function(event, ui) {
+            socket.emit('slider change', {id: name, value: ui.value});
+            $("#"+name+name+name).text(ui.value + " " + units);
+        },
+        change: function(event, ui) {
+            $("#"+name+name+name).text(ui.value + " " + units);
+        }
+    });
+    $("#"+name+name).draggable({
+        containment: 'parent',
+        revert: 'valid'
+    });
 }

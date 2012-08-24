@@ -395,6 +395,11 @@ io.sockets.on('connection', function (socket) {
                     }
                 }
             };
+        } else if (message === "x=10") {
+            info = {
+                tick: 12,
+                globals: {x: 10}
+            };
         }
 
         socket.emit('tick',info);
@@ -416,6 +421,23 @@ io.sockets.on('connection', function (socket) {
 
         var newMonitorInfo = {id: name, font: font, reporter: reporter};
         io.sockets.emit('new monitor', newMonitorInfo);
+    });
+
+    socket.on('slider', function(data) {
+        var global = data.variable;
+        var initial = data.initial;
+        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+            {global: global, initial: initial}
+        );
+
+        io.sockets.emit('new slider', data);
+    });
+
+    socket.on('slider change', function(data) {
+        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+            {global: data.id, value: data.value}
+        );
+        socket.broadcast.emit('slider change', data);
     });
 
     socket.on('disconnect', function() {

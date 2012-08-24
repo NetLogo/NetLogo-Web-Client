@@ -77,6 +77,30 @@ body
       input#monitorPrecision(type='number', value='17', max='17')
       label(for='monitorFont') Font size
       input#monitorFont(type='number', value='11')
+    #sliderDialog
+      label(for='sliderVar') Global variable
+      br
+      input#sliderVar(type='text')
+      br
+      table
+        tr
+          td Minimum
+          td Increment
+          td Maximum
+        tr
+          td
+            input#sliderMin(value='0')
+          td
+            input#sliderStep(value='1')
+          td
+            input#sliderMax(value='100')
+      label(for='sliderInitVal') Value
+      input#sliderInitVal(type='number', value='50')
+      label(for'sliderUnits') Units (optional)
+      input#sliderUnits(type='text')
+      br
+      input#sliderIsVertical(type='checkbox')
+      label(for='sliderIsVertical') vertical?
     #viewContainer(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
       table#viewHeader(style='margin-top: 2px; margin-left: 3px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
         tr
