@@ -216,16 +216,29 @@ function initJQueryUI() {
                 tolerance: 'touch'
             });
 
-        $('#add').button({icons: {secondary: 'ui-icon-plus'}})
+        $("#addButton").button({icons: {secondary: 'ui-icon-plus'}})
             .click(function() {
-                var type = prompt("What would you like to add?");
-                if (typeof type !== 'undefined') {
-                    var createFunction = createWidget(type);
-                    createFunction();
-                }
+                createWidget('button')();
+            });
+        $("#addMonitor").button({icons: {secondary: 'ui-icon-plus'}})
+            .click(function() {
+                createWidget('monitor')();
+            });
+        $("#addSlider").button({icons: {secondary: 'ui-icon-plus'}})
+            .click(function() {
+                createWidget('slider')();
             });
 
-        $('#addOptions').selectmenu();
+//      $('#add').button({icons: {secondary: 'ui-icon-plus'}})
+//          .click(function() {
+//              var type = prompt("What would you like to add?");
+//              if (typeof type !== 'undefined') {
+//                  var createFunction = createWidget(type);
+//                  createFunction();
+//              }
+//          });
+
+//      $('#addOptions').selectmenu();
 
         $buttonDialog.dialog({
             autoOpen: false,

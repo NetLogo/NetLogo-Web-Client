@@ -19,9 +19,15 @@ head
   script(type='text/paperscript', src='/javascripts/canvas/view-setup.js', canvas='view')
 body
   #interface(style='border: 2px inset #CCCCCC; float: right; padding: 3px; height: 1000px; width: 450px;')
-    button#add(type='button)
+    button#addButton(type='button')
+      | Add Button
+    button#addMonitor(type='button')
+      | Add Monitor
+    button#addSlider(type='button')
+      | Add Slider
+    button#add(type='button', hidden='hidden')
       | Add
-    select#addOptions
+    select#addOptions(hidden='hidden')
       option(value='button')
         | Button
       option(value='slider')
