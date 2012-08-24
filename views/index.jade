@@ -18,13 +18,24 @@ head
   script(type='text/javascript', src='/javascripts/chat.js')
   script(type='text/paperscript', src='/javascripts/canvas/view-setup.js', canvas='view')
 body
-  #interface(style='border: 2px inset #CCCCCC; float: right; padding: 3px; height: 1000px; width: 450px;')
+  #interface(style='border: 2px inset #CCCCCC; float: right; padding: 3px; height: 550px; width: 625px;')
+    #viewContainer(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
+      table#viewHeader(style='margin-top: 2px; margin-left: 3px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
+        tr
+          td#ticks(style='padding: 0px') ticks:
+          td#tickCounter(style='width: 320px; padding: 0px')
+          td#button(style='padding: 0px')
+            input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
+      canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')
     button#addButton(type='button')
       | Add Button
+    br
     button#addMonitor(type='button')
       | Add Monitor
+    br
     button#addSlider(type='button')
       | Add Slider
+    br
     button#add(type='button', hidden='hidden')
       | Add
     select#addOptions(hidden='hidden')
@@ -46,6 +57,7 @@ body
         | Output
       option(value='note')
         | Note
+  div
     #buttonDialog
       table
         tr
@@ -107,28 +119,20 @@ body
       br
       input#sliderIsVertical(type='checkbox')
       label(for='sliderIsVertical') vertical?
-    #viewContainer(style='border: 2px outset #CCCCCC; background-color: #CCCCCC; display: inline-block; float: right; text-align: center;')
-      table#viewHeader(style='margin-top: 2px; margin-left: 3px; table-layout: fixed; text-align: left; border-collapse: collapse;', border='0')
-        tr
-          td#ticks(style='padding: 0px') ticks:
-          td#tickCounter(style='width: 320px; padding: 0px')
-          td#button(style='padding: 0px')
-            input(type='button', value='3D', style='background-color: #CCCCCC; font-size: 8pt;', onclick='threeD()')
-      canvas#view(height='400', width='400', style='background-color: #000000; vertical-align: bottom; margin: 3px')
   h1(style='margin-top: 0')= title
   table
     tr(style='text-align: left')
-      th(style='width: 520px')
+      th(style='width: 380px')
         | Command Log
       td
         input(type="button", value="Clear", onclick="clearChat()", style="width: 50px")
   table#chat(style='border: none; table-layout: fixed')
     tr
       td
-        #chatContainer(style='border: 1px inset #CCCCCC; height: 20em; width: 40em; padding: .385em; margin-right: 10pt; overflow: auto', tabindex='0')
+        #chatContainer(style='border: 1px inset #CCCCCC; height: 20em; width: 30em; padding: .385em; margin-right: 10pt; overflow: auto', tabindex='0')
           table#chatLog(style='width: 97%; border-collapse: collapse; table-layout: fixed; margin-right: 1.5%; margin-left: 1.5%')
       td
-        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 10em; padding: .385em; overflow: auto')
+        #onlineLog(style='border: 1px inset #CCCCCC; height: 20em; width: 8em; padding: .385em; overflow: auto')
           table#usersTable(style='width: 100%; table-layout: fixed')
             thead
               tr
@@ -138,7 +142,7 @@ body
     tr(style='height: 15px', valign='middle')
       td#agentType(style='font-size: 8pt; width: 50px; height: 100%;', cellspacing='3px', cellpadding='3px')
       td(style='height: 100%', cellspacing='3px', cellpadding='3px')
-        input#inputBuffer(value='', autofocus='autofocus', style='width: 507px;', class='mousetrap')
+        input#inputBuffer(value='', autofocus='autofocus', style='width: 370px;', class='mousetrap')
   #blocker1(style='position: fixed; margin-top: auto; margin-bottom: auto; right: 0px; z-index: -1; width: 150px; height: 150px;')
     img(src='/images/white.png')
   #copierWrap(style='position: fixed; margin-top: auto; margin-bottom: auto; right: 0px; padding: 20px; width: 100px; height: 100px; z-index: -2;')

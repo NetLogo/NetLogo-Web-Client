@@ -210,10 +210,11 @@ function initJQueryUI() {
     $(function() {
 
         $("#viewContainer")
-            .droppable().
-            draggable({
-                containment: 'parent',
+            .droppable({
                 tolerance: 'touch'
+            }).
+            draggable({
+                containment: 'parent'
             });
 
         $("#addButton").button({icons: {secondary: 'ui-icon-plus'}})
