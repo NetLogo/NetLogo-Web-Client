@@ -415,9 +415,9 @@ io.sockets.on('connection', function (socket) {
         var precision = data.precision;
         var font = data.font;
         var name = data.id;
-        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
-            {reporter: reporter, precision: precision}
-        );
+//        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+//            {reporter: reporter, precision: precision}
+//        );
 
         var newMonitorInfo = {id: name, font: font, reporter: reporter};
         io.sockets.emit('new monitor', newMonitorInfo);
@@ -426,31 +426,31 @@ io.sockets.on('connection', function (socket) {
     socket.on('slider', function(data) {
         var global = data.variable;
         var initial = data.initial;
-        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
-            {global: global, initial: initial}
-        );
+//        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+//            {global: global, initial: initial}
+//        );
 
         io.sockets.emit('new slider', data);
     });
 
     socket.on('slider change', function(data) {
-        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
-            {global: data.id, value: data.value}
-        );
+//        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+//            {global: data.id, value: data.value}
+//        );
         socket.broadcast.emit('slider change', data);
     });
 
     socket.on('switch', function(data) {
-        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
-            {global: data.variable}
-        );
+//        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+//            {global: data.variable}
+//        );
         io.sockets.emit('new switch', data);
     });
 
     socket.on('switch change', function(data) {
-        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
-            {global: data.id, value: data.value}
-        );
+//        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
+//            {global: data.id, value: data.value}
+//        );
         socket.broadcast.emit('switch change', data);
     });
 
