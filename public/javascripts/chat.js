@@ -225,9 +225,15 @@ function initJQueryUI() {
         $("#viewContainer")
             .droppable({
                 tolerance: 'touch'
-            }).
-            draggable({
-                containment: 'parent'
+            })
+            .draggable({
+                containment: 'parent',
+                revert: 'valid'
+            });
+
+        $("#commandCenter")
+            .droppable({
+                tolerance: 'touch'
             });
 
         $("#addButton").button({icons: {secondary: 'ui-icon-plus'}})
