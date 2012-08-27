@@ -225,9 +225,15 @@ function initJQueryUI() {
         $("#viewContainer")
             .droppable({
                 tolerance: 'touch'
-            }).
-            draggable({
-                containment: 'parent'
+            })
+            .draggable({
+                containment: 'parent',
+                revert: 'valid'
+            });
+
+        $("#commandCenter")
+            .droppable({
+                tolerance: 'touch'
             });
 
         $("#addButton").button({icons: {secondary: 'ui-icon-plus'}})
@@ -547,7 +553,7 @@ function createButton(data) {
     var agents = data.agents;
     var isForever = data.isForever;
     var actionKey = data.actionKey;
-    var newButtonHTML = "<div><button id='" + id +
+    var newButtonHTML = "<div style='display: inline-block;' id='"+id+"-wrapper'><button id='" + id +
         "' name='" + isDisabled +
         "' accesskey='" + actionKey +
         "' value='" + JSON.stringify({Message: command, Shout: agents, Forever: isForever}) +
@@ -576,7 +582,10 @@ function createButton(data) {
         .click(function() {
             buttonSend(document.getElementById(id));
         });
-    //TODO make these draggable
+    $("#"+id+"-wrapper").draggable({
+        containment: "parent",
+        revert: 'valid'
+    });
 }
 
 function buttonSend(button) {
