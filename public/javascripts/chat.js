@@ -140,7 +140,7 @@ document.body.onload = function() {
     socket.on('slider change', function(data) {
         var sliderID = data.id;
         var newValue = data.value;
-        $("#"+sliderID).slider("value", newValue);
+        $("#"+sliderID+"-slider").slider("value", newValue);
     });
 
     socket.on('new switch', function(data) {
@@ -150,7 +150,7 @@ document.body.onload = function() {
     socket.on('switch change', function(data) {
         var switchID = data.id;
         var newValue = data.value;
-        $("#"+switchID).slider('value', newValue);
+        $("#"+switchID+"-switch").slider('value', newValue);
     });
 
     var keyString =
@@ -553,7 +553,7 @@ function createButton(data) {
     var agents = data.agents;
     var isForever = data.isForever;
     var actionKey = data.actionKey;
-    var newButtonHTML = "<div style='display: inline-block;' id='"+id+"-wrapper'><button id='" + id +
+    var newButtonHTML = "<div style='display: inline-block;' id='"+id+"-wrapper'><button id='" + id + "-button" +
         "' name='" + isDisabled +
         "' accesskey='" + actionKey +
         "' value='" + JSON.stringify({Message: command, Shout: agents, Forever: isForever}) +
@@ -574,7 +574,7 @@ function createButton(data) {
         agentIcon = 'ui-icon-link';
     }
 
-    $('#'+id)
+    $('#'+id+"-button")
         .button({
             icons: { primary: agentIcon, secondary: foreverIcon },
             label: id
@@ -611,13 +611,13 @@ function createMonitor(data) {
     var monitorID = data.id;
     var reporter = data.reporter;
     var monitorFont = data.font;
-    var newMonitorHTML = "<div style='background-color: #CC9966; display: inline-block; outline: 2px outset #CC9966;' id='" + monitorID + "'>"+
+    var newMonitorHTML = "<div style='background-color: #CC9966; display: inline-block; outline: 2px outset #CC9966;' id='" + monitorID + "-monitor'>"+
             "<label style='margin-left: 3px' for='" + reporter + "-input'>"+monitorID+"</label>"+
             "<br>"+
             "<input readonly='readonly' type='text' id='" + reporter + "-input'>"+
         "</div>";
     $interface.append(newMonitorHTML);
-    $("#"+monitorID).draggable({
+    $("#"+monitorID+"-monitor").draggable({
         containment: 'parent',
         revert: 'valid'
     });
@@ -654,8 +654,8 @@ function createSlider(data) {
         //TODO get table to rotate properly
     }
     var newSliderHTML =
-        "<div style='"+divStyle+"' id='"+name+"-wrapper'>"+
-            "<div id='"+name+"'></div>"+
+        "<div style='"+divStyle+"' id='"+name+"-slider-wrapper'>"+
+            "<div id='"+name+"-slider'></div>"+
             "<table width='150px' style='margin: 0px'>"+
                 "<tr>"+
                     "<td>"+name+"</td>"+
@@ -664,7 +664,7 @@ function createSlider(data) {
             "</table>"+
         "</div>";
     $interface.append(newSliderHTML);
-    $("#"+name).slider({
+    $("#"+name+"-slider").slider({
         max: max,
         min: min,
         step: step,
@@ -678,7 +678,7 @@ function createSlider(data) {
             $("#"+name+"-value").text(ui.value + " " + units);
         }
     });
-    $("#"+name+"-wrapper").draggable({
+    $("#"+name+"-slider-wrapper").draggable({
         containment: 'parent',
         revert: 'valid'
     });
@@ -692,21 +692,21 @@ function alertSwitch() {
 
 function createSwitch(data) {
     var switchID = data.variable;
-    var divID = switchID + "-wrapper";
+    var divID = switchID + "-switch-wrapper";
     var divStyle = 'background-color: #99CC99; display: inline-block; outline: 2px outset #99CC99;' +
         'padding-right: 10px; vertical-align: middle';
     var newSwitchHTML =
         "<div style='"+divStyle+"' id='"+divID+"'>"+
             "<table>"+
                 "<tr>"+
-                    "<td><div style='height: 20px; margin: 7px;' id='"+switchID+"'></div></td>"+
+                    "<td><div style='height: 20px; margin: 7px;' id='"+switchID+"-switch'></div></td>"+
                     "<td><div style='font-size: 8pt; margin-right: 10px;'>On<br>Off</div></td>"+
                     "<td>"+switchID+"</td>"+
                 "</tr>"+
             "</table>"+
         "</div>";
     $interface.append(newSwitchHTML);
-    $("#"+switchID).slider({
+    $("#"+switchID+"-switch").slider({
         max: 1,
         orientation: 'vertical',
         slide: function(event, ui) {
