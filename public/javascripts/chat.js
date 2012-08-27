@@ -308,7 +308,7 @@ function initJQueryUI() {
 
         $switchDialog.dialog({
             autoOpen: false,
-            title: 'Slider',
+            title: 'Switch',
             buttons: {
                 Ok: alertSwitch,
                 Cancel: function() { $switchDialog.dialog('close') }
