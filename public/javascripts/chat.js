@@ -94,35 +94,23 @@ document.body.onload = function() {
         var time = d.toTimeString().slice(0, 5);
         var user = data.user;
         var message = data.processed_message;
-        var serverState = data.server_state;
-        var final_text = "";
 
-        switch (serverState) {
-            case 0:
-                final_text = message;
-                break;
-            case 1:
-                final_text = message.reverse();
-                break;
-            case 2:
-                final_text = message.wordReverse();
-                break;
-        }
-
-        logList[state] = new TextHolder(final_text);
+        logList[state] = new TextHolder(message);
         var difference = $chatContainer[0].scrollHeight - $chatContainer.scrollTop();
-        $chatLog.append(messageSwitcher(user, final_text, time));
+        $chatLog.append(messageSwitcher(user, message, time));
         if ((difference === $chatContainer.innerHeight()) || (user === userName)) { textScroll(); }
 
     });
 
     socket.on('tick', function(data) {
-        world.updateWorld(data);
-        var globals = world.getGlobals();
-        for (var reporter in globals) {
-            $("#"+reporter+"-input").val(globals[reporter]);
+        if (data) {
+            world.updateWorld(data);
+            var globals = world.getGlobals();
+            for (var reporter in globals) {
+                $("#"+reporter+"-input").val(globals[reporter]);
+            }
+            $tickCounter.text(data.tick);
         }
-        $tickCounter.text(data.tick);
     });
 
     socket.on('new button', function(data) {

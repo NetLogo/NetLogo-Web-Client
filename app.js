@@ -71,15 +71,6 @@ io.sockets.on('connection', function (socket) {
 
         console.log("Server Receiving: " + data);
 
-        $.post("http://abmplus.tech.northwestern.edu:9001/netlogo_data",
-               { agentType: shout, cmd: message },
-               function(data) {
-                   var packet = { user: name, processed_message: data };
-                   console.log("Server Sending: " + packet);
-                   io.sockets.json.send(packet);
-               }
-        );
-
         var info;
 
         if (message === 'cp') { // test create patches
@@ -400,6 +391,15 @@ io.sockets.on('connection', function (socket) {
                 tick: 12,
                 globals: {x: 10}
             };
+        } else {
+            $.post("http://abmplus.tech.northwestern.edu:9002/netlogo_data",
+                { agentType: shout, cmd: message },
+                function(data) {
+                    var packet = { user: name, processed_message: data };
+                    console.log("Server Sending: " + packet);
+                    io.sockets.json.send(packet);
+                }
+            );
         }
 
         socket.emit('tick',info);
