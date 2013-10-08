@@ -1,0 +1,13 @@
+{
+  "name": "NetLogo-Web-Client",
+  "description": "A web client for NetLogo",
+  "repository": "https://github.com/NetLogo/NetLogo-Web-Client",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express":                 "2.5",
+    "jade":                    "*",
+    "jquery":                  "1.7.3",
+    "socket.io":               "*"
+  }
+}
